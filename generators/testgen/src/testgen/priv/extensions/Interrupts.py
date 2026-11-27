@@ -1,0 +1,210 @@
+##################################
+# priv/extensions/Interrupts.py
+#
+# Interrupts privileged test generator: the Interrupts_cg group, which boots to S-mode.
+# David_Harris@hmc.edu 7 September 2026
+# SPDX-License-Identifier: Apache-2.0
+##################################
+
+
+"""Interrupts test generator for interrupts not relying on M-mode (covergroup Interrupts_cg)."""
+
+from testgen.asm.helpers import comment_banner
+from testgen.data.state import TestData
+from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.InterruptsCommon import (
+    InterruptSuite,
+    emit_interrupts,
+    flavor,
+    generate_cp_enable,
+    generate_cp_priority_enable,
+    generate_cp_priority_pending,
+    generate_cp_trigger_vsti_sstc,
+    generate_cp_wfi,
+    generate_cp_wfi_timeout,
+    generate_cp_wfi_vsti,
+    guard_symbol,
+    hideleg_vs_target,
+    int_coverpoint,
+    int_macro,
+    label_coverpoint,
+    mode_enter,
+    mode_exit,
+    reg_ints,
+    sstc_ints,
+    supervisor_ints,
+    vs_ints,
+    write_ie,
+)
+from testgen.priv.registry import add_priv_test_generator
+
+# Boots to S-mode, which requires S and therefore U. With H, the tests also run in VS and VU modes and raise
+# the VS-level interrupts, whose enables are in hie.
+SUITE = InterruptSuite(
+    group="",
+    boot="S",
+    types=[*supervisor_ints, *vs_ints],
+    priority_types=["SEI", "STI", "SSI", "LCOFI", *vs_ints],
+    ip="sip",
+    ie="sie",
+    status={"csr": "sstatus", "mask": 0x22, "field": "SIE"},
+    # cp_wfi: wake on the Sstc supervisor timer, enabled by sie.STIE, pending in sip.STIP
+    wfi={"guard": "SSTC_SUPPORTED", "timer": "SSTC", "ie": ("STIE", 0x20), "ip": ("sip", "STIP", 0x20), "stce": True},
+    deleg=[],
+    hie=True,
+)
+COVERGROUP = SUITE.covergroup
+
+
+def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:
+    """Raise each interrupt in ``priv`` mode with every bit of sie (and hie) set, for each stvec.MODE and sstatus.SIE.
+
+    With H, raise each VS-level interrupt again with hideleg delegating it to VS-mode, for each vstvec.MODE and
+    vsstatus.SIE.
+    """
+
+    ######################################
+    banner = "cp_trigger / cp_trigger_reg / cp_trigger_sti_sstc"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks, f"trigger_{priv}")
+    tc.section_header = comment_banner(
+        banner,
+        f"Trigger each interrupt in {priv} mode with sie=1s (and hie=1s with H) x stvec.MODE=DIRECT/VECTORED"
+        " x sstatus.SIE=0/1 (x hideleg=0/1 for the VS-level interrupts)",
+    )
+    tmp_reg = test_data.int_regs.get_register()
+
+    for int_type in [*supervisor_ints, *reg_ints, *sstc_ints, *vs_ints]:
+        if priv in ("U", "VS", "VU") and int_type == "SSTC_STCE0":
+            # Arming Sstc from U mode (or VS or VU mode) goes through T-SBI.  This suite boots to S mode with
+            # medeleg delegating U-mode ecalls, so the S-mode handler services the request and
+            # executes the stimecmp write at S privilege.  That access is illegal while
+            # menvcfg.STCE = 0, and the trap fires inside the handler after it has swapped
+            # sscratch, so re-entry overwrites the saved context instead of recording a test
+            # trap.  Interrupts_Sm covers priv U with STCE = 0: it boots to M mode, leaving
+            # medeleg = 0, so the same request reaches M mode where stimecmp is accessible.
+            continue
+        macro = int_macro[int_type]
+        guard = guard_symbol(int_type)
+        cp = label_coverpoint(suite, int_coverpoint.get(int_type, "cp_trigger"), priv, int_type)
+        # In VS-mode and VU-mode, the SIE of the level that does not take a VS-level interrupt (sstatus.SIE when
+        # hideleg delegates it, vsstatus.SIE when it does not) must not matter, so it gets its own loop
+        others = [0, 1] if priv in ("VS", "VU") and int_type in vs_ints else [None]
+        for hideleg, mode, enable, other in [
+            (hideleg, mode, enable, other)
+            for hideleg in ([0, 1] if int_type in vs_ints else [0])
+            for mode in [0, 1]
+            for enable in [0, 1]
+            for other in others
+        ]:
+            # stvec.MODE, or vstvec.MODE (set and gated by hideleg_vs_target) for a case delegated to VS-mode
+            modecmd = "csrs" if mode == 1 else "csrc"
+            # sstatus.SIE: the other SIE when hideleg delegates the interrupt to VS-mode
+            sstatus_sie = other if hideleg and other is not None else enable
+            enablecmd = "csrs" if sstatus_sie == 1 else "csrc"
+            vs_open, vs_close = hideleg_vs_target(hideleg, int_type, mode, enable, tmp_reg)
+            # vsstatus.SIE: the other SIE when the interrupt stays at HS-level
+            vs_sie = [] if hideleg or other is None else [f"LI(x{tmp_reg}, 0x22) # SIE, SPIE"]
+            vs_sie_open = vs_sie + (
+                [f"{'csrs' if other else 'csrc'} vsstatus, x{tmp_reg} # vsstatus.SIE = {other}"] if vs_sie else []
+            )
+            vs_sie_close = vs_sie + ([f"csrc vsstatus, x{tmp_reg} # vsstatus.SIE = SPIE = 0"] if vs_sie else [])
+            # Cases whose other SIE differs from the one the other cases leave are recorded in
+            # cp_trigger_tsbi_other_sie, or cp_trigger_tsbi_vs_other_sie when delegated
+            default_other = enable if hideleg else 0
+            other_cp = "cp_trigger_tsbi_vs_other_sie" if hideleg else "cp_trigger_tsbi_other_sie"
+            case_cp = cp if other is None or other == default_other else other_cp
+            other_name = "" if other is None else f"_other_sie_{other}"
+            stvec_open = [] if hideleg else [f"#ifdef UDB_STVEC_MODES_{mode}"]
+            stvec_close = [] if hideleg else [f"#endif // UDB_STVEC_MODES_{mode}"]
+            stvec_write = (
+                [] if hideleg else [f"LI(x{tmp_reg}, 1)", f"{modecmd} stvec, x{tmp_reg} # stvec.mode = {mode}"]
+            )
+            tc.code += [
+                f"#ifdef {guard}",
+                *stvec_open,
+                *vs_open,
+                *vs_sie_open,
+                f"LI(x{tmp_reg}, -1)",
+                *write_ie(suite, tmp_reg, "1s"),
+                *stvec_write,
+                f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
+                f"{enablecmd} sstatus, x{tmp_reg} # sstatus.SIE = {sstatus_sie}",
+                # Leave a nonzero stval so the trap handler's stval == 0 check sees the interrupt write it
+                f"auipc x{tmp_reg}, 0 # nonzero valid address",
+                f"csrw stval, x{tmp_reg} # stval = nonzero",
+                # Likewise htval, htinst and hstatus.GVA, which an interrupt taken into HS-mode must also zero.
+                # htinst gets a transformed load, lw x1, 0(x0).
+                "#ifdef H_SUPPORTED",
+                f"csrw htval, x{tmp_reg} # htval = nonzero",
+                f"LI(x{tmp_reg}, 0x2083) # transformed lw x1, 0(x0)",
+                f"csrw htinst, x{tmp_reg} # htinst = nonzero",
+                f"LI(x{tmp_reg}, HSTATUS_GVA)",
+                f"csrs hstatus, x{tmp_reg} # hstatus.GVA = 1",
+                "#endif // H_SUPPORTED",
+                test_data.add_testcase(
+                    f"priv_{priv}_{int_type}_mode_{mode}_enable_{enable}{'_hideleg' if hideleg else ''}{other_name}",
+                    case_cp,
+                    COVERGROUP,
+                ),
+                *mode_enter(suite, priv),
+                f"RVTEST_SET_{macro}_INT_{flavor(priv)} # Set the interrupt",
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
+                f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
+                *mode_exit(suite, priv),
+                *vs_sie_close,
+                *vs_close,
+                *stvec_close,
+                f"#endif // {guard}",
+                "",
+            ]
+
+    test_data.int_regs.return_register(tmp_reg)
+
+
+_COMMON_GENERATORS = [
+    _generate_cp_trigger_s,
+    generate_cp_enable,
+    generate_cp_priority_pending,
+    generate_cp_priority_enable,
+]
+
+
+@add_priv_test_generator("Interrupts", required_extensions=["S"], extra_defines=["#define BOOT_TO_SMODE"])
+def make_interrupts_s(test_data: TestData) -> list[TestChunk]:
+    """Interrupts tests that run in S-mode."""
+    generators = _COMMON_GENERATORS + [
+        generate_cp_wfi,
+        generate_cp_wfi_vsti,
+        generate_cp_wfi_timeout,
+        generate_cp_trigger_vsti_sstc,
+    ]
+    return emit_interrupts(test_data, SUITE, "S", generators)
+
+
+@add_priv_test_generator("Interrupts", required_extensions=["S"], extra_defines=["#define BOOT_TO_SMODE"])
+def make_interrupts_u(test_data: TestData) -> list[TestChunk]:
+    """Interrupts tests that run in U-mode."""
+    # U-mode WFI traps after a bounded time when S-mode is implemented, so only test the timeout.
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout, generate_cp_trigger_vsti_sstc]
+    return emit_interrupts(test_data, SUITE, "U", generators)
+
+
+@add_priv_test_generator("Interrupts", required_extensions=["H"], extra_defines=["#define BOOT_TO_SMODE"])
+def make_interrupts_vs(test_data: TestData) -> list[TestChunk]:
+    """Interrupts tests that run in VS-mode."""
+    generators = _COMMON_GENERATORS + [
+        generate_cp_wfi,
+        generate_cp_wfi_vsti,
+        generate_cp_wfi_timeout,
+        generate_cp_trigger_vsti_sstc,
+    ]
+    return emit_interrupts(test_data, SUITE, "VS", generators)
+
+
+@add_priv_test_generator("Interrupts", required_extensions=["H"], extra_defines=["#define BOOT_TO_SMODE"])
+def make_interrupts_vu(test_data: TestData) -> list[TestChunk]:
+    """Interrupts tests that run in VU-mode."""
+    # VU-mode WFI never waits: it raises virtual instruction with TW = 0, so only test the timeout.
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout, generate_cp_trigger_vsti_sstc]
+    return emit_interrupts(test_data, SUITE, "VU", generators)

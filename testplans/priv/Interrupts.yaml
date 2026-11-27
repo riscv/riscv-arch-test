@@ -1,7 +1,10 @@
 # yaml-language-server: $schema=testplan.schema.json
-suite: InterruptsS
+suite: Interrupts
+title: Interrupts Coverpoints (Interrupts_cg)
 source: https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=1560685057#gid=1560685057
 description: |
+  The Interrupts suite has one covergroup per group of tests.  Interrupts_cg, below, boots to S-mode; Interrupts_Sm boots to M-mode.
+  Interrupts_Sgei and Interrupts_SgeiSm cover guest external interrupts, and Interrupts_Shlcofideleg and Interrupts_SmShlcofideleg cover Shlcofideleg.
   Tests run if S exists (and don't use MTI/MSI/MEI that are outside supervisor-mode spec)
   Boot to SMODE, run tests in each supported priv mode of <S,U,VS,VU>
   Reference model needs to know if each of the types of interrupts are supported
@@ -26,7 +29,7 @@ setup:
       U: Same as S
       VS: |-
         Same as S, and also write hie = 1s
-        hideleg boots with 0s, so every interrupt traps to HS
+        hideleg = 0, or for a VS-level interrupt also 1 in that interrupt with vstvec.MODE and vsstatus.SIE written as stvec.MODE and sstatus.SIE
       VU: Same as VS
     - step: trigger_interrupts <type>
       S: |-
@@ -44,19 +47,36 @@ setup:
       S: <type> pending if UDB_<TYPE>_SUPPORTED, trap if SIE = 1
       U: pending and trap if UDB_<TYPE>_SUPPORTED
 coverpoints:
-  - name: cp_trigger
+  - name: |-
+      cp_trigger
+      cp_trigger_tsbi
+      cp_trigger_vs
+      cp_trigger_tsbi_vs
     goal: Assert each interrupt
     description: |-
       For <type> = {LCOFI, STI, SSI, SEI, VSTI, VSEI, VSSI}
       setup_interrupts_s
       trigger_interrupts_<type>
+      With H, each VS-level interrupt is also raised with hideleg delegating it to VS-mode.  cp_trigger_vs and cp_trigger_tsbi_vs record those cases with vsstatus.SIE and vstvec.MODE in place of sstatus.SIE and stvec.MODE.
     expectation: |-
       in S mode, supported interrupt will fire if SIE = 1
       SIE should not affect result in lower modes
-    bins: 4 priv * 7 int * 2 SIE * 2 vecMODE
+      A VS-level interrupt delegated to VS-mode is never taken in HS or U mode.  VS-mode takes it, as the S-level interrupt one below (cause 9, 5 or 1), when vsstatus.SIE = 1, and VU-mode always takes it.
+    bins: 4 priv * (7 int + 3 delegated) * 2 SIE * 2 vecMODE
     rules:
       - mstatus_xie_intr_en_dis
       - mstatus_xpie_op
+  - name: |-
+      cp_trigger_tsbi_other_sie
+      cp_trigger_tsbi_vs_other_sie
+    goal: The other level's SIE does not gate a VS-level interrupt
+    description: |-
+      As cp_trigger for VSEI, VSTI and VSSI in {VS, VU} mode with hideleg = {0, 1 in type}, with the SIE of the level that does not take the interrupt also = {0/1}: sstatus.SIE when hideleg delegates it to VS-mode, vsstatus.SIE when it does not
+    expectation: As cp_trigger.  vsstatus.SIE does not affect a VS-level interrupt taken in HS-mode (cp_trigger_tsbi_other_sie), and sstatus.SIE does not affect one delegated to VS-mode (cp_trigger_tsbi_vs_other_sie).
+    bins: 2 priv * 3 int * 2 sstatus.SIE * 2 vsstatus.SIE in each cross
+    rules:
+      - hideleg_hs
+      - hideleg_op
   - name: cp_trigger_reg
     description: Same as cp_trigger, but use mip.SEIP, mip.SSIP, and sip.SSIP rather than macros.
     expectation: same as above
@@ -94,6 +114,13 @@ coverpoints:
       With menvcfg.STCE = henvcfg.STCE = 1, hie.VSTIE = 1, vsstatus.SIE = 1 and hideleg.VSTI = {0/1}, in HS-mode write vstimecmp = 0 and change to {U, VU} mode through the T-SBI mret
     expectation: HS-mode takes VSTI (cause 6) on entry when hideleg.VSTI = 0.  When hideleg.VSTI = 1, VS-mode takes STI (cause 5) on entry to VU-mode, and U-mode does not take it
     bins: 2 modes (U, VU) * 2 hideleg
+  - name: cp_trigger_vsti_htimedelta
+    goal: VSTI from vstimecmp with htimedelta nonzero
+    description: |-
+      if H_SUPPORTED and SSTC_SUPPORTED:
+      In HS-mode with menvcfg.STCE = henvcfg.STCE = 1 and vsstatus.SIE = 1, set htimedelta = 2^60 and vstimecmp = 2^60 with hideleg.VSTI = 0, or htimedelta = -2^60 and vstimecmp = 2^63 with hideleg.VSTI = 1, then set hie.VSTIE; with hideleg.VSTI = 0, set sstatus.SIE, else change to VS-mode
+    expectation: (time + htimedelta) mod 2^64 >= vstimecmp only because htimedelta is nonzero (time < 2^60).  HS-mode takes VSTI (cause 6) when hideleg.VSTI = 0; VS-mode takes STI (cause 5) when hideleg.VSTI = 1
+    bins: 2 (htimedelta, vstimecmp) pairs
   - name: cp_enable
     goal: Enables control interrupts
     description: |-
@@ -103,8 +130,20 @@ coverpoints:
       RVTEST_SET_<type>_INT
       RVTEST_IDLE_FOR_INT
       RVTEST_CLR_<type>_INT
-    expectation: Interrupt if sie and sip match
+    expectation: Interrupt if sie and sip match.  With H, sie and hie are written together, so hie also enables or disables the VS-level interrupts.
     bins: 4 priv * 2 sie * 7 int
+  - name: cp_enable_zero_vs
+    goal: A delegated VS-level interrupt is not taken while its vsie bit is clear
+    description: |-
+      In {VS, VU} mode, for <type> in VSEI, VSTI, VSSI:
+      hideleg = 1 in type, vsstatus.SIE = 1, sstatus.SIE = 1
+      sie = hie = 1s everywhere except type
+      RVTEST_SET_<type>_INT
+      RVTEST_IDLE_FOR_INT
+      read vsip in HS-mode
+      RVTEST_CLR_<type>_INT
+    expectation: No interrupt.  The interrupt is pending in vsip.
+    bins: 2 priv * 3 int
   - name: cp_priority_sip
     goal: Priority of pending interrupts
     description: |-
@@ -114,8 +153,11 @@ coverpoints:
       write sie = 1s
       RVTEST_IDLE_FOR_INT
       RVTEST_CLR_<type>_INT for both
-    expectation: highest priority pending interrupt will fire
-    bins: 21 int * 4 priv
+      With H, repeat each pair with hideleg delegating each nonempty subset of its VS-level members to VS-mode, with vsstatus.SIE = 1
+    expectation: highest priority pending interrupt will fire.  An interrupt delegated to VS-mode is taken only in VS and VU modes, after the interrupts that go to HS-mode.
+    bins: (21 pairs + 21 delegated) * 4 priv
+    rules:
+      - s_interrupt_priority
   - name: cp_priority_sie
     goal: Priority of enabled interrupts
     description: |-
@@ -158,6 +200,24 @@ coverpoints:
     rules:
       - hstatus_vtw_op
   - name: |-
+      cp_wfi_vsti
+      cp_wfi_vsti_vs
+    goal: WFI wakes for a VS-level interrupt, whether or not hideleg delegates it
+    description: |-
+      If SSTC_SUPPORTED: menvcfg.STCE = henvcfg.STCE = 1, mstatus.TW = 0, hstatus.VTW = 0, sie = 0, hie.VSTIE = 1, hideleg.VSTI = {0/1}
+      In HS-mode with sstatus.SIE = {0/1}, or in VS-mode with vsstatus.SIE = {0/1}:
+      RVTEST_SET_VSSTC_INT_SOON_S
+      do {
+        WFI instruction
+      } until VSTI has been taken, or is pending where it is not taken
+      RVTEST_CLR_VSSTC_INT_S
+    expectation: |-
+      WFI wakes in every case.  In HS-mode, VSTI is taken (cause 6) only when hideleg.VSTI = 0 and sstatus.SIE = 1.
+      In VS-mode, VSTI is taken by HS-mode (cause 6) when hideleg.VSTI = 0, and by VS-mode (cause 5) when hideleg.VSTI = 1 and vsstatus.SIE = 1.
+    bins: 2 priv * 2 hideleg * 2 SIE
+    rules:
+      - wfi_unaffected_conditions
+  - name: |-
       cp_wfi_timeout_vs
       cp_wfi_timeout_vs_vtw_one
     goal: WFI in VS-mode follows mstatus.TW and hstatus.VTW
@@ -186,3 +246,35 @@ coverpoints:
     bins: 2 TW * 2 VTW * 2 SIE * 2 sie.STIE
     rules:
       - H_virtinst_vu_wfi_tw0
+  - heading: Hypervisor interrupt CSRs (H implemented), done in HS-mode unless noted
+  - name: cp_trigger_htinst
+    goal: htinst = 0 on an interrupt
+    description: The cp_trigger cases in HS-mode with sstatus.SIE = 1 preload htinst with a nonzero value; the trap record checks htinst
+    expectation: htinst = 0 after each interrupt taken into HS-mode
+    bins: 7 int
+  - name: cp_hip_write
+    goal: only hip.vssip is writable, and aliases to hvip
+    description: Write hip=0xFFFF and hip = 0x0000.  Read back hvip and hip.
+    expectation: 0x0004 and 0x0000 in both hip and hvip.
+    bins: "2"
+  - name: cp_hie
+    goal: hie.VS*IE and hie.SGEIE are aliases of mie
+    description: With mie = {0x444, 0x1444 if GEILEN > 0}, read hie
+    expectation: hie = mie
+    bins: 2 (1 if GEILEN = 0)
+  - name: cp_vsip_vsie
+    goal: vsie and vsip are aliases of hie and hip in the delegated bits
+    description: |-
+      For each of the 8 combinations of hideleg.VS*I:
+      with hie = 0x444, read vsie
+      with hvip = 0x444, read vsip
+      with hie = 0, write vsie = 0xFFFF and read hie
+      with hvip = 0, write vsip = 0xFFFF and read hvip
+      With Sscofpmf, LCOFI is pending and enabled throughout
+    expectation: vsie and vsip read hie and hip shifted right by one in the delegated bits and zero elsewhere, including LCOFI (hideleg[13] = 0).  Writes reach only the delegated bits of hie, and only VSSIP of hvip.
+    bins: 8 hideleg * 4 accesses
+  - name: cp_sip_vs
+    goal: VS-mode sees vsip in sip, not the HS-level interrupts
+    description: With sie = 0, sip.SSIP = 1, hideleg = hie = 0x444 and hvip.VSSIP = {0/1}, change to VS-mode with vsstatus.SIE = 0 and read sip.  With vsstatus.SIE = 1, VS-mode takes VSSI on entry and its handler clears vsip.SSIP before the read; cp_trigger_tsbi covers that case.
+    expectation: sip.SSIP reads hvip.VSSIP; the pending HS-level SSIP is not visible.
+    bins: 2 VSSIP

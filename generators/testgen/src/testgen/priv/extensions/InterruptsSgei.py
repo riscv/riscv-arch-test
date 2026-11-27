@@ -20,7 +20,7 @@ takes SGEI from every mode: SGEI still goes to HS-mode because mideleg[12] is re
 IMSIC state below M-mode (vstopei, vsiselect and vsireg); boot sets mstateen0.IMSIC, AIA and CSRIND for them.
 """
 
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import hideleg_vs_target, int_macro, lower_modes
@@ -96,6 +96,45 @@ def _trigger_tests(test_data: TestData) -> list[str]:
                     "csrw hie, zero",
                 ]
             )
+    lines.extend(
+        [
+            comment_banner(
+                "cp_trigger_sgei_vectored",
+                "With stvec.MODE = VECTORED and guest external interrupt 1 pending and enabled in hgeie, write\n"
+                "hie.SGEIE = 1 in HS-mode with sstatus.SIE = 1, or enter VS-mode with hie.SGEIE = 1.  HS-mode takes\n"
+                "cause 12 at stvec.BASE + 48",
+            ),
+            "#ifdef UDB_STVEC_MODES_1",
+            f"LI(x{tmp_reg}, 1)",
+            f"csrs stvec, x{tmp_reg} # stvec.MODE = VECTORED",
+            # HS-mode takes SGEI on the csrw hie
+            "csrsi sstatus, SSTATUS_SIE",
+            *_gei("SET", 1, tmp_reg),
+            f"LI(x{tmp_reg}, MIP_SGEIP)",
+            test_data.add_testcase("hs", "cp_trigger_sgei_vectored", _CG),
+            f"csrw hie, x{tmp_reg}",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+            "csrci sstatus, SSTATUS_SIE",
+            f"csrr x{tmp_reg}, hip",
+            write_sigupd(tmp_reg, test_data),
+            *_gei("CLR", 1, tmp_reg),
+            # HS-mode takes SGEI on the mret into VS-mode
+            f"LI(x{tmp_reg}, MIP_SGEIP)",
+            f"csrw hie, x{tmp_reg}",
+            *_gei("SET", 1, tmp_reg),
+            test_data.add_testcase("vs", "cp_trigger_sgei_lower_vectored", _CG),
+            "RVTEST_TSBI_GOTO_VSMODE",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+            "RVTEST_TSBI_GOTO_SMODE",
+            f"csrr x{tmp_reg}, hip",
+            write_sigupd(tmp_reg, test_data),
+            *_gei("CLR", 1, tmp_reg),
+            "csrw hie, zero",
+            f"LI(x{tmp_reg}, 1)",
+            f"csrc stvec, x{tmp_reg} # stvec.MODE = DIRECT",
+            "#endif // UDB_STVEC_MODES_1",
+        ]
+    )
     lines.extend(["csrw hgeie, zero", "#endif // RVTEST_SGEI_INTR_IMPL"])
     test_data.int_regs.return_register(tmp_reg)
     return lines
@@ -282,37 +321,37 @@ def _sgei_tests(test_data: TestData) -> list[str]:
         comment_banner(
             "cp_priority_sgei",
             "With guest external interrupt 1 and hvip = 0x444 pending, hideleg = 0, hie = 0x1444, sie = 1s and\n"
-            "SEI, STI, SSI or no S-level interrupt pending, set sstatus.SIE.  The S-level interrupt is taken\n"
-            "first, then SGEI, VSEI, VSSI and VSTI",
+            "SEI, STI, SSI, LCOFI or no other interrupt pending, set sstatus.SIE.  The S-level interrupt is taken\n"
+            "first, then SGEI, VSEI, VSSI and VSTI, then LCOFI (cp_priority_sgei_lcofi)",
         )
     )
     # Guest external interrupt 1 is enabled in hgeie, so raising it makes SGEI pending
     lines.extend(["csrw hideleg, zero", f"LI(x{tmp_reg}, 2)", f"csrw hgeie, x{tmp_reg}"])
-    for s_int in [None, *S_INTS]:
-        coverpoint = "cp_priority_sgei"
-        lines.extend(
-            [
-                f"LI(x{tmp_reg}, MIP_VS_MASK)",
-                f"csrw hvip, x{tmp_reg}",
-                f"LI(x{tmp_reg}, MIP_HS_MASK)",
-                f"csrw hie, x{tmp_reg}",
-                f"LI(x{tmp_reg}, -1)",
-                f"csrw sie, x{tmp_reg}",
-                *([f"RVTEST_SET_{int_macro[s_int]}_INT_S"] if s_int else []),
-                *_gei("SET", 1, tmp_reg),
-                test_data.add_testcase(s_int.lower() if s_int else "sgei", coverpoint, _CG),
-                f"csrr x{tmp_reg}, sip",
-                write_sigupd(tmp_reg, test_data),
-                "csrsi sstatus, SSTATUS_SIE",
-                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
-                "csrci sstatus, SSTATUS_SIE",
-                *([f"RVTEST_CLR_{int_macro[s_int]}_INT_S"] if s_int else []),
-                *_gei("CLR", 1, tmp_reg),
-                "csrw sie, zero",
-                "csrw hie, zero",
-                "csrw hvip, zero",
-            ]
-        )
+    for s_int in [None, *S_INTS, "LCOFI"]:
+        lcofi = s_int == "LCOFI"
+        coverpoint = "cp_priority_sgei_lcofi" if lcofi else "cp_priority_sgei"
+        body = [
+            f"LI(x{tmp_reg}, MIP_VS_MASK)",
+            f"csrw hvip, x{tmp_reg}",
+            f"LI(x{tmp_reg}, MIP_HS_MASK)",
+            f"csrw hie, x{tmp_reg}",
+            f"LI(x{tmp_reg}, -1)",
+            f"csrw sie, x{tmp_reg}",
+            *([f"RVTEST_SET_{int_macro[s_int]}_INT_S"] if s_int else []),
+            *_gei("SET", 1, tmp_reg),
+            test_data.add_testcase(s_int.lower() if s_int else "sgei", coverpoint, _CG),
+            f"csrr x{tmp_reg}, sip",
+            write_sigupd(tmp_reg, test_data),
+            "csrsi sstatus, SSTATUS_SIE",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+            "csrci sstatus, SSTATUS_SIE",
+            *([f"RVTEST_CLR_{int_macro[s_int]}_INT_S"] if s_int else []),
+            *_gei("CLR", 1, tmp_reg),
+            "csrw sie, zero",
+            "csrw hie, zero",
+            "csrw hvip, zero",
+        ]
+        lines.extend(gated(body, "defined(SSCOFPMF_SUPPORTED)" if lcofi else None))
     lines.append(
         comment_banner(
             "cp_hgeie",

@@ -1631,6 +1631,18 @@ covergroup Interrupts_Sgei_cg with function sample(ins_t ins);
     cp_trigger_sgei_lower: cross priv_mode_m, mret_insn, mstatus_mpv_mpp_lower, hie_sgeie, sgei_pending;
     // A pending S-level interrupt, or none, is taken before SGEI, which is taken before the VS-level interrupts
     cp_priority_sgei:      cross priv_mode_hs, set_sie, sgei_pending, hie_1444, sie_ones, sip_s, hvip_all, hideleg_none;
+    `ifdef SSCOFPMF_SUPPORTED
+        sie_lcofie_one : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SIE)[13] {
+            bins one = {1};
+        }
+        // LCOFI is the only S-level interrupt pending
+        sip_lcofi : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SIP)[13], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SIP)[9],
+                                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SIP)[5], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_SIP)[1]} {
+            bins lcofi = {4'b1000};
+        }
+        // SGEI and the VS-level interrupts are taken before LCOFI
+        cp_priority_sgei_lcofi: cross priv_mode_hs, set_sie, sgei_pending, hie_1444, sie_lcofie_one, sip_lcofi, hvip_all, hideleg_none;
+    `endif
 
     // Each guest external interrupt i enabled alone, with hgeip = 0, bit i or every implemented bit
     hgeie_bit : coverpoint $clog2(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGEIE)) iff ($onehot(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGEIE))) {
@@ -1714,6 +1726,24 @@ covergroup Interrupts_Sgei_cg with function sample(ins_t ins);
     cp_trigger_vsei_hgeip_taken:       cross priv_mode_hs, csrrw, hie, hie_write_vseie_one, sstatus_sie_one, vseip_from_hgeip, hideleg_vsei, hgeie_vgein;
     cp_trigger_vsei_hgeip_taken_lower: cross priv_mode_m, mret_insn, mstatus_mpv_mpp_lower, hie_vseie_one, vseip_from_hgeip, hideleg_vsei;
     cp_trigger_vsei_hgeip_taken_vs:    cross priv_mode_m, mret_insn, mstatus_mpv_mpp_virt, hie_vseie_one, vseip_from_hgeip, hideleg_vsei_one, vsstatus_sie_one, vstvec_mode;
+
+    // SGEI through a vectored stvec, at BASE + 48: on the csrw hie in HS-mode, or on the mret into VS-mode
+    `ifdef UDB_STVEC_MODES_1
+        stvec_vectored : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_STVEC)[1:0] {
+            bins vector = {2'b01};
+        }
+        hie_write_sgeie_one : coverpoint ins.current.rs1_val[12] {
+            bins one = {1};
+        }
+        hie_sgeie_one : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HIE)[12] {
+            bins one = {1};
+        }
+        mstatus_mpv_mpp_vs : coverpoint {`INT_MPV, get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+            bins VS_mode = {3'b101};
+        }
+        cp_trigger_sgei_vectored:       cross priv_mode_hs, csrrw, hie, hie_write_sgeie_one, sstatus_sie_one, sgei_pending, stvec_vectored;
+        cp_trigger_sgei_lower_vectored: cross priv_mode_m, mret_insn, mstatus_mpv_mpp_vs, hie_sgeie_one, sgei_pending, stvec_vectored;
+    `endif
 
     // A csrrw, csrrs or csrrc of hstatus that moves VGEIN, after which the test reads hip.VSEIP:
     // {old VGEIN == 0, hgeip[old VGEIN], new VGEIN == 0, hgeip[new VGEIN]}, where hgeip bit 0 reads 0.

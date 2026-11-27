@@ -15,11 +15,26 @@ coverpoints:
     description: With sstatus.SIE = 0, hgeip & hgeie != 0 and hie.SGEIE = {0/1}, change to {U, VS, VU} mode
     expectation: If SGEIE = 1, interrupt to HS-mode with cause 12 on entering the mode, whatever sstatus.SIE and vsstatus.SIE are
     bins: 3 priv * 2
+  - name: cp_trigger_sgei_vectored
+    goal: SGEI through a vectored stvec
+    description: if UDB_STVEC_MODES_1, with stvec.MODE = VECTORED, sstatus.SIE = 1 and hgeip & hgeie != 0, write hie.SGEIE = 1
+    expectation: interrupt to HS-mode with cause 12 at stvec.BASE + 48
+    bins: "1"
+  - name: cp_trigger_sgei_lower_vectored
+    goal: SGEI from VS-mode through a vectored stvec
+    description: if UDB_STVEC_MODES_1, with stvec.MODE = VECTORED, sstatus.SIE = 0, hgeip & hgeie != 0 and hie.SGEIE = 1, change to VS-mode
+    expectation: interrupt to HS-mode with cause 12 at stvec.BASE + 48 on entering VS-mode
+    bins: "1"
   - name: cp_priority_sgei
     goal: SGEI has lower priority than any S*I and higher priority than VS*I
     description: With sstatus.SIE = 1, hvip = 0x444, hideleg = 0, hie = 0x1444, sie = 1s, hgeip & hgeie != 0, and sip = {none, SEIP, STIP, SSIP}
     expectation: Take the S-level interrupt first if one is pending, then SGEI (cause 12), then VSEI, VSSI and VSTI
     bins: "4"
+  - name: cp_priority_sgei_lcofi
+    goal: SGEI has higher priority than LCOFI
+    description: if SSCOFPMF_SUPPORTED, as cp_priority_sgei with sip = LCOFIP
+    expectation: Take SGEI (cause 12), then VSEI, VSSI and VSTI, then LCOFI (cause 13)
+    bins: "1"
   - name: cp_hgeie
     goal: hgeie enables SGEI
     description: With sstatus.SIE = 0, for i in 1...GEILEN, with hgeip = {0, 1 in i, 1s in all writable bits}, hgeie = 1 in bit i

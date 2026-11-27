@@ -402,7 +402,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Interrupts_cg/cp_priority_{sip, sip_tsbi, sip_split_tsbi, sie, sie_tsbi, sie_split_tsbi}",
-        "Interrupts_Sgei_cg/cp_priority_sgei",
+        "Interrupts_Sgei_cg/cp_priority_{sgei, sgei_lcofi}",
       ]
 
   # Bits SGEIP, VSEIP, VSTIP, and VSSIP in mip are aliases for the same bits in hypervisor

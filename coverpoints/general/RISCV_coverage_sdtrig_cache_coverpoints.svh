@@ -13,6 +13,10 @@
 ///////////////////////////////////////////
 cbo_select: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "select")[0] {
     type_option.weight = 0;
+    bins adr = {1'b0};
+    `ifdef UDB_SDTRIG_MCONTROL6_SELECT_WRITABLE
+        bins data = {1'b1};
+    `endif
 }
 // tdata2 relative to the cache block address in rs1
 cbo_tdata2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA2) {

@@ -141,9 +141,12 @@ csr_tdata2: coverpoint ins.current.insn[31:20] {
     bins tdata2 = {CSR_TDATA2};
 }
 // the type a csrw writes to tdata1
-tdata1_write_type: coverpoint ins.current.rs1_val[XLEN-1:XLEN-4] {
+tdata1_write_icount: coverpoint ins.current.rs1_val[XLEN-1:XLEN-4] {
     type_option.weight = 0;
-    bins icount    = {4'd3};
+    bins icount = {4'd3};
+}
+tdata1_write_mcontrol6: coverpoint ins.current.rs1_val[XLEN-1:XLEN-4] {
+    type_option.weight = 0;
     bins mcontrol6 = {4'd6};
 }
 illegal_insn_trap: coverpoint sdtrig_illegal_taken(ins) {
@@ -192,15 +195,23 @@ tdata1_select_data: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER,
     type_option.weight = 0;
     bins data = {1'b1};
 }
+// every execute/store/load combination whose bits are writable (UDB_SDTRIG_MCONTROL6_<bit>_WRITABLE)
 tdata1_xsl: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "execute")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "store")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "load")[0]} {
     type_option.weight = 0;
-    bins xsl[] = {[0:7]};
+    bins xsl_000 = {3'b000};
+    `ifdef UDB_SDTRIG_MCONTROL6_LOAD_WRITABLE bins xsl_001 = {3'b001}; `endif
+    `ifdef UDB_SDTRIG_MCONTROL6_STORE_WRITABLE bins xsl_010 = {3'b010}; `endif
+    `ifdef UDB_SDTRIG_MCONTROL6_STORE_WRITABLE `ifdef UDB_SDTRIG_MCONTROL6_LOAD_WRITABLE bins xsl_011 = {3'b011}; `endif `endif
+    `ifdef UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE bins xsl_100 = {3'b100}; `endif
+    `ifdef UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE `ifdef UDB_SDTRIG_MCONTROL6_LOAD_WRITABLE bins xsl_101 = {3'b101}; `endif `endif
+    `ifdef UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE `ifdef UDB_SDTRIG_MCONTROL6_STORE_WRITABLE bins xsl_110 = {3'b110}; `endif `endif
+    `ifdef UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE `ifdef UDB_SDTRIG_MCONTROL6_STORE_WRITABLE `ifdef UDB_SDTRIG_MCONTROL6_LOAD_WRITABLE bins xsl_111 = {3'b111}; `endif `endif `endif
 }
 tdata1_xsl_one: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "execute")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "store")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "load")[0]} {
     type_option.weight = 0;
-    bins execute = {3'b100};
-    bins store   = {3'b010};
-    bins load    = {3'b001};
+    `ifdef UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE bins execute = {3'b100}; `endif
+    `ifdef UDB_SDTRIG_MCONTROL6_STORE_WRITABLE   bins store   = {3'b010}; `endif
+    `ifdef UDB_SDTRIG_MCONTROL6_LOAD_WRITABLE    bins load    = {3'b001}; `endif
 }
 tdata1_xsl_store: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "execute")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "store")[0], get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "load")[0]} {
     type_option.weight = 0;

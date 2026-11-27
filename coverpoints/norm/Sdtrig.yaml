@@ -9,7 +9,7 @@ normative_rule_definitions:
   - name: Sdtrig_num_trigs_ge1
     coverpoint:
       [
-        "Sdtrig_Sm_access_cg/cp_csr_access_common",
+        "Sdtrig_Sm_access_cg/cp_csr_access_common_{disabled, icount, itrigger, etrigger, mcontrol6}",
         "Sdtrig_Sm_trig_module_reg_cg/cp_tselect_trigs",
       ]
 
@@ -22,7 +22,10 @@ normative_rule_definitions:
   # implemented triggers must succeed, regardless of the current type of the
   # currently selected trigger.
   - name: Sdtrig_csr_mode
-    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common"]
+    coverpoint:
+      [
+        "Sdtrig_Sm_access_cg/cp_csr_access_common_{disabled, icount, itrigger, etrigger, mcontrol6}",
+      ]
 
   # Triggers do not fire while in Debug Mode.
   - name: Sdtrig_no_debug_fires
@@ -160,8 +163,8 @@ normative_rule_definitions:
   - name: Sdtrig_breakpoint_delegated
     coverpoint:
       [
-        "Sdtrig_S_cg/cp_breakpoint_delegate_s",
-        "Sdtrig_U_cg/cp_breakpoint_delegate_u",
+        "Sdtrig_S_cg/{cp_mcontrol6_delegate_s, cp_icount_delegate_s}",
+        "Sdtrig_U_cg/{cp_mcontrol6_delegate_u, cp_icount_delegate_u}",
         "Sdtrig_H_cg/{cp_mcontrol6_delegate_vs, cp_mcontrol6_delegate_vu, cp_icount_delegate_vs, cp_icount_delegate_vu}",
         "Sdtrig_HSm_cg/{cp_mcontrol6_delegate_vs, cp_mcontrol6_delegate_vu, cp_icount_delegate_vs, cp_icount_delegate_vu}",
       ]
@@ -344,7 +347,7 @@ normative_rule_definitions:
   - name: Sdtrig_tdata_warl
     coverpoint:
       [
-        "Sdtrig_Sm_access_cg/cp_csr_access_common",
+        "Sdtrig_Sm_access_cg/cp_csr_access_common_{disabled, icount, itrigger, etrigger, mcontrol6}",
         "Sdtrig_Sm_trig_module_reg_cg/cp_csr_access_local",
       ]
 
@@ -362,7 +365,7 @@ normative_rule_definitions:
       [
         "Sdtrig_Sm_trig_module_reg_cg/cp_tdata_write",
         "Sdtrig_Sm_trig_module_reg_cg/cp_csr_access_local",
-        "Sdtrig_Sm_access_cg/cp_csr_access_common",
+        "Sdtrig_Sm_access_cg/cp_csr_access_common_{disabled, icount, itrigger, etrigger, mcontrol6}",
       ]
 
   # Attempts to access an unimplemented Trigger Module Register raise an illegal
@@ -425,7 +428,10 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_tdata1
-    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common"]
+    coverpoint:
+      [
+        "Sdtrig_Sm_access_cg/cp_csr_access_common_{disabled, icount, itrigger, etrigger, mcontrol6}",
+      ]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tdata1_reset
@@ -464,7 +470,10 @@ normative_rule_definitions:
 
   # Both Debug and M-mode can write the tdata registers at the selected tselect.
   - name: Sdtrig_tdata1_dmode_0
-    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common"]
+    coverpoint:
+      [
+        "Sdtrig_Sm_access_cg/cp_csr_access_common_{disabled, icount, itrigger, etrigger, mcontrol6}",
+      ]
 
   # Only Debug Mode can write the tdata registers at the selected tselect. Writes
   # from other modes are ignored.
@@ -473,7 +482,8 @@ normative_rule_definitions:
 
   # This bit is only writable from Debug Mode.
   - name: Sdtrig_tdata1_dmode_writable
-    coverpoint: ["Sdtrig_Sm_trig_module_reg_cg/cp_tdata1_dmode"]
+    coverpoint:
+      ["Sdtrig_Sm_trig_module_reg_cg/cp_tdata1_dmode_{mcontrol6, icount}"]
 
   # If type is 0, then this field is hard-wired to 0.
   - name: Sdtrig_tdata1_data
@@ -485,7 +495,10 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_tdata2
-    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common"]
+    coverpoint:
+      [
+        "Sdtrig_Sm_access_cg/cp_csr_access_common_{disabled, icount, itrigger, etrigger, mcontrol6}",
+      ]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tdata2_reset
@@ -508,7 +521,10 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_tdata3
-    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common"]
+    coverpoint:
+      [
+        "Sdtrig_Sm_access_cg/cp_csr_access_common_{disabled, icount, itrigger, etrigger, mcontrol6}",
+      ]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tdata3_reset
@@ -527,7 +543,10 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_tinfo
-    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common"]
+    coverpoint:
+      [
+        "Sdtrig_Sm_access_cg/cp_csr_access_common_{disabled, icount, itrigger, etrigger, mcontrol6}",
+      ]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tinfo_reset
@@ -578,7 +597,7 @@ normative_rule_definitions:
   - name: Sdtrig_trigger_modes_1
     coverpoint:
       [
-        "Sdtrig_Sm_access_cg/cp_csr_access_common",
+        "Sdtrig_Sm_access_cg/cp_csr_access_common_{disabled, icount, itrigger, etrigger, mcontrol6}",
         "Sdtrig_Sm_trig_module_reg_cg/cp_csr_access_global",
         "Sdtrig_S_access_cg/cp_csr_access_trap_s",
         "Sdtrig_U_access_cg/cp_csr_access_trap_u",
@@ -660,8 +679,8 @@ normative_rule_definitions:
   - name: Sdtrig_scontext_data
     coverpoint:
       [
-        "Sdtrig_Sm_access_cg/cp_csr_access_common",
-        "Sdtrig_Sm_textra_cg/cp_textra_scontext",
+        "Sdtrig_Sm_access_cg/cp_csr_access_common_{disabled, icount, itrigger, etrigger, mcontrol6}",
+        "Sdtrig_Sm_textra_cg/cp_textra_scontext_{icount, mcontrol6}",
       ]
 
   # This register must be implemented if hcontext is implemented, and is optional
@@ -685,8 +704,8 @@ normative_rule_definitions:
   - name: Sdtrig_mcontext_hcontext_data
     coverpoint:
       [
-        "Sdtrig_Sm_access_cg/cp_csr_access_common",
-        "Sdtrig_Sm_textra_cg/cp_textra_mcontext",
+        "Sdtrig_Sm_access_cg/cp_csr_access_common_{disabled, icount, itrigger, etrigger, mcontrol6}",
+        "Sdtrig_Sm_textra_cg/cp_textra_mcontext_{icount, mcontrol6}",
         "Sdtrig_H_cg/cp_hcontext_hs",
       ]
 
@@ -1058,7 +1077,7 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_mcontrol6
-    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common"]
+    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common_mcontrol6"]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_mcontrol6_reset
@@ -1122,10 +1141,10 @@ normative_rule_definitions:
   - name: Sdtrig_mcontrol6_textra
     coverpoint:
       [
-        "Sdtrig_Sm_textra_cg/cp_textra_mcontext",
-        "Sdtrig_Sm_textra_cg/cp_textra_scontext",
-        "Sdtrig_Sm_textra_cg/cp_textra_double_context",
-        "Sdtrig_Sm_textra_cg/cp_textra_asid",
+        "Sdtrig_Sm_textra_cg/cp_textra_mcontext_mcontrol6",
+        "Sdtrig_Sm_textra_cg/cp_textra_scontext_mcontrol6",
+        "Sdtrig_Sm_textra_cg/cp_textra_double_context_mcontrol6",
+        "Sdtrig_Sm_textra_cg/cp_textra_asid_mcontrol6",
       ]
 
   # If implemented, the TM updates this field every time the trigger fires.
@@ -1523,7 +1542,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sdtrig_S_mcontrol6_cg/cp_mcontrol6_priv_bits_s",
-        "Sdtrig_S_cg/cp_breakpoint_s",
+        "Sdtrig_S_cg/cp_mcontrol6_breakpoint_s",
         "Sdtrig_Sm_trig_module_reg_cg/cp_tdata1_mode_hardwired",
         "Sdtrig_S_mcontrol6_cg/cp_mcontrol6_execute_adr",
         "Sdtrig_S_mcontrol6_cg/cp_mcontrol6_load_store_adr",
@@ -1535,7 +1554,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sdtrig_U_mcontrol6_cg/cp_mcontrol6_priv_bits_u",
-        "Sdtrig_U_cg/cp_breakpoint_u",
+        "Sdtrig_U_cg/cp_mcontrol6_breakpoint_u",
         "Sdtrig_Sm_trig_module_reg_cg/cp_tdata1_mode_hardwired",
         "Sdtrig_U_mcontrol6_cg/cp_mcontrol6_execute_adr",
         "Sdtrig_U_mcontrol6_cg/cp_mcontrol6_load_store_adr",
@@ -1574,7 +1593,7 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_icount
-    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common"]
+    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common_icount"]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_icount_reset
@@ -1699,10 +1718,10 @@ normative_rule_definitions:
   - name: Sdtrig_icount_textra
     coverpoint:
       [
-        "Sdtrig_Sm_textra_cg/cp_textra_mcontext",
-        "Sdtrig_Sm_textra_cg/cp_textra_scontext",
-        "Sdtrig_Sm_textra_cg/cp_textra_double_context",
-        "Sdtrig_Sm_textra_cg/cp_textra_asid",
+        "Sdtrig_Sm_textra_cg/cp_textra_mcontext_icount",
+        "Sdtrig_Sm_textra_cg/cp_textra_scontext_icount",
+        "Sdtrig_Sm_textra_cg/cp_textra_double_context_icount",
+        "Sdtrig_Sm_textra_cg/cp_textra_asid_icount",
       ]
 
   # When set, enable this trigger in VS-mode. This bit is hard-wired to 0 if the
@@ -1744,7 +1763,7 @@ normative_rule_definitions:
   - name: Sdtrig_icount_s
     coverpoint:
       [
-        "Sdtrig_S_cg/cp_breakpoint_s",
+        "Sdtrig_S_cg/cp_icount_breakpoint_s",
         "Sdtrig_S_icount_cg/cp_icount_instr",
         "Sdtrig_S_icount_cg/cp_icount_instr_fire",
         "No case with only the other modes' bits set yet",
@@ -1755,7 +1774,7 @@ normative_rule_definitions:
   - name: Sdtrig_icount_u
     coverpoint:
       [
-        "Sdtrig_U_cg/cp_breakpoint_u",
+        "Sdtrig_U_cg/cp_icount_breakpoint_u",
         "Sdtrig_U_icount_cg/cp_icount_instr",
         "Sdtrig_U_icount_cg/cp_icount_instr_fire",
         "No case with only the other modes' bits set yet",
@@ -1763,7 +1782,7 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_itrigger
-    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common"]
+    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common_itrigger"]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_itrigger_reset
@@ -1771,7 +1790,7 @@ normative_rule_definitions:
 
   # This register is accessible as tdata1 when type is 4.
   - name: Sdtrig_itrigger_access
-    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common"]
+    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common_itrigger"]
 
   # This trigger can fire when an interrupt trap is taken.
   - name: Sdtrig_itrigger_fire
@@ -1893,7 +1912,7 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_etrigger
-    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common"]
+    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common_etrigger"]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_etrigger_reset
@@ -1901,7 +1920,7 @@ normative_rule_definitions:
 
   # This register is accessible as tdata1 when type is 5.
   - name: Sdtrig_etrigger_access
-    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common"]
+    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common_etrigger"]
 
   # This trigger may fire on up to XLEN of the Exception Codes defined in mcause
   # (described in the Privileged Spec, with Interrupt=0).
@@ -2087,7 +2106,10 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_textra32
-    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common"]
+    coverpoint:
+      [
+        "Sdtrig_Sm_access_cg/cp_csr_access_common_{disabled, icount, itrigger, etrigger, mcontrol6}",
+      ]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_textra32_reset
@@ -2097,9 +2119,9 @@ normative_rule_definitions:
   - name: Sdtrig_textra32_access
     coverpoint:
       [
-        "Sdtrig_Sm_textra_cg/cp_textra_mcontext",
-        "Sdtrig_Sm_textra_cg/cp_textra_scontext",
-        "Sdtrig_Sm_textra_cg/cp_textra_double_context",
+        "Sdtrig_Sm_textra_cg/cp_textra_mcontext_{icount, mcontrol6}",
+        "Sdtrig_Sm_textra_cg/cp_textra_scontext_{icount, mcontrol6}",
+        "Sdtrig_Sm_textra_cg/cp_textra_double_context_{icount, mcontrol6}",
       ]
 
   # If DXLEN >= 64, then this register provides access to the low bits of each field
@@ -2114,15 +2136,15 @@ normative_rule_definitions:
   # Byte-granular comparison of scontext to svalue allows scontext to be defined to
   # include more than one element of comparison.
   - name: Sdtrig_textra32_byte_granular
-    coverpoint: ["Sdtrig_Sm_textra_cg/cp_textra_scontext"]
+    coverpoint: ["Sdtrig_Sm_textra_cg/cp_textra_scontext_{icount, mcontrol6}"]
 
   # Byte masking only applies to scontext comparison; i.e when sselect is 1.
   - name: Sdtrig_textra32_byte_mask_applies
     coverpoint:
       [
-        "Sdtrig_Sm_textra_cg/cp_textra_scontext",
-        "Sdtrig_Sm_textra_cg/cp_textra_asid_sbytemask",
-        "Sdtrig_S_textra_cg/cp_textra_asid_sbytemask",
+        "Sdtrig_Sm_textra_cg/cp_textra_scontext_{icount, mcontrol6}",
+        "Sdtrig_Sm_textra_cg/cp_textra_asid_sbytemask_{icount, mcontrol6}",
+        "Sdtrig_S_textra_cg/cp_textra_asid_sbytemask_{icount, mcontrol6}",
       ]
 
   # Note that sselect and mhselect filtering apply in all modes, including M-mode
@@ -2130,26 +2152,27 @@ normative_rule_definitions:
   - name: Sdtrig_textra32_filter_modes
     coverpoint:
       [
-        "Sdtrig_Sm_textra_cg/cp_textra_mcontext",
-        "Sdtrig_Sm_textra_cg/cp_textra_scontext",
-        "Sdtrig_S_textra_cg/cp_textra_mcontext",
-        "Sdtrig_S_textra_cg/cp_textra_scontext",
-        "Sdtrig_U_textra_cg/cp_textra_mcontext",
-        "Sdtrig_U_textra_cg/cp_textra_scontext",
+        "Sdtrig_Sm_textra_cg/cp_textra_mcontext_{icount, mcontrol6}",
+        "Sdtrig_Sm_textra_cg/cp_textra_scontext_{icount, mcontrol6}",
+        "Sdtrig_S_textra_cg/cp_textra_mcontext_{icount, mcontrol6}",
+        "Sdtrig_S_textra_cg/cp_textra_scontext_{icount, mcontrol6}",
+        "Sdtrig_U_textra_cg/cp_textra_mcontext_{icount, mcontrol6}",
+        "Sdtrig_U_textra_cg/cp_textra_scontext_{icount, mcontrol6}",
         "Sdtrig_H_cg/{cp_textra_mctx_sel, cp_textra_vmid_sel, cp_textra_vsatp_asid}",
       ]
 
   # Ignore mhvalue.
   - name: Sdtrig_textra32_mhselect_ignore
-    coverpoint: ["Sdtrig_Sm_textra_cg/cp_textra_double_context"]
+    coverpoint:
+      ["Sdtrig_Sm_textra_cg/cp_textra_double_context_{icount, mcontrol6}"]
 
   # This trigger will only match or fire if the low bits of mcontext/hcontext equal
   # mhvalue.
   - name: Sdtrig_textra32_mhselect_mcontext
     coverpoint:
       [
-        "Sdtrig_Sm_textra_cg/cp_textra_mcontext",
-        "Sdtrig_Sm_textra_cg/cp_textra_double_context",
+        "Sdtrig_Sm_textra_cg/cp_textra_mcontext_{icount, mcontrol6}",
+        "Sdtrig_Sm_textra_cg/cp_textra_double_context_{icount, mcontrol6}",
       ]
 
   # 1, 5 (mcontext_select): This trigger will only match or fire if the low bits of
@@ -2169,7 +2192,8 @@ normative_rule_definitions:
 
   # If the H extension is not supported, the only legal values are 0 and 4.
   - name: Sdtrig_textra32_mhselect_no_h
-    coverpoint: ["Sdtrig_Sm_textra_cg/cp_textra_mhselect_no_h"]
+    coverpoint:
+      ["Sdtrig_Sm_textra_cg/cp_textra_mhselect_no_h_{icount, mcontrol6}"]
 
   # When the least significant bit of this field is 1, it causes bits 7:0 in the
   # comparison to be ignored, when sselect=1. When the next most significant bit of
@@ -2178,8 +2202,8 @@ normative_rule_definitions:
   - name: Sdtrig_textra32_sbytemask
     coverpoint:
       [
-        "Sdtrig_Sm_textra_cg/cp_textra_scontext",
-        "Sdtrig_Sm_textra_cg/cp_textra_scontext_all",
+        "Sdtrig_Sm_textra_cg/cp_textra_scontext_{icount, mcontrol6}",
+        "Sdtrig_Sm_textra_cg/cp_textra_scontext_all_{icount, mcontrol6}",
       ]
 
   # This field should be tied to 0 when S-mode is not supported.
@@ -2188,22 +2212,23 @@ normative_rule_definitions:
 
   # Ignore svalue.
   - name: Sdtrig_textra32_sselect_ignore
-    coverpoint: ["Sdtrig_Sm_textra_cg/cp_textra_double_context"]
+    coverpoint:
+      ["Sdtrig_Sm_textra_cg/cp_textra_double_context_{icount, mcontrol6}"]
 
   # This trigger will only match or fire if the low bits of scontext equal svalue.
   - name: Sdtrig_textra32_sselect_scontext
     coverpoint:
       [
-        "Sdtrig_Sm_textra_cg/cp_textra_scontext",
-        "Sdtrig_Sm_textra_cg/cp_textra_double_context",
+        "Sdtrig_Sm_textra_cg/cp_textra_scontext_{icount, mcontrol6}",
+        "Sdtrig_Sm_textra_cg/cp_textra_double_context_{icount, mcontrol6}",
       ]
 
   # This trigger will only match or fire if:
   - name: Sdtrig_textra32_sselect_asid1
     coverpoint:
       [
-        "Sdtrig_Sm_textra_cg/cp_textra_asid",
-        "Sdtrig_S_textra_cg/cp_textra_asid",
+        "Sdtrig_Sm_textra_cg/cp_textra_asid_{icount, mcontrol6}",
+        "Sdtrig_S_textra_cg/cp_textra_asid_{icount, mcontrol6}",
       ]
   # the mode is VS-mode or VU-mode and ASID in vsatp equals the lower ASIDMAX (defined in
   # the Privileged Spec) bits of {textra32-svalue}.
@@ -2214,8 +2239,8 @@ normative_rule_definitions:
   - name: Sdtrig_textra32_sselect_asid3
     coverpoint:
       [
-        "Sdtrig_Sm_textra_cg/cp_textra_asid",
-        "Sdtrig_S_textra_cg/cp_textra_asid",
+        "Sdtrig_Sm_textra_cg/cp_textra_asid_{icount, mcontrol6}",
+        "Sdtrig_S_textra_cg/cp_textra_asid_{icount, mcontrol6}",
       ]
 
   # This field should be tied to 0 when S-mode is not supported.
@@ -2224,7 +2249,10 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_textra64
-    coverpoint: ["Sdtrig_Sm_access_cg/cp_csr_access_common"]
+    coverpoint:
+      [
+        "Sdtrig_Sm_access_cg/cp_csr_access_common_{disabled, icount, itrigger, etrigger, mcontrol6}",
+      ]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_textra64_reset
@@ -2234,8 +2262,8 @@ normative_rule_definitions:
   - name: Sdtrig_textra64_access
     coverpoint:
       [
-        "Sdtrig_Sm_textra_cg/cp_textra_mcontext",
-        "Sdtrig_Sm_textra_cg/cp_textra_scontext",
+        "Sdtrig_Sm_textra_cg/cp_textra_mcontext_{icount, mcontrol6}",
+        "Sdtrig_Sm_textra_cg/cp_textra_scontext_{icount, mcontrol6}",
       ]
 
   # This register retains its value when XLEN changes.
@@ -2250,15 +2278,15 @@ normative_rule_definitions:
   # Byte-granular comparison of scontext to svalue in textra64 allows scontext to be
   # defined to include more than one element of comparison.
   - name: Sdtrig_textra64_byte_granular
-    coverpoint: ["Sdtrig_Sm_textra_cg/cp_textra_scontext"]
+    coverpoint: ["Sdtrig_Sm_textra_cg/cp_textra_scontext_{icount, mcontrol6}"]
 
   # Byte masking only applies to scontext comparison; i.e when sselect is 1.
   - name: Sdtrig_textra64_byte_mask_applies
     coverpoint:
       [
-        "Sdtrig_Sm_textra_cg/cp_textra_scontext",
-        "Sdtrig_Sm_textra_cg/cp_textra_asid_sbytemask",
-        "Sdtrig_S_textra_cg/cp_textra_asid_sbytemask",
+        "Sdtrig_Sm_textra_cg/cp_textra_scontext_{icount, mcontrol6}",
+        "Sdtrig_Sm_textra_cg/cp_textra_asid_sbytemask_{icount, mcontrol6}",
+        "Sdtrig_S_textra_cg/cp_textra_asid_sbytemask_{icount, mcontrol6}",
       ]
 
   # When the least significant bit of this field is 1, it causes bits 7:0 in the
@@ -2268,6 +2296,6 @@ normative_rule_definitions:
   - name: Sdtrig_textra64_sbytemask
     coverpoint:
       [
-        "Sdtrig_Sm_textra_cg/cp_textra_scontext",
-        "Sdtrig_Sm_textra_cg/cp_textra_scontext_all",
+        "Sdtrig_Sm_textra_cg/cp_textra_scontext_{icount, mcontrol6}",
+        "Sdtrig_Sm_textra_cg/cp_textra_scontext_all_{icount, mcontrol6}",
       ]

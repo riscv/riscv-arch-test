@@ -50,6 +50,10 @@ triggernum_chain_end: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,
 }
 tdata1_m: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "m")[0] {
     type_option.weight = 0;
+    bins off = {1'b0};
+    `ifdef UDB_SDTRIG_M_WRITABLE
+        bins on = {1'b1};
+    `endif
 }
 tdata1_match_cmp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "match")[3:0] {
     type_option.weight = 0;
@@ -415,7 +419,9 @@ priv_bits_sw: coverpoint ins.current.insn iff (
 }
 priv_bits_outcome: coverpoint sdtrig_priv_bits_outcome(ins, `SDTRIG_MCONTROL6_MODE_BIT) {
     type_option.weight = 0;
-    bins own_fired      = {2'd1};
+    // the trigger fires only where the group's mode bit is writable
+    `ifdef SDTRIG_SUITE_S `ifdef UDB_SDTRIG_S_WRITABLE bins own_fired = {2'd1}; `endif `endif
+    `ifdef SDTRIG_SUITE_U `ifdef UDB_SDTRIG_U_WRITABLE bins own_fired = {2'd1}; `endif `endif
     bins others_no_fire = {2'd2};
 }
 `endif

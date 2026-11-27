@@ -32,7 +32,7 @@ TRIG_TYPE_ITRIGGER = 4
 TRIG_TYPE_ETRIGGER = 5
 MCONTROL6_TYPE = 6
 TDATA1_TYPE_DISABLED = 15
-# types cp_csr_access_common bins (the testplan's {3, 4, 5, 6, 15}); the others are legacy, reserved or custom
+# types cp_csr_access_common_<type> covers (the testplan's {3, 4, 5, 6, 15}); the others are legacy, reserved or custom
 ACCESS_TYPES = (TRIG_TYPE_ICOUNT, TRIG_TYPE_ITRIGGER, TRIG_TYPE_ETRIGGER, MCONTROL6_TYPE, TDATA1_TYPE_DISABLED)
 _TYPE_PARAM = {
     TRIG_TYPE_ICOUNT: "ICOUNT",
@@ -1145,7 +1145,7 @@ def _with_trap_counts(chunks: list[TestChunk]) -> list[TestChunk]:
 def _generate_access_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate common trigger-CSR access tests.
 
-    Only Sdtrig_Sm has cp_csr_access_common. Through T-SBI, Sdtrig_S would make the same M-mode accesses, which
+    Only Sdtrig_Sm has cp_csr_access_common_<type>. Through T-SBI, Sdtrig_S would make the same M-mode accesses, which
     Sdtrig_Sm already covers on every hart with S, at about 150 times the cost. Sdtrig_S and Sdtrig_U have only the
     direct accesses of _generate_access_trap_tests.
     """
@@ -1160,7 +1160,7 @@ def _generate_access_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_")).code
     lines.append(
         comment_banner(
-            coverpoint,
+            f"{coverpoint}_<type>",
             "Access every trigger CSR across all triggers and the types {3, 4, 5, 6, 15} each supports\n"
             "Should not cause any illegal instruction exceptions on implemented triggers",
         )
@@ -1179,9 +1179,10 @@ def _generate_access_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                 if csr in optional_csrs:
                     lines.append(f"#ifdef UDB_{csr.upper()}_IMPLEMENTED")
                 binname = f"tselect_{trig_num}_type_{trig_type}_csr_{csr}"
+                type_name = _TYPE_PARAM.get(trig_type, "disabled").lower()
                 lines.extend(
                     [
-                        _add_tc(test_data, binname, coverpoint, covergroup),
+                        _add_tc(test_data, binname, f"{coverpoint}_{type_name}", covergroup),
                         f"LI x{temp_reg}, {trig_num} # load trig_num value",
                         _csr_access(f"csrw tselect, x{temp_reg} # set tselect = trig_num", mode),
                         *_arm_type(type_reg, trig_type, mode),
@@ -1256,12 +1257,12 @@ def _generate_native_triggers_tests(test_data: TestData, mode: str) -> list[Test
     chunks: list[TestChunk] = []
 
     ######################################
-    coverpoint = f"cp_breakpoint_delegate_{mode.lower()}"
+    m = mode.lower()
     ######################################
     lines = test_data.new_test_chunk(chunks, "breakpoint_delegate").code
     lines.append(
         comment_banner(
-            coverpoint,
+            f"cp_mcontrol6_delegate_{m}, cp_icount_delegate_{m}",
             f"Breakpoint from a trigger fired in {mode}-mode: taken in M with medeleg[3]=0, delegated to S\n"
             "with medeleg[3]=1 (M on a hart that hard-wires medeleg[3] to 0)",
         )
@@ -1287,7 +1288,10 @@ def _generate_native_triggers_tests(test_data: TestData, mode: str) -> list[Test
                     [
                         *guards,
                         _add_tc(
-                            test_data, f"trig_num_{trig_num}_{trig_type}_delegate_{delegate}", coverpoint, covergroup
+                            test_data,
+                            f"trig_num_{trig_num}_{trig_type}_delegate_{delegate}",
+                            f"cp_{trig_type}_delegate_{m}",
+                            covergroup,
                         ),
                         *_fire_supported_trigger(trig_type, trig_num, mode, cfg_reg, addr_reg, data_reg),
                         *_sign_trap_count(data_reg, test_data),
@@ -2344,7 +2348,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_")).code
     lines.append(
         comment_banner(
-            coverpoint,
+            f"{coverpoint}_mcontrol6, {coverpoint}_icount",
             "Write tdata1 with dmode = 1 and a type the trigger supports (mcontrol6 with no execute/store/load,\n"
             "icount with m = 0, so neither fires) from M-mode. dmode is writable only from Debug Mode, so it\n"
             "reads back 0; only dmode is recorded",
@@ -2366,7 +2370,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             lines.extend(
                 [
                     *gates,
-                    _add_tc(test_data, f"trig_num_{trig_num}_{type_name}", coverpoint, covergroup),
+                    _add_tc(test_data, f"trig_num_{trig_num}_{type_name}", f"{coverpoint}_{type_name}", covergroup),
                     *_write_tselect(temp_reg, trig_num, mode),
                     *_clear_tdata(mode),
                     *_xlen_li(
@@ -4293,7 +4297,7 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 
     def case(binname: str, cp: str, trig_num: int, trig_type: str, tdata3_lines: list[str]) -> list[str]:
         return [
-            _add_tc(test_data, binname, cp, covergroup),
+            _add_tc(test_data, binname, f"{cp}_{trig_type}", covergroup),
             *_fire_textra_trigger(trig_type, trig_num, tdata3_lines, mode, cfg_reg, addr_reg, data_reg),
             *_disable_trigger(mode),
             *_sign_trap_count(temp_reg, test_data),
@@ -4325,7 +4329,12 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     coverpoint = "cp_textra_mcontext"
     ######################################
     lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_")).code
-    lines.append(comment_banner(coverpoint, "textra mhselect=4: the trigger fires only when mhvalue equals mcontext"))
+    lines.append(
+        comment_banner(
+            f"{coverpoint}_icount, {coverpoint}_mcontrol6",
+            "textra mhselect=4: the trigger fires only when mhvalue equals mcontext",
+        )
+    )
     lines.append(_MCONTEXT_MATCH_GATE)
     lines.extend(_global_ie(mode, True))
     lines.extend(set_context("mcontext", _mhvalue(_MCONTEXT_TEST_VALUE_RV32), _mhvalue(_MCONTEXT_TEST_VALUE_RV64)))
@@ -4350,7 +4359,12 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     coverpoint = "cp_textra_scontext"
     ######################################
     lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_")).code
-    lines.append(comment_banner(coverpoint, "textra sselect=1: svalue compared with scontext, sbytemask bytes ignored"))
+    lines.append(
+        comment_banner(
+            f"{coverpoint}_icount, {coverpoint}_mcontrol6",
+            "textra sselect=1: svalue compared with scontext, sbytemask bytes ignored",
+        )
+    )
     lines.append(_SCONTEXT_MATCH_GATE)
     lines.extend(_global_ie(mode, True))
     lines.extend(set_context("scontext", _svalue(_SCONTEXT_TEST_VALUE_RV32), _svalue(_SCONTEXT_TEST_VALUE_RV64)))
@@ -4388,7 +4402,8 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_")).code
     lines.append(
         comment_banner(
-            coverpoint, "mhselect/mhvalue and sselect/svalue together: fires only when every enabled context matches"
+            f"{coverpoint}_icount, {coverpoint}_mcontrol6",
+            "mhselect/mhvalue and sselect/svalue together: fires only when every enabled context matches",
         )
     )
     lines.append(_MCONTEXT_MATCH_GATE)
@@ -4434,7 +4449,7 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_")).code
         lines.append(
             comment_banner(
-                coverpoint,
+                f"{coverpoint}_icount, {coverpoint}_mcontrol6",
                 "textra sselect=2: the low ASIDMAX bits of svalue compared with satp.ASID; sbytemask is ignored",
             )
         )
@@ -4492,7 +4507,7 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_")).code
         lines.append(
             comment_banner(
-                coverpoint,
+                f"{coverpoint}_icount, {coverpoint}_mcontrol6",
                 "Without H, write tdata3.mhselect = 1, 2, 3, 5, 6, 7 on an armed trigger that never fires (icount with\n"
                 "m = 0, mcontrol6 with no execute/store/load). Only 0 and 4 are legal, so 1 is recorded when\n"
                 "mhselect reads back 0 or 4; which of the two is the hart's choice",
@@ -4509,7 +4524,10 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                 for mhsel in (1, 2, 3, 5, 6, 7):
                     body += [
                         _add_tc(
-                            test_data, f"trig_num_{trig_num}_type_{trig_type}_mhselect_{mhsel}", coverpoint, covergroup
+                            test_data,
+                            f"trig_num_{trig_num}_type_{trig_type}_mhselect_{mhsel}",
+                            f"{coverpoint}_{trig_type}",
+                            covergroup,
                         ),
                         *_xlen_li(temp_reg, _textra3(32, mhselect=mhsel), _textra3(64, mhselect=mhsel)),
                         _csr_access(f"csrw tdata3, x{temp_reg} # mhselect = {mhsel}", mode),

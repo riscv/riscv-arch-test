@@ -71,14 +71,17 @@ asid_match: coverpoint sdtrig_textra_asid_match(ins.current.csr[CSR_TDATA3], ins
     type_option.weight = 0;
 }
 
-// cp_textra_mhselect_no_h: a tdata3 write of an mhselect value that needs H, on a trigger armed as icount or mcontrol6
+// cp_textra_mhselect_no_h_*: a tdata3 write of an mhselect value that needs H, on a trigger armed as icount or mcontrol6
 csr_tdata3: coverpoint ins.current.insn[31:20] {
     type_option.weight = 0;
     bins tdata3 = {CSR_TDATA3};
 }
-armed_type: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "type")[3:0] {
+armed_icount: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "type")[3:0] {
     type_option.weight = 0;
-    bins icount    = {4'd3};
+    bins icount = {4'd3};
+}
+armed_mcontrol6: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_TDATA1, "type")[3:0] {
+    type_option.weight = 0;
     bins mcontrol6 = {4'd6};
 }
 mhselect_written: coverpoint sdtrig_textra_mhselect(ins.current.rs1_val) {
@@ -95,8 +98,11 @@ scontext_match_only: coverpoint sdtrig_textra_scontext_match(ins.current.csr[CSR
     bins match = {1'b1};
 }
 // Sdtrig_S/U: an instruction that the armed icount or mcontrol6 trigger acts on (sdtrig_textra_action)
-textra_action: coverpoint sdtrig_textra_action(ins) {
+textra_action_icount: coverpoint sdtrig_textra_action(ins) {
     type_option.weight = 0;
-    bins icount    = {4'd3};
+    bins icount = {4'd3};
+}
+textra_action_mcontrol6: coverpoint sdtrig_textra_action(ins) {
+    type_option.weight = 0;
     bins mcontrol6 = {4'd6};
 }

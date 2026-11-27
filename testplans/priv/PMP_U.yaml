@@ -7,6 +7,7 @@ notes: |
   - Boots to M-mode and programs the PMP there, then switches to U-mode (RVTEST_TSBI_GOTO_UMODE) for each set of probes and back to M-mode (RVTEST_TSBI_GOTO_MMODE). cp_mprv_* probes run in M-mode.
   - Background entry, grain, standard region, loads, stores and the fetch probe are as in PMP_Sm.
   - Entries under test are unlocked (L=0) unless a row says otherwise: R/W/X apply to U-mode accesses whatever L is.
+  - With H, the PMP_H group's H_vu_* files run the same probes from VU-mode (RVTEST_TSBI_GOTO_VUMODE), and the cp_mprv_* probes with mstatus.MPV = 1, with vsatp and hgatp Bare. Each cross then also has VU-mode (MPV = 1) bins, which doubles the bin counts below.
 coverpoints:
   - heading: Permission bits
   - name: cp_cfg_X
@@ -108,8 +109,8 @@ coverpoints:
       cp_mprv_jalr
       cp_mprv_lw
       cp_mprv_sw
-    goal: Verify that M-mode loads and stores are checked as U-mode when mstatus.MPRV=1 and MPP=U, and that fetches are not.
-    description: "M-mode. Entry 0 over a standard region: L={0,1}, A=NAPOT, XWR={000, 111}. mstatus.MPP = U, MPRV = {0,1}. jalr, lw and sw in the region."
+    goal: Verify that M-mode loads and stores are checked as U-mode when mstatus.MPRV=1 and MPP=U, or as VU-mode when also MPV=1, and that fetches are not.
+    description: "M-mode. Entry 0 over a standard region: L={0,1}, A=NAPOT, XWR={000, 111}. mstatus.MPP = U, MPV = {0, 1} with H, MPRV = {0,1}. jalr, lw and sw in the region."
     expectation: "XWR=111: all succeed. XWR=000: lw and sw fault when MPRV=1 (even with L=0) or when L=1, and succeed when MPRV=0 and L=0. jalr ignores MPRV: it faults only when L=1."
     bins: "2 MPRV × 2 L × 2 XWR = 8 each. MPP=M is not binned: with MPRV=1 it behaves as MPRV=0."
     rules:
@@ -121,16 +122,16 @@ coverpoints:
       - pmp_store_fault
   - heading: PMP CSR access
   - name: cp_pmpaddr_access_u
-    goal: Verify that the pmpaddr CSRs are not accessible from U-mode.
-    description: From U-mode, write all ones to pmpaddr0-63.
-    expectation: Illegal-instruction exception on every write.
+    goal: Verify that the pmpaddr CSRs are not accessible from U-mode or VU-mode.
+    description: From U-mode (and VU-mode with H), write all ones to pmpaddr0-63.
+    expectation: Illegal-instruction exception on every write, from VU-mode too, because pmpaddr is an M-level CSR (so not a virtual-instruction exception).
     bins: 64 CSRs
     rules:
       - pmp_csr_mode
       - pmp_addr_registers
   - name: cp_pmpcfg_access_u
-    goal: Verify that the pmpcfg CSRs are not accessible from U-mode.
-    description: From U-mode, write all ones to pmpcfg0-15.
+    goal: Verify that the pmpcfg CSRs are not accessible from U-mode or VU-mode.
+    description: From U-mode (and VU-mode with H), write all ones to pmpcfg0-15.
     expectation: Illegal-instruction exception on every write.
     bins: 16 CSRs
     rules:

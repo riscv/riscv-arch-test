@@ -1,0 +1,107 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: PMP_H
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=161540329#gid=161540329
+notes: |-
+  General Test Environment (PMP_H):
+  - Runs when Sm and H are implemented and NUM_PMP_ENTRIES > 0. The NA4, NAPOT and TOR test files also need PMP_NA4_SUPPORTED, PMP_NAPOT_SUPPORTED or PMP_TOR_SUPPORTED; the hypervisor load/store and two-stage files need PMP_NAPOT_SUPPORTED.
+  - Boots to M-mode, programs the PMP there and delegates nothing, so the M-mode handler takes every trap. Probes run in VS-mode or VU-mode (RVTEST_TSBI_GOTO_VSMODE, RVTEST_TSBI_GOTO_VUMODE), in HS-mode or in M-mode, and the test returns to M-mode (RVTEST_TSBI_GOTO_MMODE) to change the PMP.
+  - Background entry, grain, standard region, loads, stores and the fetch probe are as in PMP_Sm. Entries under test are unlocked (L=0) unless a row says otherwise.
+  - The H_vs_* and H_vu_* files repeat the PMP_S and PMP_U probes from VS-mode and VU-mode, and their cp_mprv_* probes with mstatus.MPV = 1. Their coverage is in PMP_S_cg and PMP_U_cg, whose rows in PMP_S and PMP_U describe them. They and the cp_pmp_hlv/hlvx/hsv rows run with vsatp and hgatp Bare, so the guest physical address is the supervisor physical address.
+  - The two-stage rows (cp_pmp_after_translation onward) need Sv39x4 and VS-stage Sv39 (RV64) or Sv32x4 and VS-stage Sv32 (RV32), PMP_GRANULARITY <= 12 (a NAPOT region the size of one 4 KiB page table) and at least 12 usable PMP entries. They map TEST_FOR_EXECUTION in two ways. Mapping vs is a VS-stage kilopage over the G-stage identity map; mapping g is a G-stage kilopage reached through a VS-stage identity superpage. The walk of mapping vs reaches its last VS-stage table, vlvl0, through a G-stage kilopage that maps a guest physical address (the page after the G-stage test page) to vlvl0's different supervisor physical address. Each scenario programs its own PMP entry (entries 0-10), so coverage identifies the scenario from the lowest enabled entry and its XWR.
+  - VS-mode and VU-mode code fetches through the VS-stage and G-stage roots (Vroot, Hroot), so only the HS-mode and M-mode hypervisor loads and stores and the M-mode loads and stores with MPRV = 1 deny the roots.
+  - The M-mode rows (cp_pmp_hlv_pt_m, cp_pmp_mprv_pt) leave the PMP entries unlocked. PMP still applies to them: the explicit accesses are VS-level or VU-level, and the page-table reads of both stages are S-level (machine.adoc pmp_check_pagetable_access). G-stage translation treats accesses as U-level only when it checks G-stage PTE permissions (hypervisor.adoc H_vm_gpapriv), not for PMP. mstatus.MPRV, MPP and MPV are set before each MPRV access and MPRV is cleared after it, because the mret that ends a trap leaves MPRV = 1 with MPP = U.
+  - After every PMP change the tests execute sfence.vma, hfence.gvma and hfence.vvma. HFENCE.VVMA is needed because HFENCE.GVMA need not flush cached guest-virtual-to-guest-physical translations (hypervisor.adoc HFENCE NOTE), although the hypervisor PMP NOTE says HFENCE.VVMA is not required: a possible spec issue.
+  - A faulting load keeps the value preloaded into rd, which the test checks, and the trap handler checks mepc, so every fault is precise. VU-mode cannot write the signature through the VS-stage identity map, which is not a user page, so M-mode checks the VU-mode results.
+coverpoints:
+  - heading: Hypervisor loads and stores
+  - name: |-
+      cp_pmp_hlv
+      cp_pmp_hsv
+    goal: Verify that PMP checks HLV and HSV, whose effective privilege is VS or VU, even when they execute in M-mode.
+    description: "PMP_NAPOT_SUPPORTED only. vsatp and hgatp Bare. One standard NAPOT region, six legal XWR with L=0. Every hlv (hlv.b, hlv.bu, hlv.h, hlv.hu, hlv.w (+ hlv.wu, hlv.d on RV64)) and hsv (hsv.b, hsv.h, hsv.w (+ hsv.d on RV64)) at the start of the region from M-mode with hstatus.SPVP = 1 (VS) and from HS-mode with SPVP = 0 (VU)."
+    expectation: hlv raises a load access fault when R=0 and hsv a store/AMO access fault when W=0, from M-mode as from HS-mode.
+    bins: "{M, HS} × 6 XWR × 5 hlv (3 hsv); 7 hlv (4 hsv) on RV64"
+  - name: cp_pmp_hlvx
+    goal: Verify that HLVX needs both R and X from PMP; X alone or R alone is not enough.
+    description: Same walk as cp_pmp_hlv, for hlvx.hu and hlvx.wu.
+    expectation: hlvx.hu and hlvx.wu succeed only for XWR = 101 and 111. Every other XWR, including X-only (100) and R-only (001), raises a load access fault.
+    bins: "{M, HS} × 6 XWR × 2 hlvx = 24"
+  - heading: Two-stage translation
+  - name: cp_pmp_after_translation
+    goal: Verify that PMP checks the supervisor physical address that two-stage translation produces, not the guest virtual address.
+    description: "In VS-mode and VU-mode, jalr, sw and lw at the guest virtual address of each mapping, with PMP denying (XWR=000) the supervisor physical address (entry 6), then the two guest virtual addresses (entries 7 and 8)."
+    expectation: "SPA denied: instruction, store/AMO and load access faults. Guest virtual addresses denied: every access completes."
+    bins: "{VS, VU} × {jalr, sw, lw} × {mapping vs, mapping g} × {SPA, GVA} denied = 24"
+  - name: |-
+      cp_pmp_amo
+      cp_pmp_lr
+    goal: Verify that PMP checks AMOs and load-reserved instructions on the supervisor physical address under two-stage translation.
+    description: "Zaamo (cp_pmp_amo) and Zalrsc (cp_pmp_lr) only. As cp_pmp_after_translation, amoswap.w (which writes back the word it reads) and lr.w at each mapping, with PMP denying the supervisor physical address, then the guest virtual addresses."
+    expectation: "SPA denied: amoswap.w raises a store/AMO access fault and lr.w a load access fault; rd keeps its preloaded value. Guest virtual addresses denied: both complete."
+    bins: "{VS, VU} × {mapping vs, mapping g} × {SPA, GVA} denied = 8 each"
+  - name: cp_pmp_pt
+    goal: Verify that PMP checks the implicit page-table reads of both stages.
+    description: "In VS-mode and VU-mode, jalr, sw and lw at each mapping with PMP denying one table below the root: vlvl0 (entry 0), hlvl0 (entry 1), and on RV64 vlvl1 (entry 2) and hlvl1 (entry 3)."
+    expectation: "An access whose walk reads the denied table raises the access fault of its type (instruction, store/AMO or load), and the other accesses complete. vlvl0 and vlvl1 lie on the walk of mapping vs only. hlvl0 and hlvl1 lie on both walks, since the G-stage kilopage that maps vlvl0 is in hlvl0."
+    bins: "{VS, VU} × {jalr, sw, lw} × {mapping vs, mapping g} × 2 tables = 24 (48 on RV64)"
+  - name: cp_pmp_pt_gpa
+    goal: Verify that PMP checks the supervisor physical address of a VS-stage page-table read, not its guest physical address.
+    description: "In VS-mode and VU-mode, jalr, sw and lw at each mapping, with PMP denying (entry 8) the 4 KiB at the guest physical address of vlvl0, which G-stage translation maps to vlvl0's different supervisor physical address."
+    expectation: No access fault; the accesses complete. (In cp_pmp_pt, where PMP denies vlvl0's supervisor physical address, they fault.)
+    bins: "{VS, VU} × {jalr, sw, lw} × {mapping vs, mapping g} = 12"
+  - name: cp_pmp_pt_update
+    goal: Verify that PMP checks the hardware A/D update that Svadu makes to a VS-stage or G-stage leaf.
+    description: "Svadu only. menvcfg.ADUE = henvcfg.ADUE = 1, and both kilopage leaves have A = D = 0. PMP makes vlvl0 (entry 0), then hlvl0 (entry 1), read-only (XWR = 001). In VS-mode and VU-mode, jalr, sw and lw at each mapping."
+    expectation: "vlvl0 read-only: every access through mapping vs raises the access fault of its type, because the update of its VS-stage leaf writes vlvl0; accesses through mapping g complete, and hardware sets the A and D bits of the G-stage leaf. hlvl0 read-only: every access through mapping g raises the access fault of its type; accesses through mapping vs complete."
+    bins: "{VS, VU} × {jalr, sw, lw} × {mapping vs, mapping g} × {vlvl0, hlvl0} read-only = 24"
+  - name: cp_pmp_hlv_pt
+    goal: Verify that PMP checks the page-table reads and the final address of hypervisor loads and stores under two-stage translation.
+    description: "HS-mode, hstatus.SPVP = 1. hsv.w, hlv.w and hlvx.wu at each mapping with PMP denying nothing, then each of Vroot, vlvl0, vlvl1 (RV64), Hroot, hlvl0, hlvl1 (RV64) and the supervisor physical address."
+    expectation: "Nothing denied: all complete. Otherwise an access whose walk reads the denied table, or whose final address is denied, raises a store/AMO access fault (hsv.w) or a load access fault (hlv.w and hlvx.wu); the others complete."
+    bins: "HS × {hsv.w, hlv.w, hlvx.wu} × {mapping vs, mapping g} × 6 scenarios (8 on RV64) = 36 (48 on RV64)"
+  - name: cp_pmp_hlv_pt_m
+    goal: Verify that PMP checks the page-table reads and the final address of hypervisor loads and stores executed in M-mode under two-stage translation.
+    description: "M-mode with hstatus.SPVP = 1 (VS-stage leaves with U = 0), then SPVP = 0 (VS-stage leaves with U = 1). hsv.w, hlv.w and hlvx.wu at each mapping with unlocked PMP entries denying nothing, then each of Vroot, vlvl0, vlvl1 (RV64), Hroot, hlvl0, hlvl1 (RV64) and the supervisor physical address."
+    expectation: "As cp_pmp_hlv_pt, for both values of SPVP. Nothing denied: all complete. Otherwise an access whose walk reads the denied table, or whose final address is denied, raises a store/AMO access fault (hsv.w) or a load access fault (hlv.w and hlvx.wu), and the loads keep their preloaded value; the others complete."
+    bins: "M × SPVP {0, 1} × {hsv.w, hlv.w, hlvx.wu} × {mapping vs, mapping g} × 6 scenarios (8 on RV64) = 72 (96 on RV64)"
+  - name: cp_pmp_mprv_pt
+    goal: Verify that PMP checks the page-table reads and the final address of M-mode loads and stores that mstatus.MPRV = 1 and MPV = 1 send through two-stage translation.
+    description: "M-mode with mstatus.MPRV = 1, MPV = 1 and MPP = S (VS-stage leaves with U = 0), then MPP = U (VS-stage leaves with U = 1). sw and lw at each mapping in the scenarios of cp_pmp_hlv_pt_m."
+    expectation: "Nothing denied: both complete. Otherwise an access whose walk reads the denied table, or whose final address is denied, raises a store/AMO access fault (sw) or a load access fault (lw), and lw keeps its preloaded value; the others complete."
+    bins: "M × {sw, lw} × MPRV = 1 × MPV/MPP {VS, VU} × {mapping vs, mapping g} × 6 scenarios (8 on RV64) = 48 (64 on RV64)"
+  - heading: Exception priority
+  - name: cp_pmp_pf_priority
+    goal: Verify that a page or guest-page fault on the final address takes priority over a PMP access fault on it.
+    description: "PMP denies the supervisor physical address. In VS-mode and VU-mode, jalr, sw and lw at each mapping, with both kilopage leaves R-only, then X-only."
+    expectation: "R-only: jalr raises an instruction page fault (mapping vs) or instruction guest-page fault (mapping g), sw a store/AMO page or guest-page fault, and lw a load access fault. X-only: sw and lw raise page or guest-page faults, and jalr an instruction access fault."
+    bins: "{VS, VU} × {jalr, sw, lw} × {page fault, guest-page fault} = 12"
+  - name: cp_pmp_amo_pf_priority
+    goal: Verify that a store page or guest-page fault of an AMO takes priority over a PMP access fault on the final address.
+    description: Zaamo only. As cp_pmp_pf_priority with R-only leaves, amoswap.w and lr.w at each mapping.
+    expectation: amoswap.w raises a store/AMO page fault (mapping vs) or store/AMO guest-page fault (mapping g). lr.w raises a load access fault (counted in cp_pmp_lr).
+    bins: "{VS, VU} × {page fault, guest-page fault} = 4"
+  - name: cp_pmp_pt_priority
+    goal: Verify that a PMP access fault on reading the table that holds an invalid leaf takes priority over the page or guest-page fault the leaf would raise.
+    description: "Both kilopage leaves invalid. PMP denies vlvl0 (entry 9), then hlvl0 (entry 10). In VS-mode and VU-mode, jalr, sw and lw at each mapping."
+    expectation: Accesses whose walk reads the denied table raise the access fault of their type, not a page or guest-page fault.
+    bins: "{VS, VU} × {jalr, sw, lw} × {vlvl0, hlvl0} × access fault = 12"
+  - heading: Not tested
+  - goal: sc.w to a PMP-denied supervisor physical address under two-stage translation
+    status: Not tested
+    notes: |-
+      An lr.w to a denied address raises an access fault and takes no reservation, and an sc.w without a reservation fails without writing memory. Whether such an sc.w still raises a store/AMO access fault is not specified, so it is not tested.
+    rules:
+      - pmp_store_fault
+      - sc_reservation_invalidate
+  - goal: Delegation of a PMP access fault from VS-mode or VU-mode to HS-mode (medeleg) and VS-mode (hedeleg)
+    status: Tested in ExceptionsH
+    notes: |-
+      Delegation depends only on the exception code, not on whether PMP or a PMA raised the access fault. PMP_H delegates nothing. ExceptionsH cp_hedeleg_instr_access_fault, cp_hedeleg_load_access_fault and cp_hedeleg_store_access_fault delegate access faults at RVMODEL_ACCESS_FAULT_ADDRESS from VS-mode and VU-mode across medeleg and hedeleg.
+    rules:
+      - pmp_access_fault_exception
+  - goal: PMP on the page tables of Sv48x4 and Sv57x4
+    status: Not tested
+    notes: |-
+      The framework allocates only the root and two lower tables per stage (rvtest_hlvl0/1, rvtest_vlvl0/1), so the two-stage scenarios run with Sv39x4 (RV64) and Sv32x4 (RV32) only.
+    rules:
+      - pmp_check_pagetable_access

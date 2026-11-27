@@ -360,8 +360,18 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
   mprv_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv")[0]{}
 
-  mpp_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0] {
-    bins S_mode = {2'b01};
+  // {MPV, MPP}: the mode whose privilege MPRV = 1 gives loads and stores, S-mode or, with H, VS-mode
+  `ifdef UDB_MXLEN_64
+    mpp_mstatus: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+  `else
+    mpp_mstatus: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpv")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+  `endif
+    bins S_mode = {3'b001};
+    `ifdef H_SUPPORTED
+      bins VS_mode = {3'b101};
+    `endif
   }
 
   lxwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {
@@ -412,39 +422,39 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
 //-------------------------------------------------------
 
-  cp_cfg_X: cross priv_mode_s, legal_lxwr, exec_instr, addr_in_napot_region ;
-  cp_cfg_R: cross priv_mode_s, legal_lxwr, read_instr, addr_in_napot_region ;
-  cp_cfg_W: cross priv_mode_s, legal_lxwr, write_instr, addr_in_napot_region ;
+  cp_cfg_X: cross priv_mode_s_maybevs, legal_lxwr, exec_instr, addr_in_napot_region ;
+  cp_cfg_R: cross priv_mode_s_maybevs, legal_lxwr, read_instr, addr_in_napot_region ;
+  cp_cfg_W: cross priv_mode_s_maybevs, legal_lxwr, write_instr, addr_in_napot_region ;
 
-  cp_cfg_A_off_jalr: cross priv_mode_s, cfg_A_off, exec_instr, addr_in_region ;
-  cp_cfg_A_off_lw: cross priv_mode_s, cfg_A_off, read_instr_lw, addr_in_region ;
-  cp_cfg_A_off_sw: cross priv_mode_s, cfg_A_off, write_instr_sw, addr_in_region ;
+  cp_cfg_A_off_jalr: cross priv_mode_s_maybevs, cfg_A_off, exec_instr, addr_in_region ;
+  cp_cfg_A_off_lw: cross priv_mode_s_maybevs, cfg_A_off, read_instr_lw, addr_in_region ;
+  cp_cfg_A_off_sw: cross priv_mode_s_maybevs, cfg_A_off, write_instr_sw, addr_in_region ;
 
   // Access at start of region, start - 4, start + 4, highest word in region, just beyond top of the region
-  cp_cfg_A_napot_jalr: cross priv_mode_s, cfg_A_napot, exec_instr, addr_offset_napot ;
-  cp_cfg_A_napot_lw: cross priv_mode_s, cfg_A_napot, read_instr_lw, addr_offset_napot ;
-  cp_cfg_A_napot_sw: cross priv_mode_s, cfg_A_napot, write_instr_sw, addr_offset_napot ;
+  cp_cfg_A_napot_jalr: cross priv_mode_s_maybevs, cfg_A_napot, exec_instr, addr_offset_napot ;
+  cp_cfg_A_napot_lw: cross priv_mode_s_maybevs, cfg_A_napot, read_instr_lw, addr_offset_napot ;
+  cp_cfg_A_napot_sw: cross priv_mode_s_maybevs, cfg_A_napot, write_instr_sw, addr_offset_napot ;
 
   `ifdef UDB_PMP_NA4_SUPPORTED
     // Access at start of address, that address - 4, just beyond top of the region.
-    cp_cfg_A_na4_jalr: cross priv_mode_s, cfg_A_na4, exec_instr, addr_offset_na4 ;
-    cp_cfg_A_na4_lw: cross priv_mode_s, cfg_A_na4, read_instr_lw, addr_offset_na4 ;
-    cp_cfg_A_na4_sw: cross priv_mode_s, cfg_A_na4, write_instr_sw, addr_offset_na4 ;
+    cp_cfg_A_na4_jalr: cross priv_mode_s_maybevs, cfg_A_na4, exec_instr, addr_offset_na4 ;
+    cp_cfg_A_na4_lw: cross priv_mode_s_maybevs, cfg_A_na4, read_instr_lw, addr_offset_na4 ;
+    cp_cfg_A_na4_sw: cross priv_mode_s_maybevs, cfg_A_na4, write_instr_sw, addr_offset_na4 ;
   `endif
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     // Access at address, address-4, address-g, address-g-4.
-    cp_cfg_A_tor_jalr: cross priv_mode_s, cfg_A_tor, exec_instr, addr_offset_tor ;
-    cp_cfg_A_tor_lw: cross priv_mode_s, cfg_A_tor, read_instr_lw, addr_offset_tor ;
-    cp_cfg_A_tor_sw: cross priv_mode_s, cfg_A_tor, write_instr_sw, addr_offset_tor ;
+    cp_cfg_A_tor_jalr: cross priv_mode_s_maybevs, cfg_A_tor, exec_instr, addr_offset_tor ;
+    cp_cfg_A_tor_lw: cross priv_mode_s_maybevs, cfg_A_tor, read_instr_lw, addr_offset_tor ;
+    cp_cfg_A_tor_sw: cross priv_mode_s_maybevs, cfg_A_tor, write_instr_sw, addr_offset_tor ;
   `endif
 
   cp_mprv_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, exec_instr, standard_region, addr_in_napot_region ;
   cp_mprv_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, read_instr_lw, standard_region, addr_in_napot_region ;
   cp_mprv_sw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, write_instr_sw, standard_region, addr_in_napot_region ;
 
-  cp_pmpaddr_access_s: cross priv_mode_s, csrrw, pmpaddr_entries ;
-  cp_pmpcfg_access_s: cross priv_mode_s, csrrw, pmpcfg_entries ;
+  cp_pmpaddr_access_s: cross priv_mode_s_maybevs, csrrw, pmpaddr_entries ;
+  cp_pmpcfg_access_s: cross priv_mode_s_maybevs, csrrw, pmpcfg_entries ;
 
 endgroup
 
@@ -2467,8 +2477,18 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
   mprv_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv")[0]{}
 
-  mpp_mstatus: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0] {
-    bins U_mode = {2'b00};
+  // {MPV, MPP}: the mode whose privilege MPRV = 1 gives loads and stores, U-mode or, with H, VU-mode
+  `ifdef UDB_MXLEN_64
+    mpp_mstatus: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+  `else
+    mpp_mstatus: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpv")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+  `endif
+    bins U_mode = {3'b000};
+    `ifdef H_SUPPORTED
+      bins VU_mode = {3'b100};
+    `endif
   }
 
   lxwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0)[7:0] {
@@ -2519,39 +2539,39 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
 
 //-------------------------------------------------------
 
-  cp_cfg_X: cross priv_mode_u, legal_lxwr, exec_instr, addr_in_napot_region ;
-  cp_cfg_R: cross priv_mode_u, legal_lxwr, read_instr, addr_in_napot_region ;
-  cp_cfg_W: cross priv_mode_u, legal_lxwr, write_instr, addr_in_napot_region ;
+  cp_cfg_X: cross priv_mode_u_maybevu, legal_lxwr, exec_instr, addr_in_napot_region ;
+  cp_cfg_R: cross priv_mode_u_maybevu, legal_lxwr, read_instr, addr_in_napot_region ;
+  cp_cfg_W: cross priv_mode_u_maybevu, legal_lxwr, write_instr, addr_in_napot_region ;
 
-  cp_cfg_A_off_jalr: cross priv_mode_u, cfg_A_off, exec_instr, addr_in_region ;
-  cp_cfg_A_off_lw: cross priv_mode_u, cfg_A_off, read_instr_lw, addr_in_region ;
-  cp_cfg_A_off_sw: cross priv_mode_u, cfg_A_off, write_instr_sw, addr_in_region ;
+  cp_cfg_A_off_jalr: cross priv_mode_u_maybevu, cfg_A_off, exec_instr, addr_in_region ;
+  cp_cfg_A_off_lw: cross priv_mode_u_maybevu, cfg_A_off, read_instr_lw, addr_in_region ;
+  cp_cfg_A_off_sw: cross priv_mode_u_maybevu, cfg_A_off, write_instr_sw, addr_in_region ;
 
   // Access at start of region, start - 4, start + 4, highest word in region, just beyond top of the region
-  cp_cfg_A_napot_jalr: cross priv_mode_u, cfg_A_napot, exec_instr, addr_offset_napot ;
-  cp_cfg_A_napot_lw: cross priv_mode_u, cfg_A_napot, read_instr_lw, addr_offset_napot ;
-  cp_cfg_A_napot_sw: cross priv_mode_u, cfg_A_napot, write_instr_sw, addr_offset_napot ;
+  cp_cfg_A_napot_jalr: cross priv_mode_u_maybevu, cfg_A_napot, exec_instr, addr_offset_napot ;
+  cp_cfg_A_napot_lw: cross priv_mode_u_maybevu, cfg_A_napot, read_instr_lw, addr_offset_napot ;
+  cp_cfg_A_napot_sw: cross priv_mode_u_maybevu, cfg_A_napot, write_instr_sw, addr_offset_napot ;
 
   `ifdef UDB_PMP_NA4_SUPPORTED
     // Access at start of address, that address - 4, just beyond top of the region.
-    cp_cfg_A_na4_jalr: cross priv_mode_u, cfg_A_na4, exec_instr, addr_offset_na4 ;
-    cp_cfg_A_na4_lw: cross priv_mode_u, cfg_A_na4, read_instr_lw, addr_offset_na4 ;
-    cp_cfg_A_na4_sw: cross priv_mode_u, cfg_A_na4, write_instr_sw, addr_offset_na4 ;
+    cp_cfg_A_na4_jalr: cross priv_mode_u_maybevu, cfg_A_na4, exec_instr, addr_offset_na4 ;
+    cp_cfg_A_na4_lw: cross priv_mode_u_maybevu, cfg_A_na4, read_instr_lw, addr_offset_na4 ;
+    cp_cfg_A_na4_sw: cross priv_mode_u_maybevu, cfg_A_na4, write_instr_sw, addr_offset_na4 ;
   `endif
 
   `ifdef UDB_PMP_TOR_SUPPORTED
     // Access at address, address-4, address-g, address-g-4.
-    cp_cfg_A_tor_jalr: cross priv_mode_u, cfg_A_tor, exec_instr, addr_offset_tor ;
-    cp_cfg_A_tor_lw: cross priv_mode_u, cfg_A_tor, read_instr_lw, addr_offset_tor ;
-    cp_cfg_A_tor_sw: cross priv_mode_u, cfg_A_tor, write_instr_sw, addr_offset_tor ;
+    cp_cfg_A_tor_jalr: cross priv_mode_u_maybevu, cfg_A_tor, exec_instr, addr_offset_tor ;
+    cp_cfg_A_tor_lw: cross priv_mode_u_maybevu, cfg_A_tor, read_instr_lw, addr_offset_tor ;
+    cp_cfg_A_tor_sw: cross priv_mode_u_maybevu, cfg_A_tor, write_instr_sw, addr_offset_tor ;
   `endif
 
   cp_mprv_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, exec_instr, standard_region, addr_in_napot_region ;
   cp_mprv_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, read_instr_lw, standard_region, addr_in_napot_region ;
   cp_mprv_sw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, write_instr_sw, standard_region, addr_in_napot_region ;
 
-  cp_pmpaddr_access_u: cross priv_mode_u, csrrw, pmpaddr_entries ;
-  cp_pmpcfg_access_u: cross priv_mode_u, csrrw, pmpcfg_entries ;
+  cp_pmpaddr_access_u: cross priv_mode_u_maybevu, csrrw, pmpaddr_entries ;
+  cp_pmpcfg_access_u: cross priv_mode_u_maybevu, csrrw, pmpcfg_entries ;
 
 endgroup
 
@@ -3590,6 +3610,320 @@ endfunction
 
 `endif
 
+`ifdef H_SUPPORTED
+`include "general/RISCV_coverage_hypervisor.svh"
+
+// PMPH_TWO_STAGE: the two-stage chunks of pmp/H.py run, which needs H_TWO_STAGE, a PMP grain of at most 4 KiB
+// (UDB_PMP_GRANULARITY <= 12) and PMP entries 0-10 below the background entry (UDB_NUM_USABLE_PMP_ENTRIES >= 12)
+`ifdef H_TWO_STAGE
+  `ifdef UDB_PMP_GRANULARITY_2
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_3
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_4
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_5
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_6
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_7
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_8
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_9
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_10
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_11
+    `define PMPH_TABLE_GRAIN
+  `elsif UDB_PMP_GRANULARITY_12
+    `define PMPH_TABLE_GRAIN
+  `endif
+  `ifdef PMPH_TABLE_GRAIN
+    `ifdef UDB_NUM_USABLE_PMP_ENTRIES_0
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_1
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_2
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_3
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_4
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_5
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_6
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_7
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_8
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_9
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_10
+    `elsif UDB_NUM_USABLE_PMP_ENTRIES_11
+    `else
+      `define PMPH_TWO_STAGE
+    `endif
+  `endif
+`endif
+
+// Guest virtual addresses of the two mappings in pmp/H.py: mapping vs is a VS-stage kilopage at
+// VS_SV39/VS_SV32 data_va, and mapping g a G-stage kilopage at SV39X4/SV32X4 data_va.
+`ifdef UDB_MXLEN_64
+  `define PMPH_GVA_SUPERPAGE(addr) addr[63:30]
+  `define PMPH_VS_SUPERPAGE 5
+  `define PMPH_G_SUPERPAGE 11
+`else
+  `define PMPH_GVA_SUPERPAGE(addr) addr[31:22]
+  `define PMPH_VS_SUPERPAGE 'h241
+  `define PMPH_G_SUPERPAGE 'h341
+`endif
+
+// PMP with the hypervisor extension: hsv, hlv and hlvx from M-mode and HS-mode against each legal XWR
+// (vsatp and hgatp Bare), and accesses through two-stage translation under PMP regions at the page tables,
+// the final address and the guest addresses.  PMP_S_cg and PMP_U_cg cover the walks from VS-mode and VU-mode.
+covergroup PMP_H_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, int pmp_entry, logic [2:0] pmp_xwr);
+  option.per_instance = 0;
+  `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+  hlv: coverpoint ins.current.insn {
+    wildcard bins hlv_b  = {HLV_B};
+    wildcard bins hlv_bu = {HLV_BU};
+    wildcard bins hlv_h  = {HLV_H};
+    wildcard bins hlv_hu = {HLV_HU};
+    wildcard bins hlv_w  = {HLV_W};
+    `ifdef UDB_MXLEN_64
+      wildcard bins hlv_wu = {HLV_WU};
+      wildcard bins hlv_d  = {HLV_D};
+    `endif
+  }
+  hlvx: coverpoint ins.current.insn {
+    wildcard bins hlvx_hu = {HLVX_HU};
+    wildcard bins hlvx_wu = {HLVX_WU};
+  }
+  hsv: coverpoint ins.current.insn {
+    wildcard bins hsv_b = {HSV_B};
+    wildcard bins hsv_h = {HSV_H};
+    wildcard bins hsv_w = {HSV_W};
+    `ifdef UDB_MXLEN_64
+      wildcard bins hsv_d = {HSV_D};
+    `endif
+  }
+  hlv_w_hsv_w_hlvx_wu: coverpoint ins.current.insn {
+    wildcard bins hlv_w   = {HLV_W};
+    wildcard bins hsv_w   = {HSV_W};
+    wildcard bins hlvx_wu = {HLVX_WU};
+  }
+  // hstatus.SPVP selects VS (1) or VU (0) for hlv, hlvx and hsv
+  hstatus_spvp: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HSTATUS, "spvp")[0] {}
+
+  // Each unlocked legal XWR in the entry that lxwr_walk_body gives it
+  unlocked_lxwr: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
+    wildcard bins cfg_0000 = {54'b????????????????????????????????????????00011000_100000};
+    wildcard bins cfg_0001 = {54'b????????????????????????????????00011001????????_?10000};
+    wildcard bins cfg_0011 = {54'b????????????????????????00011011????????????????_??1000};
+    wildcard bins cfg_0100 = {54'b????????????????00011100????????????????????????_???100};
+    wildcard bins cfg_0101 = {54'b????????00011101????????????????????????????????_????10};
+    wildcard bins cfg_0111 = {54'b00011111????????????????????????????????????????_?????1};
+  }
+  addr_in_napot_region: coverpoint (ins.current.rs1_val & `PMP_ADDR_LOWMASK) {
+    bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
+  }
+  vsatp_bare: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
+    bins bare = {0};
+  }
+  hgatp_bare: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
+    bins bare = {0};
+  }
+  `ifdef PMPH_TWO_STAGE
+  vsatp_paged: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VSATP, "mode") {
+    bins paged = {[1:15]};
+  }
+  hgatp_paged: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HGATP, "mode") {
+    bins paged = {[1:15]};
+  }
+  mapping: coverpoint `PMPH_GVA_SUPERPAGE(ins.current.rs1_val) {
+    bins vs = {`PMPH_VS_SUPERPAGE};
+    bins g  = {`PMPH_G_SUPERPAGE};
+  }
+  // PMP entry denying a page table (0-5) or the final address (6), or none
+  pmp_scenario: coverpoint pmp_entry {
+    bins none  = {-1};
+    bins vlvl0 = {0};
+    bins hlvl0 = {1};
+    `ifdef UDB_MXLEN_64
+      bins vlvl1 = {2};
+      bins hlvl1 = {3};
+    `endif
+    bins vroot = {4};
+    bins hroot = {5};
+    bins spa   = {6};
+  }
+  access_instr: coverpoint ins.current.insn {
+    wildcard bins jalr = {JALR};
+    wildcard bins sw   = {SW};
+    wildcard bins lw   = {LW};
+  }
+  sw_lw: coverpoint ins.current.insn {
+    wildcard bins sw = {SW};
+    wildcard bins lw = {LW};
+  }
+  mprv_on: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mprv") {
+    bins on = {1};
+  }
+  // {MPV, MPP} = VS or VU: MPRV gives M-mode loads and stores that privilege and two-stage translation
+  `ifdef UDB_MXLEN_64
+  mpp_mpv_guest: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpv")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+  `else
+  mpp_mpv_guest: coverpoint {get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUSH, "mpv")[0],
+                             get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MSTATUS, "mpp")[1:0]} {
+  `endif
+    bins vs = {3'b101};
+    bins vu = {3'b100};
+  }
+  `ifdef ZAAMO_SUPPORTED
+  amoswap_w: coverpoint ins.current.insn {
+    wildcard bins amoswap_w = {AMOSWAP_W};
+  }
+  `endif
+  `ifdef ZALRSC_SUPPORTED
+  lr_w: coverpoint ins.current.insn {
+    wildcard bins lr_w = {LR_W};
+  }
+  `endif
+  `ifdef SVADU_SUPPORTED
+  `ifdef UDB_MXLEN_64
+  menvcfg_adue: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "adue") {
+    bins on = {1};
+  }
+  henvcfg_adue: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "adue") {
+    bins on = {1};
+  }
+  `else
+  menvcfg_adue: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFGH)[29] {
+    bins on = {1};
+  }
+  henvcfg_adue: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HENVCFGH)[29] {
+    bins on = {1};
+  }
+  `endif
+  // PMP makes the table that holds the leaf read-only
+  pmp_table_read_only: coverpoint pmp_entry iff (pmp_xwr == 3'b001) {
+    bins vlvl0 = {0};
+    bins hlvl0 = {1};
+  }
+  `endif
+  // PMP denies the supervisor physical address, or the guest virtual addresses of both mappings
+  pmp_final: coverpoint pmp_entry {
+    bins spa = {6};
+    bins gva = {7};
+  }
+  pmp_spa: coverpoint pmp_entry {
+    bins spa = {6};
+  }
+  // PMP denies the page table that holds an invalid leaf
+  pmp_leaf_table: coverpoint pmp_entry {
+    bins vlvl0 = {9};
+    bins hlvl0 = {10};
+  }
+  // PMP denies a page table below the root
+  pmp_table: coverpoint pmp_entry iff (pmp_xwr == 3'b000) {
+    bins vlvl0 = {0};
+    bins hlvl0 = {1};
+    `ifdef UDB_MXLEN_64
+      bins vlvl1 = {2};
+      bins hlvl1 = {3};
+    `endif
+  }
+  // PMP denies the guest physical address of vlvl0, which G-stage translation maps to a different
+  // supervisor physical address
+  pmp_table_gpa: coverpoint pmp_entry {
+    bins vlvl0_gpa = {8};
+  }
+  // The trap the access takes, from the mcause the trace shows it writing
+  translation_fault: coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE)[4:0]} {
+    bins page_fault       = {6'b101100, 6'b101101, 6'b101111};
+    bins guest_page_fault = {6'b110100, 6'b110101, 6'b110111};
+  }
+  access_fault: coverpoint {ins.current.csr_wb[CSR_MCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE)[4:0]} {
+    bins access_fault = {6'b100001, 6'b100101, 6'b100111};
+  }
+  `endif
+
+  cp_pmp_hlv:  cross priv_mode_m_s, hlv, unlocked_lxwr, addr_in_napot_region, vsatp_bare, hgatp_bare;
+  cp_pmp_hlvx: cross priv_mode_m_s, hlvx, unlocked_lxwr, addr_in_napot_region, vsatp_bare, hgatp_bare;
+  cp_pmp_hsv:  cross priv_mode_m_s, hsv, unlocked_lxwr, addr_in_napot_region, vsatp_bare, hgatp_bare;
+  `ifdef PMPH_TWO_STAGE
+  cp_pmp_hlv_pt: cross priv_mode_hs, hlv_w_hsv_w_hlvx_wu, mapping, pmp_scenario, vsatp_paged, hgatp_paged;
+  // From M-mode, PMP still checks hlv, hlvx and hsv, and lw and sw with MPRV = 1 and MPV = 1, and their walks
+  cp_pmp_hlv_pt_m: cross priv_mode_m, hstatus_spvp, hlv_w_hsv_w_hlvx_wu, mapping, pmp_scenario, vsatp_paged, hgatp_paged;
+  cp_pmp_mprv_pt:  cross priv_mode_m, sw_lw, mprv_on, mpp_mpv_guest, mapping, pmp_scenario, vsatp_paged, hgatp_paged;
+  cp_pmp_after_translation: cross priv_mode_vs_vu, access_instr, mapping, pmp_final, vsatp_paged, hgatp_paged;
+  cp_pmp_pt:                cross priv_mode_vs_vu, access_instr, mapping, pmp_table, vsatp_paged, hgatp_paged;
+  // PMP checks the supervisor physical address of a VS-stage page-table read, not its guest physical address
+  cp_pmp_pt_gpa:            cross priv_mode_vs_vu, access_instr, mapping, pmp_table_gpa, vsatp_paged, hgatp_paged;
+  // A page or guest-page fault precedes an access fault on the final address
+  cp_pmp_pf_priority:       cross priv_mode_vs_vu, access_instr, pmp_spa, translation_fault;
+  // An access fault on reading the table that holds an invalid leaf precedes the page or guest-page fault
+  cp_pmp_pt_priority:       cross priv_mode_vs_vu, access_instr, pmp_leaf_table, access_fault;
+  `ifdef ZAAMO_SUPPORTED
+  cp_pmp_amo:               cross priv_mode_vs_vu, amoswap_w, mapping, pmp_final, vsatp_paged, hgatp_paged;
+  // A store page or guest-page fault precedes an access fault on the final address
+  cp_pmp_amo_pf_priority:   cross priv_mode_vs_vu, amoswap_w, pmp_spa, translation_fault;
+  `endif
+  `ifdef ZALRSC_SUPPORTED
+  cp_pmp_lr:                cross priv_mode_vs_vu, lr_w, mapping, pmp_final, vsatp_paged, hgatp_paged;
+  `endif
+  `ifdef SVADU_SUPPORTED
+  // PMP checks the hardware A/D update of a leaf, which writes its table
+  cp_pmp_pt_update:         cross priv_mode_vs_vu, access_instr, mapping, pmp_table_read_only, menvcfg_adue, henvcfg_adue, vsatp_paged, hgatp_paged;
+  `endif
+  `endif
+endgroup
+
+function void pmp_H_sample(int hart, int issue, ins_t ins);
+
+  logic [7:0] pmpcfg [63:0];
+  logic [`UDB_MXLEN-1:0] pmpaddr [62:0];
+  logic [14:0] pmp_hit;
+  int pmp_entry;
+  logic [2:0] pmp_xwr;
+
+  `ifdef UDB_MXLEN_32
+    // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
+    for (int i = 0; i < 16; i++) begin
+      logic [31:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(i));
+      pmpcfg[i*4 + 0] = cfg_word[7:0];
+      pmpcfg[i*4 + 1] = cfg_word[15:8];
+      pmpcfg[i*4 + 2] = cfg_word[23:16];
+      pmpcfg[i*4 + 3] = cfg_word[31:24];
+    end
+  `elsif UDB_MXLEN_64
+    // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
+    for (int i = 0; i < 8; i++) begin
+      logic [63:0] cfg_word = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 12'(2*i));
+      pmpcfg[i*8 + 0] = cfg_word[7:0];
+      pmpcfg[i*8 + 1] = cfg_word[15:8];
+      pmpcfg[i*8 + 2] = cfg_word[23:16];
+      pmpcfg[i*8 + 3] = cfg_word[31:24];
+      pmpcfg[i*8 + 4] = cfg_word[39:32];
+      pmpcfg[i*8 + 5] = cfg_word[47:40];
+      pmpcfg[i*8 + 6] = cfg_word[55:48];
+      pmpcfg[i*8 + 7] = cfg_word[63:56];
+    end
+  `endif
+
+  for (int j = 0; j < 63; j++) begin
+    pmpaddr[j] = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + 12'(j));
+  end
+
+  for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`STANDARD_REGION & `PMP_PMPADDR_GRAINMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_GRAINMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_GRAINMASK));
+  end
+
+  // The lowest-numbered enabled PMP entry below the background entry names the pmp/H.py scenario
+  pmp_entry = -1;
+  for (int i = 10; i >= 0; i--) begin
+    if (pmpcfg[i][4:3] != 2'b00) pmp_entry = i;
+  end
+  pmp_xwr = (pmp_entry >= 0) ? pmpcfg[pmp_entry][2:0] : 3'b000;
+
+  PMP_H_cg.sample(ins, pmpcfg, pmp_hit, pmp_entry, pmp_xwr);
+endfunction
+`endif
+
 function void pmp_sample(int hart, int issue, ins_t ins);
   pmp_Sm_sample(hart, issue, ins);
   `ifdef F_SUPPORTED
@@ -3624,5 +3958,8 @@ function void pmp_sample(int hart, int issue, ins_t ins);
   `endif
   `ifdef SVADU_SUPPORTED
     pmp_Svadu_sample(hart, issue, ins);
+  `endif
+  `ifdef H_SUPPORTED
+    pmp_H_sample(hart, issue, ins);
   `endif
 endfunction

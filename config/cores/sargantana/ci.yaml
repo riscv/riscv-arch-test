@@ -75,6 +75,7 @@ exclude_extensions:
   # csr:csr_bsc.sv#L2564-L2567 (https://github.com/bsc-loca/csr/issues/15)
   - H_inst-
   - H_vucsr-
+  - H_vucsr_write-
   # The same virtual-instruction bug on csrrsi to CSR 0xE00 from VS-mode (https://github.com/bsc-loca/csr/issues/15)
   - H_vscsr_ro-
   # htval on a guest-page fault in the VS-stage walk (https://github.com/bsc-loca/sargantana/issues/123)
@@ -86,6 +87,10 @@ exclude_extensions:
   - Sm_H_hcsr_walk-
   - Sm_H_trap-
   - Sm_H_tvm-
+  # HS/M old-value readback also exposes writable reserved hedeleg[23:20] and hedeleg[10]
+  # (https://github.com/bsc-loca/sargantana/issues/126).
+  - H_hcsr_oldvalue-
+  - Sm_H_hcsr_oldvalue-
   # Two-stage translation. GVA is 0 on load and store page faults from VS-stage translation:
   # core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L223, #L233 (https://github.com/bsc-loca/sargantana/issues/135)
   - Sv_H_sv39x4_two_stage_vs
@@ -189,6 +194,7 @@ exclude_extensions:
   - Sstc_H_hs
   - Sstc_H_vs-
   - Sstc_H_vu
+  - H_hcsr_imm-
   # xtval on an access that crosses into a faulting page is the start address, not the address of the faulting
   # page: fetch, core:datapath/rtl/if_stage_1/rtl/if_stage_1.sv#L270; load/store,
   # core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L212-L280 (NEW-2)

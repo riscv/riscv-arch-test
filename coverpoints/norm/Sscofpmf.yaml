@@ -8,6 +8,8 @@ normative_rule_definitions:
         "Sscofpmf_Sm_cg/cp_minh_inhibits_mmode",
         "Sscofpmf_S_cg/cp_sinh_inhibits_smode",
         "Sscofpmf_U_cg/cp_uinh_inhibits_umode",
+        "{Sscofpmf_Sm_cg,Sscofpmf_S_cg,Sscofpmf_U_cg}/cp_xinh_freeze_holds_count",
+        "Sscofpmf_H_cg/{cp_virt_xinh_filter,cp_virt_xinh_hs_u}",
       ]
 
   - name: mhpmevent_of_op
@@ -52,7 +54,8 @@ normative_rule_definitions:
       ]
 
   - name: scountovf_smode_read_access_control
-    coverpoint: ["Sscofpmf_S_cg/cp_scountovf_mcounteren"]
+    coverpoint:
+      ["Sscofpmf_S_cg/cp_scountovf_mcounteren", "Sscofpmf_H_cg/cp_scountovf_vs"]
 
   - name: mhpmeventh_presence
     coverpoint: ["Sscofpmf_Sm_cg/cp_sscofpmf_access"]
@@ -97,6 +100,7 @@ normative_rule_definitions:
   - name: sip_sie_priority_bit_order
     coverpoint: ["Sscofpmf_S_cg/cp_lcofip_priority_s"]
 
-  # VS-mode is out of scope for these suites: the Sscofpmf_Sm/S/U groups never run in VS-mode.
+  # Similarly, in VS mode, scountovf bit X is readable when mcounteren bit X and hcounteren bit X are both set,
+  # and otherwise reads as zero.
   - name: scountovf_vsmode_read_access
-    coverpoint: ["Needs test: read scountovf in VS-mode (needs H)."]
+    coverpoint: ["Sscofpmf_H_cg/{cp_scountovf_vs,cp_scountovf_access_vs}"]

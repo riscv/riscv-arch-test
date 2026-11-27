@@ -12,7 +12,7 @@
 from itertools import product
 from typing import Literal
 
-from testgen.asm.helpers import arch_block, comment_banner, write_sigupd
+from testgen.asm.helpers import arch_block, comment_banner, tvec_alignment, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -450,6 +450,55 @@ def direct_jump_tests(test_data: TestData, priv: Mode, covergroup: str) -> TestC
     return test_data.end_test_chunk()
 
 
+def lpad_near_miss_tests(test_data: TestData, priv: Mode, covergroup: str) -> TestChunk:
+    """Encodings next to LPAD (auipc with rd = x0) at the target of an ELP-setting jump are not landing pads."""
+    coverpoint = "cp_lpad_near_miss"
+    jump_reg, save_reg, temp_reg, rd_reg = test_data.int_regs.get_registers(4)
+    tc = test_data.begin_test_chunk(_split(covergroup))
+    lines = [
+        comment_banner(
+            coverpoint,
+            f"{priv}-mode xLPE=1: jalr, c.jr and c.jalr through a non-link register to auipc with rd != x0,\n"
+            "lui with rd = x0, or a nop. Only auipc with rd = x0 is LPAD, so each raises a software-check exception\n"
+            "and does not execute: the auipc leaves rd unchanged.",
+        ),
+        *set_lpe(priv, priv, temp_reg, True),
+        f"LI(x7, {(LABEL << 12) | LOW_BITS:#x}) # landing pad label in x7[31:12]",
+    ]
+    targets = (
+        ("auipc_rd_nonzero", f"auipc x{rd_reg}, 0 # LPAD only with rd = x0", True),
+        ("lui_rd_x0", f"lui x0, {LABEL:#x} # LPAD is auipc, not lui", False),
+        ("addi_nop", "addi x0, x0, 0 # nop", False),
+    )
+    for bin_name, target, record_rd in targets:
+        for kind in JUMP_KINDS:
+            lines.extend(
+                _guard_if_compressed(
+                    kind,
+                    [
+                        "",
+                        *([f"LI(x{rd_reg}, 0x5A5A5A5A) # unchanged unless the auipc executes"] if record_rd else []),
+                        *jump_to_target(
+                            test_data,
+                            kind,
+                            jump_reg,
+                            0,
+                            [target],
+                            _bin(priv, f"{kind}_{bin_name}"),
+                            coverpoint,
+                            covergroup,
+                            save_reg,
+                        ),
+                        *([write_sigupd(rd_reg, test_data)] if record_rd else []),
+                    ],
+                )
+            )
+    lines.extend(set_lpe(priv, priv, temp_reg, False))
+    tc.code.extend(lines)
+    test_data.int_regs.return_registers([jump_reg, save_reg, temp_reg, rd_reg])
+    return test_data.end_test_chunk()
+
+
 def make_zicfilp_tests(test_data: TestData, priv: Mode, covergroup: str) -> list[TestChunk]:
     """Tests shared by every Zicfilp suite"""
     return [
@@ -483,6 +532,78 @@ def trap_entry_tests(test_data: TestData, priv: Mode, covergroup: str) -> TestCh
         ]
     )
     test_data.int_regs.return_registers([temp_reg])
+    return test_data.end_test_chunk()
+
+
+def pelp_lpe_off_trap_tests(test_data: TestData, priv: Priv, covergroup: str) -> TestChunk:
+    """A trap writes xPELP = ELP even when the trapping mode's xLPE is 0, so a stale xPELP = 1 is cleared.
+
+    The framework's trap handler records xstatus[17:0], which does not hold xPELP, and xRET clears xPELP.
+    So the test points xtvec at a handler of its own just after the ebreak, which reads xPELP and puts
+    xtvec and xstatus back.
+    """
+    coverpoint = "cp_pelp_trap_entry_lpe_off"
+    save_tvec, save_status, save_statush, temp_reg, mode_reg = test_data.int_regs.get_registers(5)
+    tvec, status = ("mtvec", "mstatus") if priv == "M" else ("stvec", "sstatus")
+    tc = test_data.begin_test_chunk(_split(covergroup))
+    testcase = test_data.add_testcase(_bin(priv, "ebreak_xpelp_stale"), coverpoint, covergroup)
+    handler = f"{test_data.current_testcase_label}_handler"
+    if priv == "M":
+        pelp = [
+            "#if __riscv_xlen == 32",
+            "LI(x{r}, MSTATUSH_MPELP)",
+            "{op} mstatush, x{r}",
+            "#else",
+            "LI(x{r}, MSTATUS_MPELP)",
+            "{op} mstatus, x{r}",
+            "#endif",
+        ]
+        read_pelp = [
+            "#if __riscv_xlen == 32",
+            f"csrr x{temp_reg}, mstatush",
+            f"LI(x{mode_reg}, MSTATUSH_MPELP)",
+            "#else",
+            f"csrr x{temp_reg}, mstatus",
+            f"LI(x{mode_reg}, MSTATUS_MPELP)",
+            "#endif",
+        ]
+    else:
+        pelp = ["LI(x{r}, SSTATUS_SPELP)", "{op} sstatus, x{r}"]
+        read_pelp = [f"csrr x{temp_reg}, sstatus", f"LI(x{mode_reg}, SSTATUS_SPELP)"]
+    tc.code.extend(
+        [
+            comment_banner(
+                coverpoint,
+                f"{priv}-mode xLPE=0 and software-written {priv}PELP=1. ebreak traps into "
+                f"{priv}-mode with ELP=NO_LP_EXPECTED,\nso trap entry must write xPELP=0. A local handler records xPELP.",
+            ),
+            *set_lpe(priv, priv, temp_reg, False),
+            f"csrr x{save_status}, {status}",
+            *(["#if __riscv_xlen == 32", f"csrr x{save_statush}, mstatush", "#endif"] if priv == "M" else []),
+            f"csrr x{save_tvec}, {tvec}",
+            f"andi x{mode_reg}, x{save_tvec}, 3 # keep the MODE the DUT uses",
+            f"LA(x{temp_reg}, {handler})",
+            f"or x{temp_reg}, x{temp_reg}, x{mode_reg}",
+            f"csrw {tvec}, x{temp_reg}",
+            *(line.format(r=temp_reg, op="csrs") for line in pelp),
+            testcase,
+            ".option push",
+            ".option norvc",
+            "ebreak",
+            ".option pop",
+            *tvec_alignment(tvec),
+            f"{handler}:",
+            f"csrw {tvec}, x{save_tvec}",
+            *read_pelp,
+            f"and x{temp_reg}, x{temp_reg}, x{mode_reg} # xPELP after trap entry",
+            write_sigupd(temp_reg, test_data),
+            *(line.format(r=temp_reg, op="csrc") for line in pelp),
+            f"csrw {status}, x{save_status}",
+            # Trap entry also set MDT (Smdbltrp), which lives in mstatush on RV32; only MRET would clear it.
+            *(["#if __riscv_xlen == 32", f"csrw mstatush, x{save_statush}", "#endif"] if priv == "M" else []),
+        ]
+    )
+    test_data.int_regs.return_registers([save_tvec, save_status, save_statush, temp_reg, mode_reg])
     return test_data.end_test_chunk()
 
 
@@ -773,6 +894,8 @@ def make_zicfilpsm(test_data: TestData) -> list[TestChunk]:
         elp_state_preservation_tests(test_data, "M", covergroup),
         trap_return_tests(test_data, "M", covergroup),
         async_interrupt_tests(test_data, covergroup),
+        lpad_near_miss_tests(test_data, "M", covergroup),
+        pelp_lpe_off_trap_tests(test_data, "M", covergroup),
     ]
 
 
@@ -790,6 +913,8 @@ def make_zicfilps(test_data: TestData) -> list[TestChunk]:
         guarded_trap_entry_tests(test_data, "S", covergroup),
         elp_state_preservation_tests(test_data, "S", covergroup),
         trap_return_tests(test_data, "S", covergroup),
+        lpad_near_miss_tests(test_data, "S", covergroup),
+        pelp_lpe_off_trap_tests(test_data, "S", covergroup),
     ]
 
 
@@ -799,7 +924,7 @@ def make_zicfilps(test_data: TestData) -> list[TestChunk]:
 )
 def make_zicfilpu(test_data: TestData) -> list[TestChunk]:
     """Generate Zicfilp landing pad tests in U-mode."""
-    return make_zicfilp_tests(test_data, "U", "Zicfilp_U_cg")
+    return [*make_zicfilp_tests(test_data, "U", "Zicfilp_U_cg"), lpad_near_miss_tests(test_data, "U", "Zicfilp_U_cg")]
 
 
 # H group: the test boots to HS-mode. hedeleg is 0, so software-check exceptions are taken in HS-mode unless a test
@@ -979,6 +1104,62 @@ def _h_trap_entry_tests(test_data: TestData) -> TestChunk:
     return test_data.end_test_chunk()
 
 
+def _h_lpe_off_trap_tests(test_data: TestData) -> TestChunk:
+    """With every LPE clear, a trap from VS-mode or VU-mode into VS-mode or HS-mode writes SPELP = ELP = 0 over a
+    stale SPELP = 1.  As in pelp_lpe_off_trap_tests, a local handler stands in for the framework's, whose SRET
+    would clear SPELP."""
+    coverpoint = "cp_pelp_trap_entry_lpe_off"
+    save_tvec, save_status, save_hstatus, temp_reg, mask_reg = test_data.int_regs.get_registers(5)
+    tc = test_data.begin_test_chunk(_split(_H_CG))
+    lines = [
+        comment_banner(
+            coverpoint,
+            "menvcfg.LPE = henvcfg.LPE = senvcfg.LPE = 0.  HS-mode sets SPELP = 1 in vsstatus or sstatus, points vstvec\n"
+            "or stvec at a local handler just after an ebreak, and enters VS-mode or VU-mode.  The ebreak traps into\n"
+            "VS-mode (hedeleg[3] = 1) or HS-mode (hedeleg = 0) with ELP = NO_LP_EXPECTED, so it must write SPELP = 0.\n"
+            "Back in HS-mode, the test records SPELP and puts xtvec and the status registers back.",
+        ),
+        *set_lpe("S", "S", temp_reg, False),
+        *_set_lpes(0, 0, temp_reg),
+    ]
+    for handler, mode in product(("vs", "hs"), _V_MODES):
+        tvec, status = ("vstvec", "vsstatus") if handler == "vs" else ("stvec", "sstatus")
+        testcase = test_data.add_testcase(f"{mode.lower()}_to_{handler}_spelp_stale", coverpoint, _H_CG)
+        label = f"{test_data.current_testcase_label}_handler"
+        lines.extend(
+            [
+                "",
+                f"LI(x{temp_reg}, (1 << CAUSE_BREAKPOINT) | (1 << CAUSE_SOFTWARE_CHECK_FAULT))",
+                f"{'csrs' if handler == 'vs' else 'csrc'} hedeleg, x{temp_reg}",
+                f"csrr x{save_status}, {status}",
+                f"csrr x{save_hstatus}, hstatus",
+                f"csrr x{save_tvec}, {tvec}",
+                f"andi x{mask_reg}, x{save_tvec}, 3 # keep the MODE the DUT uses",
+                f"LA(x{temp_reg}, {label})",
+                f"or x{temp_reg}, x{temp_reg}, x{mask_reg}",
+                f"csrw {tvec}, x{temp_reg}",
+                *_set_spelp(status, 1, temp_reg),
+                f"RVTEST_TSBI_GOTO_{mode}MODE",
+                testcase,
+                ".option push",
+                ".option norvc",
+                "ebreak",
+                ".option pop",
+                *tvec_alignment("stvec"),
+                f"{label}:",
+                *(["RVTEST_TSBI_GOTO_SMODE"] if handler == "vs" else []),
+                f"csrw {tvec}, x{save_tvec}",
+                *_record_spelp(test_data, status, temp_reg, mask_reg),
+                f"csrw {status}, x{save_status}",
+                f"csrw hstatus, x{save_hstatus} # a trap into HS-mode writes SPV and SPVP",
+            ]
+        )
+    lines.append("csrw hedeleg, zero")
+    tc.code.extend(lines)
+    test_data.int_regs.return_registers([save_tvec, save_status, save_hstatus, temp_reg, mask_reg])
+    return test_data.end_test_chunk()
+
+
 def _h_vs_sret_tests(test_data: TestData) -> TestChunk:
     """SRET in VS-mode takes the previous ELP from vsstatus.SPELP, ignores sstatus.SPELP and clears vsstatus.SPELP."""
     coverpoint = "cp_vs_sret_spelp"
@@ -1143,32 +1324,41 @@ def _h_async_interrupt_tests(test_data: TestData) -> TestChunk:
 def _h_sstatus_alias_tests(test_data: TestData) -> TestChunk:
     """sstatus.SPELP in VS-mode is vsstatus.SPELP."""
     coverpoint = "cp_vs_sstatus_spelp"
-    temp_reg, mask_reg = test_data.int_regs.get_registers(2)
+    temp_reg, mask_reg, save_reg = test_data.int_regs.get_registers(3)
     tc = test_data.begin_test_chunk(_split(_H_CG))
     lines = [
         comment_banner(
             coverpoint,
-            "In VS-mode, set and then clear sstatus.SPELP and read sstatus back. After each write, HS-mode reads\n"
-            "vsstatus.SPELP, which must hold the value VS-mode wrote.",
+            "With henvcfg.LPE = {0, 1}, in VS-mode set and then clear sstatus.SPELP and read sstatus back. After\n"
+            "each write, HS-mode reads vsstatus.SPELP, which must hold the value VS-mode wrote.",
         ),
-        f"LI(x{mask_reg}, SSTATUS_SPELP)",
+        f"csrr x{save_reg}, henvcfg",
     ]
-    for op in ("csrs", "csrc"):
+    for lpe in (0, 1):
         lines.extend(
             [
-                "",
-                "RVTEST_TSBI_GOTO_VSMODE",
-                test_data.add_testcase(f"{op}_spelp", coverpoint, _H_CG),
-                f"{op} sstatus, x{mask_reg}",
-                f"csrr x{temp_reg}, sstatus",
-                f"and x{temp_reg}, x{temp_reg}, x{mask_reg}",
-                write_sigupd(temp_reg, test_data),
-                "RVTEST_TSBI_GOTO_SMODE",
-                *_record_spelp(test_data, "vsstatus", temp_reg, mask_reg),
+                f"LI(x{mask_reg}, HENVCFG_LPE)",
+                f"{'csrs' if lpe else 'csrc'} henvcfg, x{mask_reg}",
+                f"LI(x{mask_reg}, SSTATUS_SPELP)",
             ]
         )
+        for op in ("csrs", "csrc"):
+            lines.extend(
+                [
+                    "",
+                    "RVTEST_TSBI_GOTO_VSMODE",
+                    test_data.add_testcase(f"{op}_spelp_lpe{lpe}", coverpoint, _H_CG),
+                    f"{op} sstatus, x{mask_reg}",
+                    f"csrr x{temp_reg}, sstatus",
+                    f"and x{temp_reg}, x{temp_reg}, x{mask_reg}",
+                    write_sigupd(temp_reg, test_data),
+                    "RVTEST_TSBI_GOTO_SMODE",
+                    *_record_spelp(test_data, "vsstatus", temp_reg, mask_reg),
+                ]
+            )
+    lines.append(f"csrw henvcfg, x{save_reg}")
     tc.code.extend(lines)
-    test_data.int_regs.return_registers([temp_reg, mask_reg])
+    test_data.int_regs.return_registers([temp_reg, mask_reg, save_reg])
     return test_data.end_test_chunk()
 
 
@@ -1185,12 +1375,14 @@ def make_zicfilph(test_data: TestData) -> list[TestChunk]:
         _h_enable_tests(test_data, "VS"),
         _h_enable_tests(test_data, "VU"),
         _h_trap_entry_tests(test_data),
+        _h_lpe_off_trap_tests(test_data),
         _h_vs_delivery_tests(test_data, "VS"),
         _h_vs_delivery_tests(test_data, "VU"),
         _h_vs_sret_tests(test_data),
         _h_hs_sret_tests(test_data),
         _h_sstatus_alias_tests(test_data),
         _h_async_interrupt_tests(test_data),
+        *(_in_mode(lpad_near_miss_tests(test_data, mode, _H_CG), mode) for mode in _V_MODES),
     ]
 
 

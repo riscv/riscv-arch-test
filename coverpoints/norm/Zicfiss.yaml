@@ -142,7 +142,9 @@ normative_rule_definitions:
     coverpoint:
       [
         "{Zicfiss_U_cg}/{cp_ss_page_access_store,cp_ss_page_access_store_misaligned,cp_ss_page_access_amo,cp_ss_vector_store}",
+        "{Zicfiss_U_cg}/{cp_ss_page_access_store_ad,cp_ss_page_access_amo_ad}",
         "{Zicfiss_S_cg}/{cp_ss_page_enc_store,cp_ss_page_access_store_misaligned_s}",
+        "{Zicfiss_S_cg}/{cp_ss_page_access_store_ad_s,cp_ss_page_access_amo_ad_s}",
       ]
   # Access to a SS page using cache-block operation (insn:cbo.*[]) instructions is not
   # permitted. Such accesses will raise a store/AMO access-fault exception.

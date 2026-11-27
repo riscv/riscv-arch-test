@@ -131,6 +131,9 @@
 `ifdef SSCOUNTERENW_COVERAGE
   `include "Sscounterenw_coverage.svh"
 `endif
+`ifdef SSDBLTRP_COVERAGE
+  `include "Ssdbltrp_coverage.svh"
+`endif
 `ifdef SSNPM_COVERAGE
   `include "Ssnpm_coverage.svh"
 `endif

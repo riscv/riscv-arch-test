@@ -76,6 +76,20 @@ coverpoints:
     id: Zicfilp_elp_lpad_expected
     rules:
       - Zicfilp_elp_lpad_expected
+  - name: cp_lpad_near_miss
+    goal: Verify that only auipc with rd=x0 is a landing pad.
+    description: |-
+      Test Environment:
+       xLPE=1, x7[31:12] holds a label.
+      Execute an indirect control transfer (Indirect_CT) using rs1 != {x1,x5,x7} so that ELP=LP_EXPECTED.
+      At the target address, execute an encoding next to LPAD: auipc with rd != x0 (auipc x9, 0), lui with rd = x0, or a nop (addi x0, x0, 0).
+      The auipc destination holds a known value beforehand and is recorded afterwards.
+    expectation: A software-check exception (cause=18) is raised, and the target instruction does not execute, so the auipc destination is unchanged.
+    bins: 3 targets × N Indirect_CT types × N privilege modes
+    id: Zicfilp_lpad_enc Zicfilp_elp_lpad_expected
+    rules:
+      - Zicfilp_lpad_enc
+      - Zicfilp_elp_lpad_expected
   - name: cp_zicfilp_lpad_label_mismatch
     goal: Verify software-check exception for LPAD label mismatch
     description: |-

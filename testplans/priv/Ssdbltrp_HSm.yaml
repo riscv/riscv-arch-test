@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Ssdbltrp_HSm
+notes: |
+  covergroup Ssdbltrp_HSm
+  The tests boot to M-mode and set menvcfg.DTE and henvcfg.DTE.  M-mode enters VS-mode and VU-mode by MRET or SRET, not through T-SBI.
+  A double trap resumes in M-mode just past the trapping instruction (mtvec points there), where the test records the trap CSRs and restores mstatus, which clears mstatus.MDT.
+  Every return into VU-mode clears vsstatus.SDT, so only VS-mode can raise a double trap.
+coverpoints:
+  - name: cp_vs_double_trap
+    goal: A trap into VS-mode with vsstatus.SDT = 1 is a double trap taken in M-mode
+    description: |-
+      With menvcfg.DTE = henvcfg.DTE = 1, set vsstatus.SDT = vsstatus.SPIE = 1 and vsstatus.SPP = 0, vsepc = vstval = the address of the trapping instruction, and vscause = 2.
+      Set medeleg = hedeleg = 1 << 3 and execute ebreak in VS-mode, and medeleg = hedeleg = 1 << 5 and load from RVMODEL_ACCESS_FAULT_ADDRESS_LOAD in VS-mode.
+      In M-mode, read mstatus.MPP, MPV and GVA, mcause, mtval2, mepc, mtval (ebreak only), vsstatus, vscause, vsepc and vstval.
+    expectation: mcause = 16 and mtval2 = 3 or 5.  mepc is the trapping instruction, mstatus.MPP = S and MPV = 1, and mtval and GVA are what the breakpoint or access fault would write.  vsstatus, vscause, vsepc and vstval are unchanged.
+    bins: ebreak, load access fault
+    rules:
+      - sstatus_sdt_unexpected_trap
+      - sstatus_sdt_double_trap
+      - sstatus_sdt_double_trap_regs
+      - sstatus_sdt_double_trap_mtval2
+      - sstatus_sdt_double_trap_mcause
+      - vsstatus_sdt_op
+  - name: cp_m_xret_vsstatus_sdt
+    goal: With Smdbltrp, MRET and SRET in M-mode clear vsstatus.SDT only when they return to VU-mode
+    description: With Smdbltrp, menvcfg.DTE = henvcfg.DTE = 1 and vsstatus.SDT = sstatus.SDT = 1, execute MRET and SRET in M-mode to VS-mode and VU-mode.  Return to M-mode and read vsstatus and sstatus.  SRET in M-mode to HS-mode is left out because whether it clears sstatus.SDT is disputed.
+    expectation: sstatus.SDT = 0 in every case.  vsstatus.SDT = 0 after the returns to VU-mode and 1 after the returns to VS-mode.
+    bins: "{MRET, SRET} * {VS, VU}"
+    rules:
+      - sstatus_sdt_clr_mret_sret
+      - vsstatus_sdt_clr_mret_sret

@@ -26,6 +26,7 @@ coverpoints:
       cp_exception_priority_zicfilp
       cp_lpad_nop_no_lp_expected_zicfilp
       cp_lpad_alignment_exception_zicfilp
+      cp_lpad_near_miss
       cp_pelp_trap_entry_zicfilp
       cp_pelp_trap_entry_guarded_zicfilp
       cp_pelp_trap_entry_guarded_zicfilp_c
@@ -63,6 +64,15 @@ coverpoints:
     bins: |-
       priv_mode {VS, VU} x LPE of the mode enabled x ELP {lp_expected, no_lp_expected} x handler {HS, VS}
       = 8 bins
+  - name: cp_pelp_trap_entry_lpe_off
+    goal: A trap from VS-mode or VU-mode writes SPELP from ELP even when no landing pad enable is set
+    description: |-
+      menvcfg.LPE = henvcfg.LPE = senvcfg.LPE = 0.  HS-mode sets SPELP = 1 in the handler's status register (vsstatus for VS-mode, with hedeleg[3] = hedeleg[18] = 1, or sstatus for HS-mode, with hedeleg = 0) and points its vstvec or stvec at a handler just after an EBREAK, keeping its MODE.  Execute the EBREAK in VS-mode and in VU-mode.
+      Back in HS-mode, read the handler's SPELP, then restore xtvec, the status registers and hstatus.  (The framework's trap record does not hold SPELP, and its SRET clears it.)
+    expectation: "On trap entry: SPELP = NO_LP_EXPECTED in vsstatus or sstatus, because ELP is NO_LP_EXPECTED while the landing pad enables are 0."
+    bins: |-
+      priv_mode {VS, VU} x all LPE = 0 x stale SPELP = 1 x ebreak x handler {HS, VS}
+      = 4 bins
   - name: cp_vs_sret_spelp
     goal: SRET executed in VS-mode restores ELP from vsstatus.SPELP and clears it
     description: |-
@@ -81,11 +91,11 @@ coverpoints:
       = 16 bins
   - name: cp_vs_sstatus_spelp
     goal: sstatus.SPELP accessed in VS-mode is vsstatus.SPELP
-    description: In VS-mode, set and then clear sstatus.SPELP with csrrs and csrrc, and read sstatus back.  After each write, HS-mode reads vsstatus.SPELP.
-    expectation: sstatus.SPELP read in VS-mode and vsstatus.SPELP read in HS-mode both hold the value VS-mode wrote.
+    description: With henvcfg.LPE = {0, 1}, in VS-mode set and then clear sstatus.SPELP with csrrs and csrrc, and read sstatus back.  After each write, HS-mode reads vsstatus.SPELP.
+    expectation: sstatus.SPELP read in VS-mode and vsstatus.SPELP read in HS-mode both hold the value VS-mode wrote, whatever henvcfg.LPE is.
     bins: |-
-      priv_mode VS x {csrrs, csrrc} sstatus x rs1 bit 23 (SPELP) set
-      = 2 bins
+      priv_mode VS x {csrrs, csrrc} sstatus x rs1 bit 23 (SPELP) set x henvcfg.LPE {0, 1}
+      = 4 bins
   - name: cp_hs_sret_to_hs_spelp
     goal: SRET from HS-mode to HS-mode restores ELP from sstatus.SPELP and clears it, leaving vsstatus.SPELP alone
     description: |-

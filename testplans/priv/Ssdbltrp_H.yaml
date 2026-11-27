@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Ssdbltrp_H
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1156592509#gid=1156592509
+notes: |
+  covergroup Ssdbltrp_H
+  The tests boot to HS-mode and set menvcfg.DTE (through T-SBI) and henvcfg.DTE, so sstatus.SDT and vsstatus.SDT are writable.
+  After each SRET the test returns to HS-mode and records vsstatus.SDT and the HS-level sstatus.SDT.
+  A trap into VS-mode resumes just past the trapping instruction (vstvec points there), so no SRET clears vsstatus.SDT before HS-mode reads it.
+  Every return into VU-mode clears vsstatus.SDT, so only VS-mode runs with vsstatus.SDT = 1.  Double traps are in Ssdbltrp_HSm.
+coverpoints:
+  - name: cp_hs_sret_vsstatus_sdt
+    goal: SRET from HS-mode clears vsstatus.SDT only when it returns to VU-mode
+    description: With menvcfg.DTE = henvcfg.DTE = 1, vsstatus.SDT = 1 and sstatus.SDT = 1, execute SRET in HS-mode with (hstatus.SPV, sstatus.SPP) = (1, 0) to VU-mode, (1, 1) to VS-mode and (0, 1) to HS-mode.  Return to HS-mode and read vsstatus and sstatus.
+    expectation: vsstatus.SDT = 0 after the return to VU-mode and 1 after the returns to VS-mode and HS-mode.  sstatus.SDT = 0 in every case.
+    bins: 3 targets
+    rules:
+      - sret_dt
+      - sstatus_sdt_sret
+  - name: cp_vs_sret_vsstatus_sdt
+    goal: SRET in VS-mode clears vsstatus.SDT
+    description: With menvcfg.DTE = henvcfg.DTE = 1 and vsstatus.SDT = 1, execute SRET in VS-mode with vsstatus.SPP = 0 (to VU-mode) and 1 (to VS-mode).  Return to HS-mode and read vsstatus and sstatus.
+    expectation: vsstatus.SDT = 0 in both cases.
+    bins: 2 targets
+    rules:
+      - sret_dt
+  - name: cp_vs_trap_sdt
+    goal: A trap into VS-mode sets vsstatus.SDT
+    description: With menvcfg.DTE = henvcfg.DTE = 1, vsstatus.SDT = 0 and medeleg[3] = hedeleg[3] = 1, execute ebreak in VS-mode and in VU-mode.  vstvec points just past the ebreak.  Return to HS-mode and read vsstatus and vscause.
+    expectation: The breakpoint is taken in VS-mode (vscause = 3) and vsstatus.SDT = 1.
+    bins: 2 modes
+    rules:
+      - sstatus_sdt_trap
+      - vsstatus_sdt_op
+  - name: cp_vs_sdt_target
+    goal: vsstatus.SDT affects only traps into VS-mode
+    description: With menvcfg.DTE = henvcfg.DTE = 1, vsstatus.SDT = 1 and hedeleg = 0, execute ebreak and a load from RVMODEL_ACCESS_FAULT_ADDRESS_LOAD in VS-mode.  medeleg sends both to HS-mode.  Return to HS-mode and read vsstatus.
+    expectation: Each is an ordinary trap into HS-mode, recorded by the trap handler, not a double trap.  vsstatus.SDT is still 1.
+    bins: ebreak, load access fault
+    rules:
+      - vsstatus_sdt_op
+  - name: cp_henvcfg_dte0
+    goal: henvcfg.DTE = 0 makes vsstatus.SDT read-only zero
+    description: |-
+      With menvcfg.DTE = henvcfg.DTE = 1, set vsstatus.SDT, then clear henvcfg.DTE.
+      In HS-mode, read vsstatus, then set vsstatus.SDT and read it.  In VS-mode, set sstatus.SDT and read it.
+      With medeleg[3] = hedeleg[3] = 1, execute ebreak in VS-mode; vstvec points just past it.  Return to HS-mode and read vsstatus and vscause.
+    expectation: vsstatus.SDT reads 0 every time, and the breakpoint is an ordinary trap into VS-mode (vscause = 3), not a double trap.
+    bins: HS-mode read, HS-mode write, VS-mode write, VS-mode ebreak
+    rules:
+      - henvcfg_dte_op
+  - name: cp_vs_sdt_sie
+    goal: Setting vsstatus.SDT by a CSR write clears vsstatus.SIE
+    description: With menvcfg.DTE = henvcfg.DTE = 1, write vsstatus from HS-mode and sstatus from VS-mode four ways - csrs SDT and SIE together, csrs SDT with SIE already 1, csrs SIE with SDT already 1, and csrw of the current value with SDT = 0 and SIE = 1 while SDT is 1.  Read SDT and SIE.  hideleg = 0, so vsstatus.SIE enables no interrupt.
+    expectation: SIE = 0 and SDT = 1 after the first three writes.  SDT = 0 and SIE = 1 after the last.
+    bins: 2 modes * 4 writes
+    rules:
+      - sstatus_sdt_sstatus_sie_overwrite

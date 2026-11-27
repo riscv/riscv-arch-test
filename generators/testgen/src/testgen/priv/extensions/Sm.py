@@ -11,12 +11,13 @@
 
 """Sm privileged extension test generator."""
 
-from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd
+from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd, upper_half
 from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.FCommon import gen_fcsr_tests
+from testgen.priv.extensions.H import CSR_FORMS
 from testgen.priv.extensions.HCommon import (
     H_HS_CSRS,
     H_M_CSRS,
@@ -54,6 +55,8 @@ from testgen.priv.extensions.ZicntrCommon import (
     instret_retire_tests,
 )
 from testgen.priv.registry import add_priv_test_generator
+
+MENVCFG_CDE = 1 << 60  # Smcdeleg counter delegation enable
 
 # Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}
 SM_VADDR_CSRS = {
@@ -480,6 +483,44 @@ def _add_deleg_alias(r1: int, r2: int, coverpoint: str, covergroup: str, test_da
     return lines
 
 
+#: satp.MODE values that no write may store, with the macro that makes a standard mode supported.
+#: SXLEN = 64: 1-7 and 11-13 are reserved, Sv39/Sv48/Sv57 are 8/9/10; 14 and 15 are custom.
+_SATP64_UNSUPPORTED_MODES = (
+    *((mode, None) for mode in range(1, 8)),
+    (8, "SV39_SUPPORTED"),
+    (9, "SV48_SUPPORTED"),
+    (10, "SV57_SUPPORTED"),
+    *((mode, None) for mode in range(11, 14)),
+)
+
+
+def _satp_mode_unsupported_tests(test_data: TestData, coverpoint: str, covergroup: str) -> list[str]:
+    """Write satp from M-mode with each MODE the hart cannot hold and check that satp is unchanged."""
+    start_reg, val_reg, check_reg = test_data.int_regs.get_registers(3)
+    start, val = f"x{start_reg}", f"x{val_reg}"
+
+    def write(name: str, value: str) -> list[str]:
+        return [
+            f"LI({val}, {value})",
+            f"csrw satp, {start}",
+            test_data.add_testcase(name, coverpoint, covergroup),
+            f"csrw satp, {val}",
+            gen_csr_read_sigupd(check_reg, ("satp", None), test_data),
+        ]
+
+    lines = ["#ifdef S_SUPPORTED", "#if __riscv_xlen == 64", "#ifdef SV39_SUPPORTED"]
+    # M-mode is not translated, so satp may point anywhere.
+    lines.extend([f"LI({start}, (SATP_MODE_SV39 << 60) | (1 << 44) | 1)", "#else", f"li {start}, 0", "#endif"])
+    for mode, supported in _SATP64_UNSUPPORTED_MODES:
+        body = write(f"mode{mode}", f"({mode} << 60) | (2 << 44) | 2")
+        lines.extend([f"#ifndef {supported}", *body, "#endif"] if supported else body)
+    lines.extend(["#else", "#ifndef SV32_SUPPORTED", f"li {start}, 0"])
+    lines.extend(write("sv32", "(SATP_MODE_SV32 << 31) | (2 << 22) | 2"))
+    lines.extend(["#endif", "#endif", "csrw satp, zero", "#endif // S_SUPPORTED"])
+    test_data.int_regs.return_registers([start_reg, val_reg, check_reg])
+    return lines
+
+
 def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     """Generate CSR tests"""
     covergroup = "Sm_mcsr_cg"
@@ -534,7 +575,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 7)  # CBZE: Cache Block Zero Enable
         | (3 << 32)  # PMM: Pointer Masking
         | (1 << 59)  # DTE: Double Trap Enable
-        | (0 << 60)  # Counter Delegation Smcdeleg not supported by Sail; TODO change to 1 when Smcdeleg implemented
+        | (0 << 60)  # CDE: Sail does not implement Smcdeleg; only the walks cover it (MENVCFG_CDE)
         | (1 << 61)  # ADUE: A/D
         | (1 << 62)  # PBMTE: Page-Based Memory Type Enable
         | (1 << 63)  # STCE: Supervisor Timer Compare Enable
@@ -588,6 +629,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
     csr_mcountinhibit = ("mcountinhibit", 0b111)
     csr_menvcfg = ("menvcfg", menvcfg_mask)
+    # TODO: Walk menvcfg.CDE everywhere (and add it to menvcfg_mask) once Sail implements Smcdeleg.
+    # The walks skip it where Smcdeleg is implemented, so its coverage reports missing, and check it
+    # as read-only zero elsewhere.
+    cde_unwalked = [(MENVCFG_CDE, "defined(SMCDELEG_SUPPORTED)")]
     csr_mseccfg = ("mseccfg", mseccfg_mask)
     # RV32-only high CSRs
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
@@ -742,7 +787,15 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     tc.code.extend(
-        csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, warl_fields=warl_fields, maskedwrites=True)
+        csr_walk_test(
+            test_data,
+            csr_menvcfg,
+            covergroup,
+            coverpoint_masked,
+            warl_fields=warl_fields,
+            maskedwrites=True,
+            unchecked_bits=cde_unwalked,
+        )
     )
     tc.code.append("#endif")
 
@@ -763,7 +816,16 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
-    tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.extend(
+        csr_walk_test(
+            test_data,
+            csr_menvcfgh,
+            covergroup,
+            coverpoint_masked,
+            maskedwrites=True,
+            unchecked_bits=upper_half(cde_unwalked),
+        )
+    )
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_mseccfgh, covergroup, coverpoint_masked, maskedwrites=True))
@@ -846,6 +908,19 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ]
     )
     test_data.int_regs.return_registers([temp_reg, tvm_reg])
+
+    ######################################
+    coverpoint = "cp_satp_mode_unsupported"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.section_header = comment_banner(
+        coverpoint,
+        "From M-mode, write satp with each reserved MODE and each standard MODE the hart does not\n"
+        "support, with an ASID and PPN that differ from satp's.  The whole write has no effect, so satp\n"
+        "reads back unchanged: Sv39 with ASID = 1 and PPN = 1 when Sv39 is supported, else Bare (0).\n"
+        "MODE 14 and 15 are designated for custom use and are not written.",
+    )
+    tc.code.extend(_satp_mode_unsupported_tests(test_data, coverpoint, covergroup))
 
     ######################################
     coverpoint = "cp_satp_from_s"
@@ -2025,6 +2100,37 @@ def _h_tvm_tests(test_data: TestData) -> list[str]:
 
     lines.append(
         comment_banner(
+            "cp_tvm_vs_atp, cp_tvm_vu_atp",
+            "Access satp, vsatp and hgatp with csrr, csrrw, csrrs (nonzero rs1) and csrrwi in VS-mode with\n"
+            "mstatus.TVM = 0, 1 and hstatus.VTVM = 0, 1, and in VU-mode with TVM = 0, 1.  Only VTVM traps VS-mode\n"
+            "satp; vsatp and hgatp, and every VU-mode access, raise virtual instruction.  The writes are zero",
+        )
+    )
+    zero_reg = test_data.int_regs.get_register()
+    lines.append(f"LI(x{zero_reg}, 0)")
+    atp_forms = {form: CSR_FORMS[form] for form in ("csrrs_x0", "csrrw", "csrrs_zero", "csrrwi")}
+    for mode, vtvms in (("VS", (0, 1)), ("VU", (0,))):
+        for tvm in (0, 1):
+            for vtvm in vtvms:
+                suffix = f"tvm{tvm}" if mode == "VU" else f"tvm{tvm}_vtvm{vtvm}"
+                lines.extend([*tvm_bits(tvm, vtvm), f"RVTEST_TSBI_GOTO_{mode}MODE"])
+                for csr in ("satp", "vsatp", "hgatp"):
+                    for form, instr in atp_forms.items():
+                        lines.extend(
+                            [
+                                f"LI(x{rd}, 42)",
+                                test_data.add_testcase(
+                                    f"{mode.lower()}_{csr}_{form}_{suffix}", f"cp_tvm_{mode.lower()}_atp", _H_TVM_CG
+                                ),
+                                instr.format(rd=rd, csr=csr, zero=zero_reg),
+                                write_sigupd(rd, test_data),
+                            ]
+                        )
+                lines.append("RVTEST_TSBI_GOTO_MMODE")
+    test_data.int_regs.return_register(zero_reg)
+
+    lines.append(
+        comment_banner(
             "cp_hfence, cp_sfence",
             "Execute hfence.vvma, hfence.gvma and sfence.vma in M, HS, VS, U and VU modes with\n"
             "mstatus.TVM = 0, 1 and hstatus.VTVM = 0, 1",
@@ -2049,6 +2155,43 @@ def _h_tvm_tests(test_data: TestData) -> list[str]:
                 )
     lines.extend(tvm_bits(0, 0))
     test_data.int_regs.return_registers([temp_reg, rd])
+    return lines
+
+
+def _h_hideleg_high_tests(test_data: TestData) -> list[str]:
+    """Write hideleg with all ones while mideleg[XLEN-1:16] = 0, and read bits XLEN-1:16 back.
+
+    With Smaia, a bit of hideleg for interrupts 13-63 is read-only zero when the same bit of mideleg and of mvien
+    is zero; boot leaves mvien at its reset value of zero.  Without Smaia no rule constrains hideleg[XLEN-1:16],
+    so the readback is checked only with Smaia.
+    """
+    save_mideleg, save_hideleg, ones_reg, mask_reg, check_reg = test_data.int_regs.get_registers(5)
+    lines = [
+        comment_banner(
+            "cp_hideleg_high_roz",
+            "With mideleg[XLEN-1:16] = 0, write and set hideleg with all ones.  With Smaia, hideleg[XLEN-1:16]\n"
+            "reads zero",
+        ),
+        f"csrr x{save_mideleg}, mideleg",
+        f"csrr x{save_hideleg}, hideleg",
+        f"LI(x{mask_reg}, -65536)    # bits XLEN-1:16",
+        f"csrc mideleg, x{mask_reg}",
+        f"LI(x{ones_reg}, -1)",
+    ]
+    for form, instr in (("csrrw1", "csrw"), ("csrrs1", "csrs")):
+        lines.extend(
+            [
+                "csrw hideleg, zero",
+                test_data.add_testcase(f"hideleg_high_{form}", "cp_hideleg_high_roz", _H_CSR_CG),
+                f"{instr} hideleg, x{ones_reg}",
+                *gated(
+                    [gen_csr_read_sigupd(check_reg, ("hideleg", -65536), test_data, mask_reg)],
+                    "defined(SMAIA_SUPPORTED)",
+                ),
+            ]
+        )
+    lines.extend([f"csrw hideleg, x{save_hideleg}", f"csrw mideleg, x{save_mideleg}"])
+    test_data.int_regs.return_registers([save_mideleg, save_hideleg, ones_reg, mask_reg, check_reg])
     return lines
 
 
@@ -2129,6 +2272,9 @@ def make_smh(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.new_test_chunk(test_chunks, "H_replica")
     tc.code.extend([*_h_replica_tests(test_data), *_h_replica_vs_tests(test_data), *_h_mtvala_tests(test_data)])
+
+    tc = test_data.new_test_chunk(test_chunks, "H_hideleg")
+    tc.code.extend(_h_hideleg_high_tests(test_data))
 
     tc = test_data.new_test_chunk(test_chunks, "H_tvm")
     tc.code.extend(_h_tvm_tests(test_data))

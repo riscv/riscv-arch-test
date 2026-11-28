@@ -128,6 +128,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Exceptions_S_cg/cp_stvec (Direct)",
+        "Exceptions_S_cg/cp_stvec_vectored_exc (Vectored)",
         "TODO: S-mode interrupts with stvec.MODE=Vectored, and a write of a reserved MODE value",
       ]
 

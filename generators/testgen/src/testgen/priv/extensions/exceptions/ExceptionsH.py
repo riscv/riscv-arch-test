@@ -15,6 +15,7 @@ M-mode.  hedeleg is 0 except where a test delegates to VS-mode.
 from testgen.asm.helpers import arch_block, comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
+from testgen.priv.extensions.exceptions.ExceptionsCommon import generate_vectored_exception_tests
 from testgen.priv.extensions.exceptions.ExceptionsHCommon import (
     DELEGATED_FAULTS,
     HEDELEG_WALK,
@@ -29,6 +30,37 @@ from testgen.priv.registry import add_priv_test_generator
 CG = "Exceptions_H_cg"
 
 HEDELEGH_GATE = "__riscv_xlen == 32 && defined(SM1P13P0_OR_LATER_SUPPORTED)"
+
+
+_VSTVEC_VECTORED_HEDELEG = (
+    "(1 << CAUSE_ILLEGAL_INSTRUCTION) | (1 << CAUSE_BREAKPOINT) | (1 << CAUSE_LOAD_ACCESS) | (1 << CAUSE_USER_ECALL)"
+)
+
+
+def _vstvec_vectored_tests(test_data: TestData) -> list[str]:
+    """Synchronous exceptions from VS-mode and VU-mode delegated to VS-mode with vstvec.MODE = Vectored."""
+    coverpoint = "cp_vstvec_vectored_exc"
+    save_reg, temp_reg = test_data.int_regs.get_registers(2)
+    lines = [
+        comment_banner(coverpoint, "Exceptions delegated to VS-mode with vstvec.MODE = Vectored go to BASE"),
+        "#if defined(UDB_VSTVEC_MODES_0) && defined(UDB_VSTVEC_MODES_1)",
+        f"csrr x{save_reg}, hedeleg",
+        f"LI(x{temp_reg}, {_VSTVEC_VECTORED_HEDELEG})",
+        f"csrw hedeleg, x{temp_reg}",
+        "csrsi vstvec, 1  # vstvec.MODE = Vectored",
+        "RVTEST_TSBI_GOTO_VSMODE",
+        *generate_vectored_exception_tests(test_data, CG, coverpoint, "vs"),
+        "RVTEST_TSBI_GOTO_VUMODE",
+        *generate_vectored_exception_tests(test_data, CG, coverpoint, "vu"),
+        test_data.add_testcase("ecall_vu", coverpoint, CG),
+        "RVTEST_TSBI_ECALL_TEST  # ecall to the execution environment, recorded in the trap signature",
+        "RVTEST_TSBI_GOTO_SMODE",
+        "csrci vstvec, 1  # vstvec.MODE = Direct",
+        f"csrw hedeleg, x{save_reg}",
+        "#endif",
+    ]
+    test_data.int_regs.return_registers([save_reg, temp_reg])
+    return lines
 
 
 def _ecall_tests(test_data: TestData) -> list[str]:
@@ -193,6 +225,9 @@ def _virtual_instruction_tests(test_data: TestData) -> list[str]:
 def make_exceptionsh(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the H group of the Exceptions suite (hypervisor exceptions)."""
     test_chunks: list[TestChunk] = []
+    tc = test_data.new_test_chunk(test_chunks, "H_vstvec_vectored")
+    tc.code.extend(_vstvec_vectored_tests(test_data))
+
     # hedeleg matters only for traps from VS and VU; traps from HS and U ignore even all of its writable bits
     for mode, values in (
         ("s", (HEDELEG_WRITABLE,)),

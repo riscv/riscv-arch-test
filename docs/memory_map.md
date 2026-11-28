@@ -56,7 +56,7 @@ Additional details on what each section contains and why each section is needed 
 | `exit_cleanup` / `abort_test` | Test termination paths (calls `rvmodel_halt_pass` or `rvmodel_halt_fail`).       |
 | Trap handlers                 | One handler per privilege mode (`RVTEST_TRAP_HANDLER`).                          |
 | Failure code                  | Failure detection and diagnostic reporting (`RVTEST_FAILURE_CODE`).              |
-| `rvtest_identity_map`         | Forms identity-mapped superpages for S-mode trap handler access.                 |
+| `rvtest_identity_map`         | Identity-maps the test data in `rvtest_Sroot_pg_tbl` for tests that use it.      |
 
 `.text.rvtest` contains all of the actual test code that is common across all DUTs. For any DUT-specific operations, the DUT jumps to a function in the `.text.rvmodel` section to ensure the `.text.rvtest` section remains constant length.
 

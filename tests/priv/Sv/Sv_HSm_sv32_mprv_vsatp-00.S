@@ -22,6 +22,7 @@
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
 #define TRAP_SIGUPD_COUNT 1500
+#define RVTEST_USES_H_PAGE_TABLES
 
 // Include framework macros
 #include "riscv_arch_test.h"

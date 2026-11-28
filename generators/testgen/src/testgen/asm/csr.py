@@ -8,7 +8,7 @@
 
 """CSR test utilities for privileged test generation."""
 
-from testgen.asm.helpers import write_sigupd
+from testgen.asm.helpers import gated, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.constants import INDENT
 from testgen.data.state import TestData
@@ -229,6 +229,39 @@ def _warl_reserved_check(
     return lines
 
 
+def upper_half(conditional_bits: list[tuple[int, str]]) -> list[tuple[int, str]] | None:
+    """The (bits, cond) pairs from bit 32 up, shifted down, for the RV32 upper-half CSR."""
+    return [(bits >> 32, cond) for bits, cond in conditional_bits if bits >> 32] or None
+
+
+def _mask_with_conditional_bits(csr: tuple, conditional_bits: list[tuple[int, str]]) -> tuple:
+    """csr with the bits of the (bits, cond) pairs added to its mask (all ones if None), to be cleared where cond holds."""
+    csr_name, mask = csr
+    if mask is None:
+        mask = (1 << 64) - 1
+    for bits, _cond in conditional_bits:
+        mask |= bits
+    return (csr_name, mask)
+
+
+def clear_conditional_bits(
+    reg: int, tmp_reg: int, conditional_bits: list[tuple[int, str]] | None, why: str
+) -> list[str]:
+    """Clear from x{reg} the bits of each (bits, cond) pair where cond holds.
+
+    cond is an #if expression, or a macro name, which is tested with defined(). x{tmp_reg} is scratch; why
+    starts the comment on each clear.
+    """
+    lines: list[str] = []
+    for bits, cond in conditional_bits or []:
+        clear = [
+            f"LI(x{tmp_reg}, {~bits & ((1 << 64) - 1)})    # {why} bits {bits:#x}",
+            f"and x{reg}, x{reg}, x{tmp_reg}",
+        ]
+        lines += gated(clear, f"defined({cond})" if cond.isidentifier() else cond)
+    return lines
+
+
 def csr_walk_test(
     test_data: TestData,
     csr: tuple,
@@ -267,14 +300,14 @@ def csr_walk_test(
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
         bin_prefix: Prefix for testcase bin names, to walk the same CSR more than once under one coverpoint.
-        unchecked_bits: Optional (bits, define) pairs. The bits are walked but removed from the readback
-            mask only when `define` is defined for the config. Starts from the csr mask, or all ones if None.
+        unchecked_bits: Optional (bits, cond) pairs, cond as for clear_conditional_bits. The bits are added to the mask
+            (all ones if None) and, where cond holds, cleared from it: they are not checked, and with maskedwrites
+            not written either. Elsewhere they are walked and checked.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
+    if unchecked_bits:
+        csr = _mask_with_conditional_bits(csr, unchecked_bits)
     csr_name, mask = csr
-    if unchecked_bits and mask is None:
-        mask = (1 << 64) - 1
-        csr = (csr_name, mask)
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
     if mask is not None:
@@ -357,15 +390,9 @@ def csr_walk_test(
         f"csrr x{save_reg}, {csr_name}      # Save CSR",
         f"LI(x{walk_reg}, {1 << start_bit})              # 1 in bit {start_bit}",
     ]
-    if mask is not None:
+    if mask_reg is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
-        for bits, define in unchecked_bits or []:
-            lines += [
-                f"#ifdef {define}",
-                f"LI(x{check_reg}, {~bits & ((1 << 64) - 1)})    # Do not check bits {bits:#x}",
-                f"and x{mask_reg}, x{mask_reg}, x{check_reg}",
-                f"#endif // {define}",
-            ]
+        lines += clear_conditional_bits(mask_reg, check_reg, unchecked_bits, "Do not check")
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
 

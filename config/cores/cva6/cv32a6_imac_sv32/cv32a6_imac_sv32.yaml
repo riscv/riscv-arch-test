@@ -79,7 +79,7 @@ params:
   MUTABLE_MISA_U: false
   MISA_CSR_IMPLEMENTED: true
   NON_STANDARD_EXTENSION_IMPLEMENTED: false
-  M_MODE_ENDIANNESS: little
+  M_MODE_ENDIANNESS: dynamic # mstatush.MBE is writable; loads and stores byte-swap when it is set (core/load_unit.sv, core/store_unit.sv)
   S_MODE_ENDIANNESS: little
   U_MODE_ENDIANNESS: little
   MEI_INTR_IMPL: false

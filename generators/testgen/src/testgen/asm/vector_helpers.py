@@ -8,7 +8,7 @@
 
 import math
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Literal
 
 from testgen.asm.helpers import write_sigupd
@@ -60,14 +60,16 @@ def write_sigupd_v(
     temp_reg = test_data.int_regs.temp_reg
     label = test_data.current_testcase_label
     vdsew = params.sew * (2 if widen_vd else 1) if sew_override is None else sew_override
+    # Check every element below vl, and at least one element group
+    check_count = max(egs, params.vl) if isinstance(params.vl, int) else egs
 
     # Count the number of bytes the sigupd macro will consume. This is going to be the size of the element
     # group that we are checking in the first index, plus 4 bytes for padding, and then rounded to the nearest
     # multiple of 8 (+7 & ~8) achieves this. This computation is mirrored in RVTEST_SIGUPD_V_ADVANCE
-    max_bytes = vdsew * egs // 8
+    max_bytes = vdsew * check_count // 8
     test_data.test_chunk.sigupd_count += vector_sigupd_bytes(max_bytes, test_data, vdsew)
 
-    if egs == 1:
+    if check_count == 1:
         lines = [
             f"# set SEW={vdsew}, LMUL=1, VL=1 before signature check",
             f"vsetivli x0, 1, e{vdsew}, m1, tu, mu",
@@ -76,8 +78,8 @@ def write_sigupd_v(
     else:
         sig_lmul = int(max(params.lmul or 1, 1))
         lines = [
-            f"# set SEW={vdsew}, LMUL={sig_lmul}, VL={egs} before signature check",
-            f"vsetivli x0, {egs}, e{vdsew}, m{sig_lmul}, tu, mu",
+            f"# set SEW={vdsew}, LMUL={sig_lmul}, VL={check_count} before signature check",
+            f"vsetivli x0, {check_count}, e{vdsew}, m{sig_lmul}, tu, mu",
         ]
         vtmp = test_data.vec_regs.get_register(lmul=sig_lmul, exclude_regs=[0])
         mtmp = test_data.vec_regs.get_register(lmul=1, exclude_regs=[0])
@@ -224,6 +226,14 @@ def write_sigupd_v_mask_prod(
         f"# signature pointer, x{link_reg} is the link register, x{temp_reg} is a temp register, and v{params.vd} is the result of the operation",
         f"RVTEST_SIGUPD_VLMAX_MASK_PROD(x{sig_reg}, x{link_reg}, x{temp_reg}, v{params.vd})",
     ]
+
+
+def ls_base_address(params: InstructionParams) -> str:
+    """Address expression for a load/store base: the rs1 data label plus its byte offset, if any."""
+    assert params.rs1val_pointer is not None, "rs1val_pointer must be set for a load/store base address"
+    if params.rs1val_pointer_offset:
+        return f"{params.rs1val_pointer}{params.rs1val_pointer_offset:+d}"
+    return params.rs1val_pointer
 
 
 def reload_vtype(params: InstructionParams, vl_register_or_imm: str | int) -> str:
@@ -591,6 +601,40 @@ def load_test_vtype(params: InstructionParams, random_vl_reg: str, *, force_vlma
         return f"vsetivli x{params.temp_reg}, {params.vl}, e{params.sew}, {flags}"
 
 
+def store_target_checks(
+    params: InstructionParams, instr_str: str, operands: str, eew: int, segments: int, field_regs: int
+) -> tuple[list[str], list[str], list[str], InstructionParams]:
+    """Prepare a store's target so the check sees a store that writes the wrong memory or doesn't happen.
+
+    The length suite fills the store's whole VLMAX footprint with vd's 0xd elements, using the test's addressing,
+    and reads it back unmasked at VLMAX, so the signature also holds the memory of mask-inactive and tail elements:
+    a store that writes them, or writes anything at vl = 0, changes the signature.
+
+    The base suite checks the vl elements the store writes, and the target otherwise holds whatever an earlier test
+    stored there, which can match (index data in vs3/vs2 overlaps, or the one mask bit vsm.v checks at vl = 1). The
+    first vl elements of each field of vd become the complement of vs3's, and the same store, unmasked, writes vd to
+    the target, so a store that doesn't happen changes every checked bit.
+
+    Returns the lines to run before and after the test's vtype is set, the read back, and the params for the check.
+    """
+    assert params.vd is not None and params.vs3 is not None, "vd and vs3 must be allocated before the store target"
+    load = "vl" + instr_str[2:]
+    if params.vector_suite == "length" and not params.ignore_vector_safety:
+        vlmax = load_test_vtype(params, "", force_vlmax=True)
+        fill = [vlmax, f"{instr_str} v{params.vd}, {operands} # fill the VLMAX footprint with vd's 0xd elements"]
+        read_back = [vlmax, f"{load} v{params.vd}, {operands} # read back the whole VLMAX footprint, unmasked"]
+        return fill, [], read_back, replace(params, maskval=None)
+
+    read_back = [f"{load} v{params.vd}, {operands}{', v0.t' if params.maskval else ''}"]
+    if params.vector_suite == "base":
+        assert isinstance(params.vl, int), "base-suite stores run at a fixed vl"
+        complement = [f"vsetivli x0, {params.vl}, e{eew}, m{field_regs}, tu, mu  # complement the stored data into vd"]
+        complement += [f"vnot.v v{params.vd + i * field_regs}, v{params.vs3 + i * field_regs}" for i in range(segments)]
+        fill = [f"{instr_str} v{params.vd}, {operands}  # fill the target with the complement"]
+        return complement, fill, read_back, params
+    return [], [], read_back, params
+
+
 def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: TestData) -> tuple[list[str], str]:
     """
     Loads the vector registers in regs according to their configuration, given default values from
@@ -864,6 +908,22 @@ def prep_vstart(
     test_data.int_regs.return_register(vstart_reg)
 
     return lines
+
+
+def scalar_index_safety(index_reg: int, params: InstructionParams) -> list[str]:
+    """Reduce a scalar index or offset in x{index_reg} to [0, 2*VLMAX), so about half the values are in range."""
+    assert params.lmul is not None, "LMUL must be set for vector instructions"
+    assert params.sew is not None, "SEW must be set for vector instructions"
+    assert params.temp_reg is not None, "temp_reg must be set for vector instructions"
+
+    # VLMAX is a power of 2, so masking with 2*VLMAX-1 is the remainder mod 2*VLMAX
+    return [
+        f"# x{index_reg} = x{index_reg} mod 2*VLMAX",
+        f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
+        f"add x{params.temp_reg}, x{params.temp_reg}, x{params.temp_reg}",
+        f"addi x{params.temp_reg}, x{params.temp_reg}, -1",
+        f"and x{index_reg}, x{index_reg}, x{params.temp_reg}",
+    ]
 
 
 def index_register_safety(

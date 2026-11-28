@@ -13,7 +13,9 @@ from testgen.asm.vector_helpers import (
     handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
+    ls_base_address,
     prep_mask_v,
+    store_target_checks,
     write_sigupd_v,
     write_sigupd_v_len,
 )
@@ -102,7 +104,7 @@ def format_vssseg_like_type(
     ]
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)
-    setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
+    setup.append(f"LA (x{params.rs1}, {ls_base_address(params)})")
 
     # Ensure rs2val is valid (this only matters when there is more than one element)
     if params.vector_suite == "length" and not params.ignore_vector_safety:
@@ -113,27 +115,30 @@ def format_vssseg_like_type(
         assert params.rs2val != 0, "Stride cannot be zero for strided stores because they are unordered"
 
     setup.append(f"LI (x{params.rs2}, {params.rs2val})")
+    operands = f"(x{params.rs1}), x{params.rs2}"
+    before_vtype, after_vtype, read_back, check_params = store_target_checks(
+        params, instr_str, operands, eew, segments, int(max(emul, 1))
+    )
+    setup.extend(before_vtype)
     setup.append(load_test_vtype(params, random_vl_reg))
+    setup.extend(after_vtype)
 
     # We don't need random_vl_reg anymore
     if random_vl_reg.startswith("x"):
         test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
-    equivalent_load = "vl" + instr_str[2:]
     if params.maskval:
         test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), x{params.rs2}, v0.t"]
-        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), x{params.rs2}, v0.t"
     else:
         test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), x{params.rs2}"]
-        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), x{params.rs2}"
 
     if params.vector_suite == "length":
         check = [
-            read_back,
-            *write_sigupd_v_len(test_data, params, emul, segments=segments, sew_override=info.load_store_eew),
+            *read_back,
+            *write_sigupd_v_len(test_data, check_params, emul, segments=segments, sew_override=info.load_store_eew),
         ]
     else:
-        check = [read_back, *write_sigupd_v(test_data, params, sew_override=info.load_store_eew)]
+        check = [*read_back, *write_sigupd_v(test_data, params, sew_override=info.load_store_eew)]
 
     # This can only be released after sigupd
     if params.maskval:

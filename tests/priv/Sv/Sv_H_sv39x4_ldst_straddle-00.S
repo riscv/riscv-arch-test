@@ -14,7 +14,6 @@
 #   SV39X4_TRANSLATION: true
 #   SV39_VSMODE_TRANSLATION: true
 #   MISALIGNED_LDST: true
-#   MISALIGNED_SPLIT_STRATEGY: sequential_bytes
 # MARCH: rv${XLEN}ih_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -34,10 +33,10 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_ldst_straddle
-//   In VS-mode, store and load the word two bytes below the end of a page whose next page is mapped, has an
-//   invalid G-stage leaf (guest-page fault) or an invalid VS-stage leaf (page fault).  The hart performs
-//   misaligned accesses byte by byte, so stval holds the address of the next page
+// cp_misaligned_store_page_fault_vs, cp_misaligned_load_page_fault_vs
+//   In VS-mode, store and load the halfword one byte below the end of a page whose next page is mapped, has
+//   an invalid G-stage leaf (guest-page fault) or an invalid VS-stage leaf (page fault).  One byte is in each page,
+//   so however the hart splits the access, stval holds the address of the next page
 /////////////////////////////////
 
 // Identity map the test image in both stages
@@ -202,145 +201,160 @@ RVTEST_BEGIN
   SREG x15, 0(x9)
   hfence.vvma
   hfence.gvma
-  LI(x8, 0x140802000 + 0xff6)
+  LI(x8, 0x140802000 + 0xff7)
   LI(x15, 0x100)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_twostage_cg_cp_ldst_straddle_mapped_store:
-  sw x15, 8(x8)
-  LI(x15, -1)
-Sv_H_twostage_cg_cp_ldst_straddle_mapped_load:
-  lw x15, 8(x8)
+Sv_H_twostage_cg_cp_misaligned_store_page_fault_vs_mapped_store_h:
+  sh x15, 8(x8)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_twostage_cg_cp_ldst_straddle_mapped_load, Sv_H_twostage_cg_cp_ldst_straddle_mapped_load_str)
 
-  LA(x15, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
-  LA(x9, rvtest_vlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x13, PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x15)
-  LA(x15, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_vlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x13, PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x15)
-  LA(x15, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
-  LI(x9, (((0x2C0802000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x9, 0(x15)
-  LA(x15, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
-  LA(x9, rvtest_hlvl1_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x13, PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x15)
-  LA(x15, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x13, PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x15)
-  LA(x15, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x15)
+  LI(x6, 0x140802000 + 0xff7)
+  LI(x14, 0x101)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x14, -1)
+Sv_H_twostage_cg_cp_misaligned_load_page_fault_vs_mapped_load_h:
+  lh x14, 8(x6)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_twostage_cg_cp_misaligned_load_page_fault_vs_mapped_load_h, Sv_H_twostage_cg_cp_misaligned_load_page_fault_vs_mapped_load_h_str)
+
+  LA(x13, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
+  LA(x6, rvtest_vlvl1_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x9, PTE_V)
+  or x6, x6, x9
+  SREG x6, 0(x13)
+  LA(x13, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
+  LA(x6, rvtest_vlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x9, PTE_V)
+  or x6, x6, x9
+  SREG x6, 0(x13)
+  LA(x13, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  LI(x6, (((0x2C0802000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x6, 0(x13)
+  LA(x13, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
+  LA(x6, rvtest_hlvl1_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x9, PTE_V)
+  or x6, x6, x9
+  SREG x6, 0(x13)
+  LA(x13, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
+  LA(x6, rvtest_hlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x9, PTE_V)
+  or x6, x6, x9
+  SREG x6, 0(x13)
+  LA(x13, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
+  LA(x6, svh_page)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x9
+  SREG x6, 0(x13)
   hfence.vvma
   hfence.gvma
   LA(x14, rvtest_vlvl0_pg_tbl + ((((0x140802000 + 0x1000)) >> 12) & 0x1ff) * 8)
-  LI(x6, ((((0x2C0802000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  LI(x15, ((((0x2C0802000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x15, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + ((((0x2C0802000 + 0x1000)) >> 12) & 0x1ff) * 8)
+  LA(x15, svh_page + 0x1000)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
+  or x15, x15, x8
+  SREG x15, 0(x14)
+  hfence.vvma
+  hfence.gvma
+  LI(x15, 0x140802000 + 0xff7)
+  LI(x8, 0x102)
+  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_twostage_cg_cp_misaligned_store_page_fault_vs_g_invalid_store_h:
+  sh x8, 8(x15)
+  RVTEST_TSBI_GOTO_SMODE
+
+  LI(x6, 0x140802000 + 0xff7)
+  LI(x9, 0x103)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x9, -1)
+Sv_H_twostage_cg_cp_misaligned_load_page_fault_vs_g_invalid_load_h:
+  lh x9, 8(x6)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_twostage_cg_cp_misaligned_load_page_fault_vs_g_invalid_load_h, Sv_H_twostage_cg_cp_misaligned_load_page_fault_vs_g_invalid_load_h_str)
+
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
+  LA(x15, rvtest_vlvl1_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x13, PTE_V)
+  or x15, x15, x13
+  SREG x15, 0(x8)
+  LA(x8, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
+  LA(x15, rvtest_vlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x13, PTE_V)
+  or x15, x15, x13
+  SREG x15, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
+  LI(x15, (((0x2C0802000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x15, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
+  LA(x15, rvtest_hlvl1_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x13, PTE_V)
+  or x15, x15, x13
+  SREG x15, 0(x8)
+  LA(x8, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
+  LA(x15, rvtest_hlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x13, PTE_V)
+  or x15, x15, x13
+  SREG x15, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
+  LA(x15, svh_page)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x13
+  SREG x15, 0(x8)
+  hfence.vvma
+  hfence.gvma
+  LA(x14, rvtest_vlvl0_pg_tbl + ((((0x140802000 + 0x1000)) >> 12) & 0x1ff) * 8)
+  LI(x6, ((((0x2C0802000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R))
   SREG x6, 0(x14)
   LA(x14, rvtest_hlvl0_pg_tbl + ((((0x2C0802000 + 0x1000)) >> 12) & 0x1ff) * 8)
   LA(x6, svh_page + 0x1000)
   srli x6, x6, 12
   slli x6, x6, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
-  or x6, x6, x8
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x9
   SREG x6, 0(x14)
   hfence.vvma
   hfence.gvma
-  LI(x15, 0x140802000 + 0xff6)
-  LI(x8, 0x102)
-  RVTEST_TSBI_GOTO_VSMODE
-Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_store:
-  sw x8, 8(x15)
-  LI(x8, -1)
-Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_load:
-  lw x8, 8(x15)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_load, Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_load_str)
-
-  LA(x13, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
-  LA(x14, rvtest_vlvl1_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x8, PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x13)
-  LA(x13, rvtest_vlvl1_pg_tbl + (((0x140802000) >> 21) & 0x1ff) * 8)
-  LA(x14, rvtest_vlvl0_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x8, PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x13)
-  LA(x13, rvtest_vlvl0_pg_tbl + (((0x140802000) >> 12) & 0x1ff) * 8)
-  LI(x14, (((0x2C0802000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x14, 0(x13)
-  LA(x13, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
-  LA(x14, rvtest_hlvl1_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x8, PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x13)
-  LA(x13, rvtest_hlvl1_pg_tbl + (((0x2C0802000) >> 21) & 0x1ff) * 8)
-  LA(x14, rvtest_hlvl0_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x8, PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + (((0x2C0802000) >> 12) & 0x1ff) * 8)
-  LA(x14, svh_page)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x13)
-  hfence.vvma
-  hfence.gvma
-  LA(x9, rvtest_vlvl0_pg_tbl + ((((0x140802000 + 0x1000)) >> 12) & 0x1ff) * 8)
-  LI(x6, ((((0x2C0802000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R))
-  SREG x6, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + ((((0x2C0802000 + 0x1000)) >> 12) & 0x1ff) * 8)
-  LA(x6, svh_page + 0x1000)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x15
-  SREG x6, 0(x9)
-  hfence.vvma
-  hfence.gvma
-  LI(x15, 0x140802000 + 0xff6)
+  LI(x9, 0x140802000 + 0xff7)
   LI(x8, 0x104)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_store:
-  sw x8, 8(x15)
-  LI(x8, -1)
-Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_load:
-  lw x8, 8(x15)
+Sv_H_twostage_cg_cp_misaligned_store_page_fault_vs_vs_invalid_store_h:
+  sh x8, 8(x9)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_load, Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_load_str)
+
+  LI(x13, 0x140802000 + 0xff7)
+  LI(x9, 0x105)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x9, -1)
+Sv_H_twostage_cg_cp_misaligned_load_page_fault_vs_vs_invalid_load_h:
+  lh x9, 8(x13)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_twostage_cg_cp_misaligned_load_page_fault_vs_vs_invalid_load_h, Sv_H_twostage_cg_cp_misaligned_load_page_fault_vs_vs_invalid_load_h_str)
 
   csrw vsatp, zero
   csrw hgatp, zero
@@ -349,12 +363,12 @@ Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_load:
   LA(x8, rvtest_code_begin)
   LA(x14, Vtramptbl_sv)
   SREG x8, code_bgn_off(x14)
-  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x9
-  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x9
-  LI(x9, HENVCFG_ADUE | HENVCFG_PBMTE)
-  csrc henvcfg, x9
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x13
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x13
+  LI(x13, HENVCFG_ADUE | HENVCFG_PBMTE)
+  csrc henvcfg, x13
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   csrw hedeleg, zero
 
@@ -431,12 +445,12 @@ rvtest_vlvl1_pg_tbl:
   .endif
 
 // Testcase strings
-Sv_H_twostage_cg_cp_ldst_straddle_mapped_store_str: .string "\"test: 1; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: mapped_store\""
-Sv_H_twostage_cg_cp_ldst_straddle_mapped_load_str: .string "\"test: 2; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: mapped_load\""
-Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_store_str: .string "\"test: 3; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: g_invalid_store\""
-Sv_H_twostage_cg_cp_ldst_straddle_g_invalid_load_str: .string "\"test: 4; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: g_invalid_load\""
-Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_store_str: .string "\"test: 5; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: vs_invalid_store\""
-Sv_H_twostage_cg_cp_ldst_straddle_vs_invalid_load_str: .string "\"test: 6; cg: Sv_H_twostage_cg; cp: cp_ldst_straddle; bin: vs_invalid_load\""
+Sv_H_twostage_cg_cp_misaligned_store_page_fault_vs_mapped_store_h_str: .string "\"test: 1; cg: Sv_H_twostage_cg; cp: cp_misaligned_store_page_fault_vs; bin: mapped_store_h\""
+Sv_H_twostage_cg_cp_misaligned_load_page_fault_vs_mapped_load_h_str: .string "\"test: 2; cg: Sv_H_twostage_cg; cp: cp_misaligned_load_page_fault_vs; bin: mapped_load_h\""
+Sv_H_twostage_cg_cp_misaligned_store_page_fault_vs_g_invalid_store_h_str: .string "\"test: 3; cg: Sv_H_twostage_cg; cp: cp_misaligned_store_page_fault_vs; bin: g_invalid_store_h\""
+Sv_H_twostage_cg_cp_misaligned_load_page_fault_vs_g_invalid_load_h_str: .string "\"test: 4; cg: Sv_H_twostage_cg; cp: cp_misaligned_load_page_fault_vs; bin: g_invalid_load_h\""
+Sv_H_twostage_cg_cp_misaligned_store_page_fault_vs_vs_invalid_store_h_str: .string "\"test: 5; cg: Sv_H_twostage_cg; cp: cp_misaligned_store_page_fault_vs; bin: vs_invalid_store_h\""
+Sv_H_twostage_cg_cp_misaligned_load_page_fault_vs_vs_invalid_load_h_str: .string "\"test: 6; cg: Sv_H_twostage_cg; cp: cp_misaligned_load_page_fault_vs; bin: vs_invalid_load_h\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

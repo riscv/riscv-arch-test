@@ -208,6 +208,7 @@ covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   }
 
   read_instr: coverpoint ins.current.insn {
+        `include "general/RISCV_coverage_zilx_loads.svh"
     wildcard bins lb  = {LB};
     wildcard bins lbu = {LBU};
     wildcard bins lh  = {LH};
@@ -625,6 +626,7 @@ covergroup PMP_Sm_cg with function sample(
   }
 
   read_instr: coverpoint ins.current.insn {
+        `include "general/RISCV_coverage_zilx_loads.svh"
     wildcard bins lb  = {LB};
     wildcard bins lbu = {LBU};
     wildcard bins lh  = {LH};
@@ -2316,6 +2318,7 @@ covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pa
   }
 
   read_instr: coverpoint ins.current.insn {
+        `include "general/RISCV_coverage_zilx_loads.svh"
     wildcard bins lb  = {LB};
     wildcard bins lbu = {LBU};
     wildcard bins lh  = {LH};

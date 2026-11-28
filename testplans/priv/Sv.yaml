@@ -902,3 +902,11 @@ coverpoints:
     id: Svadu_disabled_hw_update_falls_back_to_svade
     rules:
       - "[norm:Svadu_disabled_hw_update_falls_back_to_svade]"
+  - heading: Zilx indexed loads
+  - name: cp_zilx_permissions
+    goal: Verify indexed loads apply virtual-memory translation and leaf permissions.
+    description: "S-mode and U-mode: load with every legal Zilx instruction at each supported page size. Map readable, execute-only, and invalid PTEs. Use a nonzero scaled index; unsigned-word-index instructions also set the upper index bits."
+    expectation: Readable mappings return the addressed bytes. Execute-only mappings with MXR clear and invalid mappings raise load page faults.
+    bins: |-
+      zilx_load x zilx_permission x zilx_priv x mode
+      = legal indexed loads x 3 permissions x 2 privilege modes x supported translation modes

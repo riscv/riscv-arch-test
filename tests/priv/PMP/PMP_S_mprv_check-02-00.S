@@ -259,18 +259,18 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMP_S_cg_cp_mprv_jalr_lock0_mprv0_1_jalr_str: .string "\"test: 162; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock0_mprv0_1_jalr\""
-PMP_S_cg_cp_mprv_sw_lock0_mprv0_2_sw_str: .string "\"test: 163; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock0_mprv0_2_sw\""
-PMP_S_cg_cp_mprv_lw_lock0_mprv0_3_lw_str: .string "\"test: 164; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock0_mprv0_3_lw\""
-PMP_S_cg_cp_mprv_jalr_lock0_mprv1_1_jalr_str: .string "\"test: 165; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock0_mprv1_1_jalr\""
-PMP_S_cg_cp_mprv_sw_lock0_mprv1_2_sw_str: .string "\"test: 166; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock0_mprv1_2_sw\""
-PMP_S_cg_cp_mprv_lw_lock0_mprv1_3_lw_str: .string "\"test: 167; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock0_mprv1_3_lw\""
-PMP_S_cg_cp_mprv_jalr_lock1_mprv0_1_jalr_str: .string "\"test: 168; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock1_mprv0_1_jalr\""
-PMP_S_cg_cp_mprv_sw_lock1_mprv0_2_sw_str: .string "\"test: 169; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock1_mprv0_2_sw\""
-PMP_S_cg_cp_mprv_lw_lock1_mprv0_3_lw_str: .string "\"test: 170; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock1_mprv0_3_lw\""
-PMP_S_cg_cp_mprv_jalr_lock1_mprv1_1_jalr_str: .string "\"test: 171; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock1_mprv1_1_jalr\""
-PMP_S_cg_cp_mprv_sw_lock1_mprv1_2_sw_str: .string "\"test: 172; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock1_mprv1_2_sw\""
-PMP_S_cg_cp_mprv_lw_lock1_mprv1_3_lw_str: .string "\"test: 173; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock1_mprv1_3_lw\""
+PMP_S_cg_cp_mprv_jalr_lock0_mprv0_1_jalr_str: .string "\"test: 390; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock0_mprv0_1_jalr\""
+PMP_S_cg_cp_mprv_sw_lock0_mprv0_2_sw_str: .string "\"test: 391; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock0_mprv0_2_sw\""
+PMP_S_cg_cp_mprv_lw_lock0_mprv0_3_lw_str: .string "\"test: 392; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock0_mprv0_3_lw\""
+PMP_S_cg_cp_mprv_jalr_lock0_mprv1_1_jalr_str: .string "\"test: 393; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock0_mprv1_1_jalr\""
+PMP_S_cg_cp_mprv_sw_lock0_mprv1_2_sw_str: .string "\"test: 394; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock0_mprv1_2_sw\""
+PMP_S_cg_cp_mprv_lw_lock0_mprv1_3_lw_str: .string "\"test: 395; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock0_mprv1_3_lw\""
+PMP_S_cg_cp_mprv_jalr_lock1_mprv0_1_jalr_str: .string "\"test: 396; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock1_mprv0_1_jalr\""
+PMP_S_cg_cp_mprv_sw_lock1_mprv0_2_sw_str: .string "\"test: 397; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock1_mprv0_2_sw\""
+PMP_S_cg_cp_mprv_lw_lock1_mprv0_3_lw_str: .string "\"test: 398; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock1_mprv0_3_lw\""
+PMP_S_cg_cp_mprv_jalr_lock1_mprv1_1_jalr_str: .string "\"test: 399; cg: PMP_S_cg; cp: cp_mprv_jalr; bin: lock1_mprv1_1_jalr\""
+PMP_S_cg_cp_mprv_sw_lock1_mprv1_2_sw_str: .string "\"test: 400; cg: PMP_S_cg; cp: cp_mprv_sw; bin: lock1_mprv1_2_sw\""
+PMP_S_cg_cp_mprv_lw_lock1_mprv1_3_lw_str: .string "\"test: 401; cg: PMP_S_cg; cp: cp_mprv_lw; bin: lock1_mprv1_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

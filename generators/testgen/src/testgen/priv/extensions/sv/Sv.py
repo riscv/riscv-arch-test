@@ -15,7 +15,8 @@ from testgen.asm.helpers import comment_banner, load_constant, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
-from testgen.priv.extensions.sv.access import Crosses, add_rwx_test, cross_names
+from testgen.instructions.zilx import ZILX_INSTRUCTIONS, indexed_load
+from testgen.priv.extensions.sv.access import Crosses, add_rwx_test, cross_names, virtual_address
 from testgen.priv.extensions.sv.assembly import VA_ONES_DATA, VA_ZEROS_DATA
 from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, keep_image_mapped, sv_data
 from testgen.priv.extensions.sv.page_tables import (
@@ -1189,6 +1190,45 @@ def _t_satp_access(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
     test_chunks.append(test_data.end_test_chunk())
 
 
+def _t_zilx(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
+    for mode in ("Smode", "Umode"):
+        regs = SvRegs.allocate(test_data)
+        chunk = begin_sv_test(test_data, regs, sv, mode, f"{sv.name}_zilx_{mode}", coverpoint="cp_zilx_permissions")
+        index = regs.result
+        chunk.code.append("#ifdef ZILX_SUPPORTED")
+        for level in sv.levels_desc:
+            for permission, flags in (
+                ("read", PteFlags(user=mode == "Umode")),
+                ("execute_only", PteFlags(user=mode == "Umode", read=False, write=False)),
+                ("invalid", PteFlags(user=mode == "Umode", valid=False)),
+            ):
+                chunk.code.extend([*create_page_mapping(sv, leaf_level=level, leaf_flags=flags), "sfence.vma"])
+                for mnemonic, instruction in ZILX_INSTRUCTIONS.items():
+                    if instruction.rv64_only and sv.xlen == 32:
+                        continue
+                    setup, load, cleanup = indexed_load(mnemonic, regs.load, regs.addr, index, 16)
+                    label = test_data.add_testcase(
+                        f"{mnemonic}_{permission}_lvl{level}", "cp_zilx_permissions", "Sv_vm_permissions_cg"
+                    ).removesuffix(":")
+                    chunk.code.extend(
+                        [
+                            *virtual_address(sv, "va_data", level, destination=regs.addr, scratch=regs.scratch),
+                            *setup,
+                            f"LI(x{regs.load}, 0xB0BACAFE)",
+                            *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_UMODE"]),
+                            f"{label}:",
+                            load,
+                            *cleanup,
+                            *([] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"]),
+                            write_sigupd(regs.load, test_data, label=label),
+                        ]
+                    )
+        chunk.code.append("#endif")
+        chunk.raw_data.extend(sv_data(sv, regs))
+        chunk.trap_sigupd_count = trap_sigupd_count(sv.levels * len(ZILX_INSTRUCTIONS) * 3)
+        test_chunks.append(end_sv_test(test_data, regs))
+
+
 def _make_sv(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     _t_invalid_pte(test_data, test_chunks, sv)
@@ -1207,6 +1247,7 @@ def _make_sv(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     _t_va_all(test_data, test_chunks, sv)
     _t_satp_access(test_data, test_chunks, sv)
     _t_nleaf_pte_reserved(test_data, test_chunks, sv)
+    _t_zilx(test_data, test_chunks, sv)
     return test_chunks
 
 

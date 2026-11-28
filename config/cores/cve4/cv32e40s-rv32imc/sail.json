@@ -22,9 +22,10 @@
       // This bits in this value control whether the corresponding
       // bits of the CSR are writable.  Note that bit 1 cannot be written
       // to as it is read-only zero.
-      "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
+      // Only CY and IR are writable: NUM_MHPMCOUNTERS = 0
+      "writable_bits": { "len": 32, "value": "0x0000_0005" }
     },
-    "writable_fiom": true,
+    "writable_fiom": false, // menvcfg is read-only zero
     "writable_hpm_counters": {
       "len": 32,
       // NUM_MHPMCOUNTERS=0; no HPM counters implemented
@@ -123,7 +124,7 @@
       "fetch_access_fault": false,
       "fetch_page_fault": false,
       "software_check": false,
-      "hardware_error": true,
+      "hardware_error": false,
       "reserved_exceptions": false
     },
     "reserved_behavior": {
@@ -299,13 +300,14 @@
     },
     "clock_frequency": 1000000000,
     "instructions_per_tick": 2,
-    "wfi_is_nop": true,
+    // WFI sleeps until an interrupt; in U-mode with mstatus.TW = 1 it raises illegal instruction
+    "wfi_is_nop": false,
     // WFI is optionally available to User mode.  Note that even if
     // `wfi_is_nop` is set to `true` above, it will still not be
     // available to User mode unless `wfi_available_to_user_mode` is
     // also `true`.
     "wfi_available_to_user_mode": true,
-    "max_time_to_wait": 0,
+    "max_time_to_wait": 1000,
     // The model can generate the following events that can be tracked
     // using the HPM counters:
     // - EV_FENCE
@@ -430,11 +432,14 @@
     "Zicfilp": { "supported": false },
     "Zicfiss": { "supported": false },
     "Zicond": { "supported": false },
-    "Zicntr": { "supported": true },
+    // no cycle, time or instret CSRs (User Manual, Performance Counters)
+    "Zicntr": { "supported": false },
     "Zicsr": { "supported": true },
     "Zifencei": { "supported": true },
     "Zihintntl": { "supported": false },
     "Zihintpause": { "supported": false },
+    // no hpmcounter3-31 CSRs; mhpmcounter3-31(h) and mhpmevent3-31 are hard-wired to 0,
+    // which Sail 0.16 provides without Zihpm (User Manual, Performance Counters)
     "Zihpm": { "supported": false },
     "Zimop": { "supported": false },
     "Zmmul": { "supported": true },

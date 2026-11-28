@@ -1,6 +1,6 @@
 # Marin Radic mradic07@gmail.com
 # SPDX-License-Identifier: Apache-2.0
-# CI configuration for the cve4 family: CV32E40P and CV32E40X
+# CI configuration for the cve4 family: CV32E40P, CV32E40S, and CV32E40X
 
 ci_enabled: true
 exclude_extensions:

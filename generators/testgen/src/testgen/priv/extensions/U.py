@@ -44,6 +44,14 @@ def make_u(test_data: TestData) -> list[TestChunk]:
             ["ebreak", "mret", "sret"],
         )
     )
+    tc.code.extend(
+        [
+            "#ifdef S_SUPPORTED",
+            test_data.add_testcase("sfence_vma", "cp_uprivinst", "U_uprivinst_cg"),
+            "sfence.vma    # test sfence.vma instruction",
+            "#endif",
+        ]
+    )
     csr_insufficient_priv_tests(
         test_data,
         test_chunks,

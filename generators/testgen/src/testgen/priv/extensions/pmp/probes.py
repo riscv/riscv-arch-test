@@ -19,10 +19,16 @@ _AMOS = ("amoadd", "amoand", "amoor", "amoxor", "amomax", "amomaxu", "amomin", "
 
 
 def covergroup(test_data: TestData) -> str:
-    """The covergroup of the active chunk; its split name starts with the group (``F_cfg_wr`` -> ``PMP_F_cg``)."""
+    """The covergroup of the active chunk; its split name starts with the group (``F_cfg_wr`` -> ``PMP_F_cg``).
+
+    The VS-mode and VU-mode walks of the H group (``H_vs_cfg_XWR``) sample PMP_S_cg and PMP_U_cg.
+    """
     chunk = test_data.test_chunk
     assert chunk is not None and chunk.split_name is not None, "PMP chunks need a split name that starts with the group"
-    return f"PMP_{chunk.split_name.split('_')[0]}_cg"
+    group, _, rest = chunk.split_name.partition("_")
+    if group == "H" and rest.startswith(("vs_", "vu_")):
+        group = rest[1].upper()
+    return f"PMP_{group}_cg"
 
 
 #: The covergroup cross a probe's testcase belongs to: a name, or a function of the probe's instruction.
@@ -73,22 +79,39 @@ def gen_rwx(test_data: TestData, case: str, coverpoint: Cross, region: str = "TE
     ]
 
 
-def gen_rwx_mprv(test_data: TestData, case: str, coverpoint: Cross, bits: str) -> list[str]:
-    def arm(value: str) -> str:
-        return "\n".join(
-            [
-                "LI(t0, (1 << 17) | (3 << 11))",
-                "csrc mstatus, t0",
-                f"LI(t0, {value})",
-                "csrs mstatus, t0",
-            ]
-        )
+def gen_rwx_mprv(test_data: TestData, case: str, coverpoint: Cross, bits: str, *, mpv: bool = False) -> list[str]:
+    """jalr, sw and lw from M-mode with mstatus set to ``bits``, and with mstatus.MPV = 1 if ``mpv``.
+
+    A trap from M-mode rewrites MPP and clears MPV, so each probe sets them again.
+    """
+
+    def arm(value: str, set_mpv: bool) -> str:
+        lines = [
+            "LI(t0, (1 << 17) | (3 << 11))",
+            "csrc mstatus, t0",
+            f"LI(t0, {value})",
+            "csrs mstatus, t0",
+        ]
+        if mpv:
+            op = "csrs" if set_mpv else "csrc"
+            lines.extend(
+                [
+                    "#if __riscv_xlen == 64",
+                    "LI(t0, MSTATUS_MPV)",
+                    f"{op} mstatus, t0",
+                    "#else",
+                    "LI(t0, MSTATUSH_MPV)",
+                    f"{op} mstatush, t0",
+                    "#endif",
+                ]
+            )
+        return "\n".join(lines)
 
     return [
         "",
         "RVTEST_FENCEI",
         "LA(a4, TEST_FOR_EXECUTION)",
-        arm(bits),
+        arm(bits, mpv),
         "LA(ra, 1f)",
         _testcase(test_data, f"{case}_1_jalr", coverpoint, "jalr"),
         "jalr x0, 0(a4)",
@@ -96,15 +119,15 @@ def gen_rwx_mprv(test_data: TestData, case: str, coverpoint: Cross, bits: str) -
         write_sigupd(14, test_data),
         "LA(a5, TEST_FOR_EXECUTION)",
         "LI(a4, RVTEST_PMP_RET_ENCODING)",
-        arm(bits),
+        arm(bits, mpv),
         _testcase(test_data, f"{case}_2_sw", coverpoint, "sw"),
         "sw a4, 0(a5)",
         write_sigupd(14, test_data),
-        arm(bits),
+        arm(bits, mpv),
         _testcase(test_data, f"{case}_3_lw", coverpoint, "lw"),
         "lw a4, 0(a5)",
         write_sigupd(14, test_data),
-        arm("0"),
+        arm("0", False),
     ]
 
 

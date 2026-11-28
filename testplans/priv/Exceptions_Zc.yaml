@@ -4,9 +4,9 @@ source: https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djp
 coverpoints:
   - name: cp_breakpoint
     goal: Compressed breakpoint
-    description: c.ebreak
+    description: c.ebreak at pc[1] = 0 and pc[1] = 1
     expectation: Breakpoint exception
-    bins: "1"
+    bins: "2"
   - name: cp_load_address_misaligned
     goal: Compressed loads with misaligned addresses
     description: |-
@@ -37,6 +37,8 @@ coverpoints:
     bins: up to 10 instructions
   - name: cp_illegal_instruction
     goal: CompressedIllegal Instruction
-    description: c.illegal (0x0000)
-    expectation: Illegal instruction fault.
-    bins: "1"
+    description: |-
+      c.illegal (0x0000) at pc[1] = 0 and pc[1] = 1.
+      A legal nonzero compressed instruction (c.li) follows each one, so mtval with 32 instruction bits shows in mtval[31:16].
+    expectation: Illegal instruction fault. mtval is 0 or 0x0000 with the upper bits cleared. Execution resumes at mepc+2.
+    bins: "2"

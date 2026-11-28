@@ -403,11 +403,14 @@ def _generate_breakpoint_tests(test_data: TestData) -> list[str]:
     """Generate breakpoint exception test."""
     covergroup, coverpoint = "Exceptions_Zc_cg", "cp_breakpoint"
 
-    lines = [
-        comment_banner(coverpoint, "Breakpoint"),
-        test_data.add_testcase("c_ebreak", coverpoint, covergroup),
-        "c.ebreak",
-    ]
+    lines = [comment_banner(coverpoint, "Breakpoint")]
+    for pc_bit_1 in (0, 1):
+        lines.append(f"\n# Testcase: c.ebreak at pc[1] = {pc_bit_1}")
+        lines.append(".p2align 2")
+        if pc_bit_1:
+            lines.append("c.nop")
+        lines.append(test_data.add_testcase(f"c_ebreak_pc_bit_1_{pc_bit_1}", coverpoint, covergroup))
+        lines.append("c.ebreak")
 
     return lines
 
@@ -416,13 +419,21 @@ def _generate_illegal_instruction_tests(test_data: TestData) -> list[str]:
     """Generate illegal compressed instructions."""
     covergroup, coverpoint = "Exceptions_Zc_cg", "cp_illegal_instruction"
 
-    lines = [
-        comment_banner(coverpoint, "Illegal Instruction"),
-        # Align to ensure proper instruction fetch and trap handling"
-        ".p2align 2",  # Add alignment
-        test_data.add_testcase("illegal0", coverpoint, covergroup),
-        ".insn 0x00",  # use two byte for instruction alignment when trapping
-    ]
+    check_reg = test_data.int_regs.get_register()
+    lines = [comment_banner(coverpoint, "Illegal Instruction")]
+    for pc_bit_1 in (0, 1):
+        lines.append(f"\n# Testcase: c.illegal (0x0000) at pc[1] = {pc_bit_1}")
+        lines.append(f"LI(x{check_reg}, 0xBAD)")
+        lines.append(".p2align 2")
+        if pc_bit_1:
+            lines.append("c.nop")
+        lines.append(test_data.add_testcase(f"illegal0_pc_bit_1_{pc_bit_1}", coverpoint, covergroup))
+        lines.append(".insn 0x00")
+        # Legal nonzero halfword after the illegal instruction. If mtval reports 32 bits,
+        # this encoding shows in mtval[31:16]. The handler resumes here at mepc+2.
+        lines.append(f"c.li x{check_reg}, 1")
+        lines.append(write_sigupd(check_reg, test_data))
+    test_data.int_regs.return_registers([check_reg])
 
     return lines
 
@@ -436,21 +447,6 @@ def make_exceptionszc(test_data: TestData) -> list[TestChunk]:
     """Main entry point for Zc exception test generation."""
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk("Zc")
-
-    addr_reg = test_data.int_regs.get_register()
-
-    tc.code.extend(
-        [
-            "# Load FP test data from scratch if FP is supported",
-            f"LA(x{addr_reg}, scratch)",
-            "#ifdef F_SUPPORTED",
-            f"FLREG f8, 0(x{addr_reg})",
-            "#endif",
-            "",
-        ]
-    )
-
-    test_data.int_regs.return_registers([addr_reg])
 
     tc.code.extend(_generate_load_address_misaligned_tests(test_data))
     tc.code.extend(_generate_store_address_misaligned_tests(test_data))

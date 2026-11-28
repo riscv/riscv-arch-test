@@ -9,7 +9,7 @@
 """Assembly data section generation."""
 
 from testgen.asm.helpers import to_hex
-from testgen.constants import VLEN_MAX
+from testgen.constants import VECTOR_DATA_BYTES_PER_LINE, VLEN_MAX
 from testgen.data.random import random_int
 
 
@@ -84,36 +84,57 @@ def generate_vector_data_section(vector_data_labels: list[tuple[str, list[int], 
             continue
 
         lines.append(f"{label}:")
-        for value in data:
-            hex_value = to_hex(value, eew)
-            lines.append(f"{directive} {hex_value}")
+        lines.extend(pack_data_directives(directive, data, eew))
 
     return "\n".join(lines)
 
 
+def pack_data_directives(directive: str, values: list[int], eew: int) -> list[str]:
+    """
+    Emit values as data directives holding VECTOR_DATA_BYTES_PER_LINE bytes per line. Elements narrower than 64
+    bits are combined into little-endian .dword values, which lay out the same bytes in memory with shorter text.
+    Elements left over after the last full doubleword keep their own directive.
+    """
+    if eew >= 64:
+        return _data_lines(directive, values, eew)
+    per_dword = 64 // eew
+    full = len(values) - len(values) % per_dword
+    dwords = [
+        sum((values[i + k] & ((1 << eew) - 1)) << (k * eew) for k in range(per_dword))
+        for i in range(0, full, per_dword)
+    ]
+    return _data_lines(".dword", dwords, 64) + _data_lines(directive, values[full:], eew)
+
+
+def _data_lines(directive: str, values: list[int], eew: int) -> list[str]:
+    per_line = max(1, VECTOR_DATA_BYTES_PER_LINE * 8 // eew)
+    return [
+        f"{directive} " + ", ".join(to_hex(value, eew) for value in values[i : i + per_line])
+        for i in range(0, len(values), per_line)
+    ]
+
+
 def generate_vector_ls_random_base(eew: int) -> list[str]:
     """
-    Generates a vector load-store base and header label, able to fit 8*vlmax bytes going forward
-    to cover all possible lmul and segment combinations, and 2*vlmax bytes going backwards for the
+    Generates a vector load-store base and header label, able to fit 8*VLEN_MAX bytes going forward
+    to cover all possible lmul and segment combinations, and 2*VLEN_MAX bytes going backwards for the
     strided load-store instructions.
 
-    TODO: Make this customizable by instruction type & cut down on the number of elements generated
-    as this is probably too many
+    The random stream always draws 2*VLEN_MAX header and 8*VLEN_MAX base elements so that the emitted
+    values do not depend on eew. Only the elements within the byte window are emitted: the last
+    elements of the header and the first elements of the base.
     """
 
-    lines = ["vector_ls_random_header:"]
     directives = {8: ".byte", 16: ".short", 32: ".word", 64: ".dword"}
     directive = directives[eew]
+    eew_bytes = eew // 8
 
-    for i in range(2 * VLEN_MAX):
-        value = random_int(eew)
-        hex_value = to_hex(value, eew)
-        lines.append(f"{directive} {hex_value}")
+    header = [random_int(eew) for _ in range(2 * VLEN_MAX)]
+    base = [random_int(eew) for _ in range(8 * VLEN_MAX)]
 
-    lines.append("vector_ls_random_base:")
-    for i in range(8 * VLEN_MAX):
-        value = random_int(eew)
-        hex_value = to_hex(value, eew)
-        lines.append(f"{directive} {hex_value}")
-
-    return lines
+    return [
+        "vector_ls_random_header:",
+        *pack_data_directives(directive, header[len(header) - 2 * VLEN_MAX // eew_bytes :], eew),
+        "vector_ls_random_base:",
+        *pack_data_directives(directive, base[: 8 * VLEN_MAX // eew_bytes], eew),
+    ]

@@ -209,7 +209,7 @@ def format_vvi_like_type(
         VectorLoad(reg="vs2", widen="vs2" in widen, vl=vs2_vl, egs=egs),
     ]
 
-    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
+    load_code, random_vl_reg = load_vec_regs(to_load, params, test_data, base_tail_fill=enable_vs2_preload)
     setup.extend(load_code)
     setup.append(load_test_vtype(params, random_vl_reg))
 

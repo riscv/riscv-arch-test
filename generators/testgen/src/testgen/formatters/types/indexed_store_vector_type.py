@@ -172,10 +172,10 @@ def format_vsxseg_like_type(
     equivalent_load = "vl" + instr_str[2:]
     if params.maskval:
         test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}, v0.t"]
-        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}, v0.t"
+        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}, v0.t  # reload the stored data"
     else:
         test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}"]
-        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}"
+        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}  # reload the stored data"
 
     # We no longer need vs2. This allows us to have enough registers for length SIGUPD where the maximum number of
     # registers (25) are required by the test section

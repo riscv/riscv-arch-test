@@ -1152,13 +1152,14 @@ coverpoints:
       only run tests if SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH and SDTRIG_TEXTRA_MHVALUE_LEN > 0:
       repeat for each trigger type supported:
       tdata3.mhselect = 4
-      mcontext and mhvalue values below are limited to the SDTRIG_TEXTRA_MHVALUE_LEN implemented bits
+      mcontext is limited to the bits both mcontext (DBG_HCONTEXT_WIDTH) and mhvalue (SDTRIG_TEXTRA_MHVALUE_LEN)
+      implement, and mhvalue to the SDTRIG_TEXTRA_MHVALUE_LEN bits
       if RV32:
       mcontext[5:0] = 010101
-      tdata3.mhvalue = {010101/000000/010100}
+      tdata3.mhvalue = {mcontext / 0 / mcontext ^ 1}
       if RV64:
       mcontext[12:0] = 0x1555
-      tdata3.mhvalue = 0x{1555/0000/1554}
+      tdata3.mhvalue = {mcontext / 0 / mcontext ^ 1}
 
       if ICOUNT_SUPPORTED:
       tdata1.type = 3 (icount)
@@ -1185,14 +1186,15 @@ coverpoints:
       only run tests if SDTRIG_TEXTRA_SSELECT_SCONTEXT_MATCH and SDTRIG_TEXTRA_SVALUE_LEN > 0:
       repeat for each trigger type supported:
       tdata3.sselect = 1
-      scontext and svalue values below are limited to the SDTRIG_TEXTRA_SVALUE_LEN implemented bits
+      scontext is limited to the bits both scontext (DBG_SCONTEXT_WIDTH) and svalue (SDTRIG_TEXTRA_SVALUE_LEN)
+      implement, and svalue to the SDTRIG_TEXTRA_SVALUE_LEN bits
       if RV32:
       scontext = {00001234}
-      tdata3.svalue = 0x{0000/0034/1200/1234}
+      tdata3.svalue = {0 / scontext ^ 0xFF00 / scontext ^ 0x00FF / scontext}
       tdata3.sbytemask = 4 combinations
       if RV64:
       scontext = {0x12345678}
-      tdata3.svalue = 0x{00000000/12345600/12340078/12005678/00345678/12345678}
+      tdata3.svalue = {0 / scontext with byte 0, 1, 2 or 3 inverted / scontext}
       tdata3.sbytemask = {0000/0001/0010/0100/1000/1111}
 
       if ICOUNT_SUPPORTED:
@@ -1240,17 +1242,19 @@ coverpoints:
 
       if RV32:
       mcontext[5:0] = 111111
-      tdata3.mhvalue = {000000/111111}
+      tdata3.mhvalue = {~mcontext / mcontext}
       if RV64:
       mcontext[12:0] = 0x1FFF
-      tdata3.mhvalue = 0x{0000/1FFF}
+      tdata3.mhvalue = {~mcontext / mcontext}
 
       if RV32:
       scontext = 0x0000FFFF
-      tdata3.svalue = 0x{0000/FFFF}
+      tdata3.svalue = {~scontext / scontext}
       if RV64:
       scontext = 0xFFFFFFFF
-      tdata3.svalue = 0x{00000000/FFFFFFFF}
+      tdata3.svalue = {~scontext / scontext}
+      mcontext and scontext are limited as in cp_textra_mcontext and cp_textra_scontext; ~ is the complement
+      within the mhvalue or svalue bits (0 when the context implements every mhvalue or svalue bit)
 
       if ICOUNT_SUPPORTED:
       tdata1.type = 3 (icount)
@@ -1332,7 +1336,7 @@ coverpoints:
       only run tests if S is supported, as cp_itrigger_s with x = 1 (supervisor software interrupt):
       tdata2[1] = 1, tdata1.s = 1, mideleg[1] = 1, medeleg[3] = 0, take the interrupt while executing in S-mode
       under the condition of cp_textra_mcontext: mcontext as there, tdata3.mhselect = 4, tdata3.mhvalue = {mcontext / other}
-      under the condition of cp_textra_scontext: scontext as there, tdata3.sselect = 1, tdata3.svalue = {scontext / 0}
+      under the condition of cp_textra_scontext: scontext as there, tdata3.sselect = 1, tdata3.svalue = {scontext / scontext ^ 1}
       After each case, rvtest_trap_count is written to the signature.
     expectation: Breakpoint into M just before the first instruction of the S-mode handler iff the context matches
     bins: NTRIG * 2 per available context
@@ -1346,7 +1350,7 @@ coverpoints:
       only run tests if S is supported, as cp_etrigger_s_deleg with x = 5 (load access fault):
       tdata2[5] = 1, tdata1.s = 1, medeleg[5] = 1, medeleg[3] = 0, raise the exception while executing in S-mode
       under the condition of cp_textra_mcontext: mcontext as there, tdata3.mhselect = 4, tdata3.mhvalue = {mcontext / other}
-      under the condition of cp_textra_scontext: scontext as there, tdata3.sselect = 1, tdata3.svalue = {scontext / 0}
+      under the condition of cp_textra_scontext: scontext as there, tdata3.sselect = 1, tdata3.svalue = {scontext / scontext ^ 1}
       After each case, rvtest_trap_count is written to the signature.
     expectation: Breakpoint into M just before the first instruction of the S-mode handler iff the context matches
     bins: NTRIG * 2 per available context

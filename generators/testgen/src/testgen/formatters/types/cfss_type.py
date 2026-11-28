@@ -8,6 +8,7 @@
 
 from testgen.asm.helpers import (
     check_store_target,
+    fflags_setup,
     fill_store_target,
     load_float_reg,
     write_sigupd,
@@ -50,7 +51,7 @@ def format_cfss_type(
     params.immval = params.immval % (max_val + alignment)
     area_bytes = 8
 
-    setup: list[str] = ["fsflagsi 0b00000 # clear all fflags"]
+    setup: list[str] = [fflags_setup(params)]
     asm = test_data.int_regs.consume_registers([2])  # sp (x2) is used as the base pointer for CSS instructions
     if asm:
         setup.append(asm)

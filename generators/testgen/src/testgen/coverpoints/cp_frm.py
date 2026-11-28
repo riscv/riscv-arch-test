@@ -11,7 +11,7 @@ from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.instructions.params import generate_random_params
+from testgen.instructions.params import generate_random_test_params
 
 
 @add_coverpoint_generator("cp_frm")
@@ -23,7 +23,7 @@ def make_frm(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     frm_modes = ("dyn", "rdn", "rmm", "rne", "rtz", "rup")
     test_chunks: list[TestChunk] = []
     for frm_mode in frm_modes:
-        params = generate_random_params(test_data, instr_type, exclude_regs=[0], frm=frm_mode)
+        params = generate_random_test_params(test_data, instr_type, exclude_regs=[0], frm=frm_mode)
         desc = f"{coverpoint} (Test frm, mode = {frm_mode})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{frm_mode}", coverpoint)
         test_chunks.append(tc)

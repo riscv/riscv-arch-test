@@ -39,6 +39,10 @@ from testgen.data.params import InstructionParams
 from testgen.data.random import random_int, random_range
 from testgen.data.state import TestData
 from testgen.formatters import get_instruction_type_config
+from testgen.instructions.scalar_data import bias_random_sources, is_fp_instruction, random_fflags_preset
+
+# Source values that an instruction's random-data generator may replace
+_SOURCE_VALUES = ("rs1val", "rs2val", "rs3val", "fs1val", "fs2val", "fs3val")
 
 
 def generate_random_params(
@@ -235,4 +239,24 @@ def generate_random_params(
                 f"Instruction type '{instr_type}' requires immval but has no imm_bits or imm_range configured"
             )
 
+    return params
+
+
+def generate_random_test_params(
+    test_data: TestData,
+    instr_type: str,
+    exclude_regs: list[int] | None = None,
+    **fixed_params: Any,  # noqa: ANN401
+) -> InstructionParams:
+    """
+    generate_random_params for a test that runs the instruction on random data (register, overlap, and
+    rounding-mode coverpoints). Random source values come from the instruction's generator in scalar_data.py where
+    uniform bits would be uninformative, and FP tests may start with random fflags to check that flags are sticky.
+    """
+    params = generate_random_params(test_data, instr_type, exclude_regs, **fixed_params)
+    required_params = get_instruction_type_config(instr_type).required_params or set()
+    filled = {name for name in _SOURCE_VALUES if name in required_params and name not in fixed_params}
+    bias_random_sources(test_data.instr_name, params, filled, test_data)
+    if is_fp_instruction(test_data.instr_name):
+        params.preset_fflags = random_fflags_preset()
     return params

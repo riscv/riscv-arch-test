@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import write_sigupd
+from testgen.asm.helpers import fflags_setup, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -47,7 +47,7 @@ def format_cfl_type(
     test_data.test_chunk.data_values.append(params.temp_fval)
 
     setup = [
-        "fsflagsi 0b00000 # clear all fflags",
+        fflags_setup(params),
         f"addi x{params.rs1}, x{test_data.int_regs.data_reg}, {-params.immval} # adjust base address for load",
     ]
     test = [

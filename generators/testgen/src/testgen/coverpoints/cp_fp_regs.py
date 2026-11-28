@@ -11,7 +11,7 @@ from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.instructions.params import generate_random_params
+from testgen.instructions.params import generate_random_test_params
 from testgen.instructions.vector import get_base_lmul
 from testgen.instructions.vector_params import generate_random_vector_params
 
@@ -42,7 +42,7 @@ def make_fd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         if is_vector:
             params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, fd=fd)
         else:
-            params = generate_random_params(test_data, instr_type, fd=fd)
+            params = generate_random_test_params(test_data, instr_type, fd=fd)
         desc = f"{coverpoint} (Test destination fd = f{fd})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{fd}", coverpoint)
         test_chunks.append(tc)
@@ -77,7 +77,7 @@ def make_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
         if is_vector:
             params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, fs1=fs1)
         else:
-            params = generate_random_params(test_data, instr_type, fs1=fs1)
+            params = generate_random_test_params(test_data, instr_type, fs1=fs1)
         desc = f"{coverpoint} (Test source fs1 = f{fs1})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{fs1}", coverpoint)
         test_chunks.append(tc)
@@ -102,7 +102,7 @@ def make_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     # Generate tests
     for fs2 in fs2_regs:
         test_data.float_regs.consume_registers([fs2])
-        params = generate_random_params(test_data, instr_type, fs2=fs2)
+        params = generate_random_test_params(test_data, instr_type, fs2=fs2)
         desc = f"{coverpoint} (Test source fs2 = f{fs2})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{fs2}", coverpoint)
         test_chunks.append(tc)
@@ -127,7 +127,7 @@ def make_fs3(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     # Generate tests
     for fs3 in fs3_regs:
         test_data.float_regs.consume_registers([fs3])
-        params = generate_random_params(test_data, instr_type, fs3=fs3)
+        params = generate_random_test_params(test_data, instr_type, fs3=fs3)
         desc = f"{coverpoint} (Test source fs3 = f{fs3})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{fs3}", coverpoint)
         test_chunks.append(tc)

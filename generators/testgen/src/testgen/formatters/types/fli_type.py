@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import write_sigupd
+from testgen.asm.helpers import fflags_setup, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -56,7 +56,7 @@ def format_fli_type(
     assert params.fd is not None and params.rs1 is not None
     fli_val = fli_vals[params.rs1]
     setup = [
-        "fsflagsi 0b00000 # clear all fflags",
+        fflags_setup(params),
     ]
     test = [
         f"{instr_name} f{params.fd}, {fli_val} # perform operation",

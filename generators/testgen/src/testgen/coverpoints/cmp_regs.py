@@ -11,7 +11,7 @@ from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.instructions.params import generate_random_params
+from testgen.instructions.params import generate_random_test_params
 
 
 @add_coverpoint_generator("cmp_rd_rs1")
@@ -42,7 +42,7 @@ def make_cmp_rd_rs1(instr_name: str, instr_type: str, coverpoint: str, test_data
             asm_setup = test_data.int_regs.consume_register_pair(reg)
         else:
             asm_setup = test_data.int_regs.consume_registers([reg])
-        params = generate_random_params(test_data, instr_type, rd=reg, rs1=reg)
+        params = generate_random_test_params(test_data, instr_type, rd=reg, rs1=reg)
         desc = f"{coverpoint} (Test rd = rs1 = x{reg})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
         if asm_setup:
@@ -81,7 +81,7 @@ def make_cmp_rd_rs2(instr_name: str, instr_type: str, coverpoint: str, test_data
             asm_setup = test_data.int_regs.consume_register_pair(reg)
         else:
             asm_setup = test_data.int_regs.consume_registers([reg])
-        params = generate_random_params(test_data, instr_type, rd=reg, rs2=reg)
+        params = generate_random_test_params(test_data, instr_type, rd=reg, rs2=reg)
         desc = f"{coverpoint} (Test rd = rs2 = x{reg})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
         if asm_setup:
@@ -120,7 +120,7 @@ def make_cmp_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_dat
             asm_setup = test_data.int_regs.consume_register_pair(reg)
         else:
             asm_setup = test_data.int_regs.consume_registers([reg])
-        params = generate_random_params(test_data, instr_type, rs1=reg, rs2=reg)
+        params = generate_random_test_params(test_data, instr_type, rs1=reg, rs2=reg)
         desc = f"{coverpoint} (Test rs1 = rs2 = x{reg})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
         if asm_setup:
@@ -157,7 +157,7 @@ def make_cmp_rd_rs1_rs2(instr_name: str, instr_type: str, coverpoint: str, test_
             asm_setup = test_data.int_regs.consume_register_pair(reg)
         else:
             asm_setup = test_data.int_regs.consume_registers([reg])
-        params = generate_random_params(test_data, instr_type, rd=reg, rs1=reg, rs2=reg)
+        params = generate_random_test_params(test_data, instr_type, rd=reg, rs1=reg, rs2=reg)
         desc = f"{coverpoint} (Test rd = rs1 = rs2 = x{reg})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
         if asm_setup:

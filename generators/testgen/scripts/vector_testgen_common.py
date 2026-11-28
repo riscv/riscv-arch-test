@@ -74,6 +74,10 @@ def add_testcase_string(cp: str, instr_name: str) -> None:
     f'test_{testcase_count}_str: .string "\\"test: {testcase_count}; cp: {extension}_{instr_name}_cg/{cp}\\""'
   )
 
+def name_testcase_string(inst_ptr: str) -> None:
+  # The SIGUPD macros find the descriptive string at inst_ptr##_str
+  testcase_strings[-1] = testcase_strings[-1].replace(f"test_{testcase_count}_str:", f"{inst_ptr}_str:", 1)
+
 def generate_testcase_string_section() -> str:
   lines = list(testcase_strings)
   return "\n".join(lines)
@@ -1786,7 +1790,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
 def writeSIGUPD(inst_ptr, rd):
     global sigupd_count  # Allow modification of global variable
     sigupd_count += 1    # Increment counter on each call
-    str_ptr = "test_" + str(testcase_count) + "_str"
+    str_ptr = f"{inst_ptr}_str"
     # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
     # and rd. linkReg must come from {5, 8, 14} (the only values the macro
     # supports given its tempReg layout); pick randomly among the legal options.
@@ -1798,7 +1802,7 @@ def writeSIGUPD(inst_ptr, rd):
     tempReg = linkReg - 1
     writeLine(f"RVTEST_SIGUPD(x{sigReg}, x{linkReg}, x{tempReg}, x{rd}, {inst_ptr}, {str_ptr})", f"# store x{rd} in signature")
 
-def writeSIGUPD_F(fd):
+def writeSIGUPD_F(inst_ptr, fd):
     global sigupd_count  # Allow modification of global variable
     global sigupd_countF
     sigupd_count += 1    # Increment counter for floating point signature since SIGUPD_F macro stores FCSR as SREG
@@ -1814,12 +1818,12 @@ def writeSIGUPD_F(fd):
     ftempReg = tempReg
     writeLine(f"csrr x{tempReg}, fcsr", f"# save fcsr into x{tempReg} for signature")                                 # Get fcsr into a temp register
     writeLine(f"{str_ptr}:")
-    writeLine(f"RVTEST_SIGUPD_F(x{sigReg}, x{linkReg}, x{tempReg}, f{ftempReg}, f{fd}, {str_ptr}, {str_ptr}_str)", f"# store f{fd} and x{tempReg} (fcsr) in signature")  # x{rd} as fstatus Xreg from macro definition as dummy store (might be needed in another instruction)
+    writeLine(f"RVTEST_SIGUPD_F(x{sigReg}, x{linkReg}, x{tempReg}, f{ftempReg}, f{fd}, {str_ptr}, {inst_ptr}_str)", f"# store f{fd} and x{tempReg} (fcsr) in signature")  # x{rd} as fstatus Xreg from macro definition as dummy store (might be needed in another instruction)
 
 def writeSIGUPD_FFLAGS(inst_ptr):
     global sigupd_count  # Allow modification of global variable
     sigupd_count += 1    # Increment counter on each call
-    str_ptr = "test_" + str(testcase_count) + "_str"
+    str_ptr = f"{inst_ptr}_str"
     # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
     # and rd. linkReg must come from {5, 8, 14} (the only values the macro
     # supports given its tempReg layout); pick randomly among the legal options.
@@ -1834,7 +1838,6 @@ def writeSIGUPD_FFLAGS(inst_ptr):
 def writeSIGUPD_VXSAT(inst_ptr):
     global sigupd_count  # Allow modification of global variable
     sigupd_count += 1    # Increment counter on each call
-    str_ptr = "test_" + str(testcase_count) + "_str"
     # SIGUPD macro convention: tempReg = linkReg - 1. Both must avoid sigReg
     # and rd. linkReg must come from {5, 8, 14} (the only values the macro
     # supports given its tempReg layout); pick randomly among the legal options.
@@ -1844,7 +1847,7 @@ def writeSIGUPD_VXSAT(inst_ptr):
       raise RuntimeError(f"writeSIGUPD_VXSAT: no legal linkReg given sigReg={sigReg}")
     linkReg = linkOptions[randint(0, len(linkOptions) - 1)]
     tempReg = linkReg - 1
-    writeLine(f"RVTEST_SIGUPD_VXSAT(x{sigReg}, x{linkReg}, x{tempReg}, {inst_ptr}, {str_ptr})", f"# check vxsat in signature")
+    writeLine(f"RVTEST_SIGUPD_VXSAT(x{sigReg}, x{linkReg}, x{tempReg}, {inst_ptr})", f"# check vxsat in signature")
 
 
 # old version of function before selfchecking, kept for now on notes later on for different versions of macros, e.g. SEWMIN
@@ -1923,7 +1926,6 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
     offset_bytes = (worst_bytes + 4 + 7) & ~7
     sigupd_count += max(1, (offset_bytes + sig_stride - 1) // sig_stride) * segments
 
-    str_ptr = "test_" + str(testcase_count) + "_str"
 
     # See writeSIGUPD: linkReg must be in {5, 8, 14} (macro tempReg = linkReg-1).
     linkOptions = [lr for lr in (5, 8, 14)
@@ -2032,38 +2034,38 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
         writeLine(f"RVTEST_SIGUPD_VLMAX_MASK_PROD(x{sigReg}, x{linkReg}, x{tempReg}, v{vd})")
       elif length_macro:
         scalar_dst_flag = 1 if scalar_dst else 0
-        writeLine(f"# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR, _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _FORCE_TA_MA_FLAG, _INST_PTR, _STR_PTR)")
+        writeLine(f"# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR, _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _FORCE_TA_MA_FLAG, _INST_PTR)")
         if "vcompress" in inst_ptr:
           writeLine(
-            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 0, {masked_flag}, 1, {sew}, {emul}, 0, 1, {inst_ptr}, {str_ptr})")
+            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 0, {masked_flag}, 1, {sew}, {emul}, 0, 1, {inst_ptr})")
           writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
         elif vd_mask:
           writeLine(
-            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 1, {masked_flag}, 0, 8, {emul}, 0, 1, {inst_ptr}, {str_ptr})")
+            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 1, {masked_flag}, 0, 8, {emul}, 0, 1, {inst_ptr})")
           writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
           writeLine("# This is a mask producing operation, so in the tail region, there are 3 valid outputs: undisturbed, all onees, or computed as if vl = vlmax. This means")
           writeLine("# that the next test will be a duplication of the work done in this test, so that a reference model can give an output in the two non-trivial cases.")
         else:
           writeLine(
-            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 0, {masked_flag}, 0, {sew}, {emul}, {scalar_dst_flag}, 1, {inst_ptr}, {str_ptr})")
+            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 0, {masked_flag}, 0, {sew}, {emul}, {scalar_dst_flag}, 1, {inst_ptr})")
           writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
       elif is_crypto:
         writeLine(f"vsetivli x0, {egs}, e{sew}, m{sig_lmul}, tu, mu", f"# set SEW={sew}, LMUL={sig_lmul}, VL={egs} before signature check")
         writeLine(
-        f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, v{vd}, {inst_ptr}, {str_ptr})")
+        f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, v{vd}, {inst_ptr})")
         writeLine(
         f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
       else:
         writeLine(f"vsetivli x0, 1, e{sew}, m1, tu, mu", f"# set SEW={sew}, LMUL=1, VL=1 before signature check")
-        writeLine(f"# RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _VREG, _INST_PTR, _STR_PTR)")
+        writeLine(f"# RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG, _VTMP, _MTMP, _SEW, _VREG, _INST_PTR)")
         if vd_mask:
           writeLine(
-          f"RVTEST_SIGUPD_V(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, 8, v{vd}, {inst_ptr}, {str_ptr})")
+          f"RVTEST_SIGUPD_V(vmxor.mm, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, 8, v{vd}, {inst_ptr})")
           writeLine(
           f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
         else:
           writeLine(
-          f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, v{vd}, {inst_ptr}, {str_ptr})")
+          f"RVTEST_SIGUPD_V(vmsne.vv, x{sigReg}, x{linkReg}, x{tempReg}, v{vtmp}, v{mtmp}, {sew}, v{vd}, {inst_ptr})")
           writeLine(
           f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
       vd += max(1 if whole_register_operation else int(sig_lmul), 1)
@@ -2469,6 +2471,7 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
         inst_ptr = f"{inst_ptr_base}_duplicate_{_inst_ptr_counts[inst_ptr_base]}"
 
     writeLine(f"{inst_ptr}:")
+    name_testcase_string(inst_ptr)
 
     if pre_instruction_lines:
         for line in pre_instruction_lines:
@@ -2530,7 +2533,7 @@ def writeVecTest(instruction, cp, vd, sew, testline, *scalar_registers_used, tes
     elif (test in xvtype) or (test in xvmtype):
       writeSIGUPD(inst_ptr, rd)
     elif (test in fvtype):
-      writeSIGUPD_F(fd)
+      writeSIGUPD_F(inst_ptr, fd)
     elif (test in crypto_ins):
       writeSIGUPD_V(inst_ptr, vd, sew, avl=vl, sig_lmul=sig_lmul, vs1=vs1, load_testline = load_testline, sig_whole_register_store = sig_whole_register_store, testtype=testtype, masked=masked, lmul=lmul, is_crypto=True, egs=egs)
     else:

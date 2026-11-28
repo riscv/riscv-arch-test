@@ -577,12 +577,11 @@
 //   _MTMP       - Mask register holding mismatch results
 //   _VD_EEW     - Destination element width (for widening, 2*SEW)
 //   _VREG       - Vector register under test
-//   _INST_PTR   - Label of instruction under test
-//   _STR_PTR    - Label to descriptive string
+//   _INST_PTR   - Label of instruction under test; _INST_PTR##_str labels its descriptive string
 
 #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG,    \
-        _VTMP, _MTMP, _VD_EEW, _VREG, _INST_PTR, _STR_PTR)           \
+        _VTMP, _MTMP, _VD_EEW, _VREG, _INST_PTR)                     \
         .option push                                                ;\
         .option norvc                                               ;\
         vle##_VD_EEW.v _VTMP, 0(_SIG_PTR)                           ;\
@@ -594,14 +593,14 @@
     1:                                                              ;\
         jal _LINK_REG, failedtest_vec_base_##_LINK_REG##_##_TEMP_REG         ;\
         RVTEST_WORD_PTR _INST_PTR                                   ;\
-        RVTEST_WORD_PTR _STR_PTR                                    ;\
+        RVTEST_WORD_PTR _INST_PTR##_str                             ;\
         vxor.vv _VREG, _VREG, _VREG    /* Dummy NOP that encodes VR for use in failure code */  ;\
     2:                                                              ;\
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)     ;\
         .option pop
 #else
     #define RVTEST_SIGUPD_V(_CMP, _SIG_PTR, _LINK_REG, _TEMP_REG,    \
-        _VTMP, _MTMP, _VD_EEW, _VREG, _INST_PTR, _STR_PTR)           \
+        _VTMP, _MTMP, _VD_EEW, _VREG, _INST_PTR)                     \
         .option push                                                ;\
         .option norvc                                               ;\
         vse##_VD_EEW.v _VREG, 0(_SIG_PTR)                           ;\
@@ -613,7 +612,7 @@
     1:                                                              ;\
         jal _LINK_REG, failedtest_vec_base_##_LINK_REG##_##_TEMP_REG         ;\
         RVTEST_WORD_PTR _INST_PTR                                   ;\
-        RVTEST_WORD_PTR _STR_PTR                                    ;\
+        RVTEST_WORD_PTR _INST_PTR##_str                             ;\
         vxor.vv _VREG, _VREG, _VREG        /* Dummy NOP that encodes VR for use in failure code */ ;\
     2:                                                              ;\
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)     ;\
@@ -685,14 +684,13 @@
 //                    When 1, the saved vl is overridden to 1 so only element 0 is treated
 //                    as active and elements 1..VLMAX-1 receive the tail-agnostic relaxation.
 //   _FORCE_TA_MA_FLAG - Forces instruction under test to be checked as if tail and mask agnostic
-//   _INST_PTR      - Label of instruction under test
-//   _STR_PTR       - Label to descriptive string
+//   _INST_PTR      - Label of instruction under test; _INST_PTR##_str labels its descriptive string
 //   Note: _VTMP, _MTMP, _MTMP2 cannot be v0 since v0 should be saved to preserve its mask value (in case the instruction under test is masked)
 
 #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR,  \
         _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _FORCE_TA_MA_FLAG, \
-        _INST_PTR, _STR_PTR) \
+        _INST_PTR)           \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
@@ -863,7 +861,7 @@
     31:                                                                                                             \
         jal         _LINK_REG, failedtest_vec_mask_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
-        RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        RVTEST_WORD_PTR _INST_PTR##_str      ;                                                                      \
         vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     10:                                                                                                             \
         /* active region FAIL path */                                                                               \
@@ -878,7 +876,7 @@
     11:                                                                                                             \
         jal         _LINK_REG, failedtest_vec_active_##_LINK_REG##_##_TEMP_REG ;                                    \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
-        RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        RVTEST_WORD_PTR _INST_PTR##_str      ;                                                                      \
         vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     20:                                                                                                             \
         /* tail region FAIL path */                                                                                 \
@@ -893,7 +891,7 @@
     21:                                                                                                             \
         jal         _LINK_REG, failedtest_vec_tail_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
-        RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        RVTEST_WORD_PTR _INST_PTR##_str      ;                                                                      \
         vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     12:                                                                                                             \
         /* PASS */                                                                                                  \
@@ -903,7 +901,7 @@
 #else
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR,  \
         _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _FORCE_TA_MA_FLAG, \
-        _INST_PTR, _STR_PTR) \
+        _INST_PTR)           \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
@@ -1060,7 +1058,7 @@
     31:                                                                                                             \
         jal         _LINK_REG, failedtest_vec_mask_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
-        RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        RVTEST_WORD_PTR _INST_PTR##_str      ;                                                                      \
         vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     10:                                                                                                             \
         /* active region FAIL path */                                                                               \
@@ -1075,7 +1073,7 @@
     11:                                                                                                             \
         jal         _LINK_REG, failedtest_vec_active_##_LINK_REG##_##_TEMP_REG ;                                    \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
-        RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        RVTEST_WORD_PTR _INST_PTR##_str      ;                                                                      \
         vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     20:                                                                                                             \
         /* tail region FAIL path */                                                                                 \
@@ -1090,7 +1088,7 @@
     21:                                                                                                             \
         jal         _LINK_REG, failedtest_vec_tail_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
-        RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        RVTEST_WORD_PTR _INST_PTR##_str      ;                                                                      \
         vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     12:                                                                                                             \
         /* PASS */                                                                                                  \
@@ -1128,9 +1126,8 @@
 //  _LINK_REG - Link register to use for failure jump
 //  _TEMP_REG - Temporary register to use for loading signature
 //  _INST_PTR - label on instruction being tested (for PC reporting)
-//  _STR_PTR - label to string describing the test
 #ifdef RVTEST_SELFCHECK
-  #define RVTEST_SIGUPD_VXSAT(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR, _STR_PTR)  \
+  #define RVTEST_SIGUPD_VXSAT(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR)            \
     .option push                                           ;\
     .option norvc                                          ;\
     csrr _LINK_REG, vxsat                                  ;\
@@ -1138,12 +1135,12 @@
     beq _TEMP_REG, _LINK_REG, 1f                           ;\
     jal _LINK_REG, failedtest_vxsat_##_LINK_REG##_##_TEMP_REG ;\
     RVTEST_WORD_PTR _INST_PTR                              ;\
-    RVTEST_WORD_PTR _STR_PTR                               ;\
+    RVTEST_WORD_PTR _INST_PTR##_str                        ;\
     1:                                                     ;\
     addi _SIG_PTR, _SIG_PTR, SIG_STRIDE                    ;\
     .option pop
 #else
-  #define RVTEST_SIGUPD_VXSAT(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR, _STR_PTR)  \
+  #define RVTEST_SIGUPD_VXSAT(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR)            \
     .option push                                           ;\
     .option norvc                                          ;\
     csrr _LINK_REG, vxsat                                  ;\
@@ -1151,7 +1148,7 @@
     beq x0, x0, 1f                                         ;\
     jal _LINK_REG, failedtest_vxsat_##_LINK_REG##_##_TEMP_REG ;\
     RVTEST_WORD_PTR _INST_PTR                              ;\
-    RVTEST_WORD_PTR _STR_PTR                               ;\
+    RVTEST_WORD_PTR _INST_PTR##_str                        ;\
     1:                                                     ;\
     addi _SIG_PTR, _SIG_PTR, SIG_STRIDE                    ;\
     .option pop
@@ -1167,9 +1164,8 @@
 //  _LINK_REG - Link register to use for failure jump
 //  _TEMP_REG - Temporary register to use for loading signature
 //  _INST_PTR - label on instruction being tested (for PC reporting)
-//  _STR_PTR - label to string describing the test
 #ifdef RVTEST_SELFCHECK
-  #define RVTEST_SIGUPD_VSTART(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR, _STR_PTR)  \
+  #define RVTEST_SIGUPD_VSTART(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR)            \
     .option push                                           ;\
     .option norvc                                          ;\
     csrr _LINK_REG, vstart                                 ;\
@@ -1177,12 +1173,12 @@
     beq _TEMP_REG, _LINK_REG, 1f                           ;\
     jal _LINK_REG, failedtest_vstart_##_LINK_REG##_##_TEMP_REG ;\
     RVTEST_WORD_PTR _INST_PTR                              ;\
-    RVTEST_WORD_PTR _STR_PTR                               ;\
+    RVTEST_WORD_PTR _INST_PTR##_str                        ;\
     1:                                                     ;\
     addi _SIG_PTR, _SIG_PTR, SIG_STRIDE                    ;\
     .option pop
 #else
-  #define RVTEST_SIGUPD_VSTART(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR, _STR_PTR)  \
+  #define RVTEST_SIGUPD_VSTART(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR)            \
     .option push                                           ;\
     .option norvc                                          ;\
     csrr _LINK_REG, vstart                                 ;\
@@ -1190,7 +1186,7 @@
     beq x0, x0, 1f                                         ;\
     jal _LINK_REG, failedtest_vstart_##_LINK_REG##_##_TEMP_REG ;\
     RVTEST_WORD_PTR _INST_PTR                              ;\
-    RVTEST_WORD_PTR _STR_PTR                               ;\
+    RVTEST_WORD_PTR _INST_PTR##_str                        ;\
     1:                                                     ;\
     addi _SIG_PTR, _SIG_PTR, SIG_STRIDE                    ;\
     .option pop

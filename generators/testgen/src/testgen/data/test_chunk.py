@@ -9,6 +9,8 @@
 
 from dataclasses import dataclass, field
 
+from testgen.data.vector_data import VectorData
+
 
 def trap_sigupd_count(expected_traps: int = 0) -> int:
     """Return the TRAP_SIGUPD_COUNT allocation for the expected trap count, with two extra for safety."""
@@ -48,7 +50,7 @@ class TestChunk:
     data_values: list[int] = field(default_factory=list)
     raw_data: list[str] = field(default_factory=list)
     data_strings: list[str] = field(default_factory=list)
-    vector_labels: list[tuple[str, list[int], int]] = field(default_factory=list)
+    vector_labels: list[tuple[str, VectorData, int]] = field(default_factory=list)
     sigupd_count: int = 0
     trap_sigupd_count: int = 0
     num_testcases: int = 0

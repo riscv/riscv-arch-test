@@ -165,6 +165,9 @@ def _add_access(
     if misaligned:
         address.append(f"addi x{regs.addr}, x{regs.addr}, 2")
     coverpoints = target.coverpoints(medeleg=medeleg, misaligned=misaligned)
+    if misaligned and target.mprv:
+        # MPRV does not apply to instruction fetch, so the M-mode fetch is neither translated nor misaligned
+        operations = tuple(op for op in operations or ("store", "load", "exec") if op != "exec")
     if target.operation == "rwx":
         access = add_rwx_test(
             test_data,

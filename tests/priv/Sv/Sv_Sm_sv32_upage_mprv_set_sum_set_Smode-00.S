@@ -90,6 +90,28 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumset_write_test1_store:
 Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumset_read_test1_load:
   lw x8, 20(x14)
   nop
+
+  LI(x13, MSTATUS_MPRV)
+  csrc mstatus, x13
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x13, rvtest_data_1)
+  srli x13, x13, 22
+  andi x13, x13, 0x3ff
+  slli x13, x13, 2
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x13, x13, x14
+  LREG x14, 0(x13)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x13)
+  sfence.vma
+  LI(x13, MSTATUS_MPRV)
+  csrs mstatus, x13
+  LI(x13, 0x1800)
+  csrc mstatus, x13
+  LI(x13, 0x800)
+  csrs mstatus, x13
+  LI(x13, MSTATUS_SUM)
+  csrs mstatus, x13
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -99,6 +121,17 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumset_exec_test1_exec:
 
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x13, rvtest_data_1)
+  srli x13, x13, 22
+  andi x13, x13, 0x3ff
+  slli x13, x13, 2
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x13, x13, x14
+  LREG x14, 0(x13)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x13)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumset_write_test1_store, Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumset_write_test1_store_str)
@@ -135,6 +168,28 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumset_write_test2_store:
 Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumset_read_test2_load:
   lw x8, 20(x14)
   nop
+
+  LI(x13, MSTATUS_MPRV)
+  csrc mstatus, x13
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x13, rvtest_data_1)
+  srli x13, x13, 22
+  andi x13, x13, 0x3ff
+  slli x13, x13, 2
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x13, x13, x14
+  LREG x14, 0(x13)
+  andi x14, x14, ~PTE_X
+  SREG x14, 0(x13)
+  sfence.vma
+  LI(x13, MSTATUS_MPRV)
+  csrs mstatus, x13
+  LI(x13, 0x1800)
+  csrc mstatus, x13
+  LI(x13, 0x800)
+  csrs mstatus, x13
+  LI(x13, MSTATUS_SUM)
+  csrs mstatus, x13
   LA(x14, rvtest_data_1)
 
 // Execute
@@ -144,6 +199,17 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumset_exec_test2_exec:
 
   LI(x13, MSTATUS_MPRV)
   csrc mstatus, x13
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x13, rvtest_data_1)
+  srli x13, x13, 22
+  andi x13, x13, 0x3ff
+  slli x13, x13, 2
+  LA(x14, rvtest_Sroot_pg_tbl)
+  add x13, x13, x14
+  LREG x14, 0(x13)
+  ori x14, x14, PTE_X
+  SREG x14, 0(x13)
+  sfence.vma
 
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumset_write_test2_store, Sv_Sm_mstatus_mprv_cg_cp_mprv_upage_smode_sumset_write_test2_store_str)

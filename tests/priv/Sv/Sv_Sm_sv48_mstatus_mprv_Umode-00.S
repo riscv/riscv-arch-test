@@ -86,6 +86,24 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test1_store:
 Sv_Sm_mstatus_mprv_cg_cp_mprv_load_test1_load:
   lw x8, 20(x13)
   nop
+
+  LI(x14, MSTATUS_MPRV)
+  csrc mstatus, x14
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x14, rvtest_data_1)
+  srli x14, x14, 39
+  andi x14, x14, 0x1ff
+  slli x14, x14, 3
+  LA(x13, rvtest_Sroot_pg_tbl)
+  add x14, x14, x13
+  LREG x13, 0(x14)
+  andi x13, x13, ~PTE_X
+  SREG x13, 0(x14)
+  sfence.vma
+  LI(x14, MSTATUS_MPRV)
+  csrs mstatus, x14
+  LI(x14, 0x1800)
+  csrc mstatus, x14
   LA(x13, rvtest_data_1)
 
 // Execute
@@ -95,6 +113,17 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_ins_test1_exec:
 
   LI(x14, MSTATUS_MPRV)
   csrc mstatus, x14
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x14, rvtest_data_1)
+  srli x14, x14, 39
+  andi x14, x14, 0x1ff
+  slli x14, x14, 3
+  LA(x13, rvtest_Sroot_pg_tbl)
+  add x14, x14, x13
+  LREG x13, 0(x14)
+  ori x13, x13, PTE_X
+  SREG x13, 0(x14)
+  sfence.vma
 
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test1_store, Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test1_store_str)
@@ -131,6 +160,24 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test2_store:
 Sv_Sm_mstatus_mprv_cg_cp_mprv_load_test2_load:
   lw x8, 20(x13)
   nop
+
+  LI(x14, MSTATUS_MPRV)
+  csrc mstatus, x14
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x14, rvtest_data_1)
+  srli x14, x14, 39
+  andi x14, x14, 0x1ff
+  slli x14, x14, 3
+  LA(x13, rvtest_Sroot_pg_tbl)
+  add x14, x14, x13
+  LREG x13, 0(x14)
+  andi x13, x13, ~PTE_X
+  SREG x13, 0(x14)
+  sfence.vma
+  LI(x14, MSTATUS_MPRV)
+  csrs mstatus, x14
+  LI(x14, 0x1800)
+  csrc mstatus, x14
   LA(x13, rvtest_data_1)
 
 // Execute
@@ -140,6 +187,17 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_ins_test2_exec:
 
   LI(x14, MSTATUS_MPRV)
   csrc mstatus, x14
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x14, rvtest_data_1)
+  srli x14, x14, 39
+  andi x14, x14, 0x1ff
+  slli x14, x14, 3
+  LA(x13, rvtest_Sroot_pg_tbl)
+  add x14, x14, x13
+  LREG x13, 0(x14)
+  ori x13, x13, PTE_X
+  SREG x13, 0(x14)
+  sfence.vma
 
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test2_store, Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test2_store_str)
@@ -177,6 +235,24 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test3_store:
 Sv_Sm_mstatus_mprv_cg_cp_mprv_load_test3_load:
   lw x8, 20(x13)
   nop
+
+  LI(x14, MSTATUS_MPRV)
+  csrc mstatus, x14
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x14, rvtest_data_1)
+  srli x14, x14, 39
+  andi x14, x14, 0x1ff
+  slli x14, x14, 3
+  LA(x13, rvtest_Sroot_pg_tbl)
+  add x14, x14, x13
+  LREG x13, 0(x14)
+  andi x13, x13, ~PTE_X
+  SREG x13, 0(x14)
+  sfence.vma
+  LI(x14, MSTATUS_MPRV)
+  csrs mstatus, x14
+  LI(x14, 0x1800)
+  csrc mstatus, x14
   LA(x13, rvtest_data_1)
 
 // Execute
@@ -186,6 +262,17 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_ins_test3_exec:
 
   LI(x14, MSTATUS_MPRV)
   csrc mstatus, x14
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x14, rvtest_data_1)
+  srli x14, x14, 39
+  andi x14, x14, 0x1ff
+  slli x14, x14, 3
+  LA(x13, rvtest_Sroot_pg_tbl)
+  add x14, x14, x13
+  LREG x13, 0(x14)
+  ori x13, x13, PTE_X
+  SREG x13, 0(x14)
+  sfence.vma
 
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test3_store, Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test3_store_str)
@@ -224,6 +311,24 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test4_store:
 Sv_Sm_mstatus_mprv_cg_cp_mprv_load_test4_load:
   lw x8, 20(x13)
   nop
+
+  LI(x14, MSTATUS_MPRV)
+  csrc mstatus, x14
+// Clear X in the root PTE that maps rvtest_data_1
+  LA(x14, rvtest_data_1)
+  srli x14, x14, 39
+  andi x14, x14, 0x1ff
+  slli x14, x14, 3
+  LA(x13, rvtest_Sroot_pg_tbl)
+  add x14, x14, x13
+  LREG x13, 0(x14)
+  andi x13, x13, ~PTE_X
+  SREG x13, 0(x14)
+  sfence.vma
+  LI(x14, MSTATUS_MPRV)
+  csrs mstatus, x14
+  LI(x14, 0x1800)
+  csrc mstatus, x14
   LA(x13, rvtest_data_1)
 
 // Execute
@@ -233,6 +338,17 @@ Sv_Sm_mstatus_mprv_cg_cp_mprv_ins_test4_exec:
 
   LI(x14, MSTATUS_MPRV)
   csrc mstatus, x14
+// Restore X in the root PTE that maps rvtest_data_1
+  LA(x14, rvtest_data_1)
+  srli x14, x14, 39
+  andi x14, x14, 0x1ff
+  slli x14, x14, 3
+  LA(x13, rvtest_Sroot_pg_tbl)
+  add x14, x14, x13
+  LREG x13, 0(x14)
+  ori x13, x13, PTE_X
+  SREG x13, 0(x14)
+  sfence.vma
 
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test4_store, Sv_Sm_mstatus_mprv_cg_cp_mprv_store_test4_store_str)

@@ -27,6 +27,10 @@ from rich.progress import (
     TextColumn,
     TimeElapsedColumn,
 )
+from testgen.coverpoints.vector.cr_vl_lmul import vl_lmul_max
+from testgen.formatters import get_instruction_type_config
+from testgen.instructions.vector import get_legal_lmuls, get_max_lmul
+from testgen.io.templates import get_vector_base_extension
 
 
 def _progress(description: str) -> Progress:
@@ -233,6 +237,102 @@ def _max_legal_lmul_for_instruction(instr: str) -> int:
     if instr in _c.vd_widen_ins or instr in _c.vs2_widen_ins:
         return 4
     return 8
+
+
+# Smallest VLMAX at which each cp_masking_edges value differs from zero, all ones and the others.
+_MASK_EDGE_MIN_VLMAX = {"vlmaxm1ones": 2, "random": 2, "vlmaxd2p1ones": 8}
+
+
+def _guard_mask_edges(rendered: str, instr: str, instr_type: str, sew: int) -> str:
+    """Guard cp_masking_edges bins on the smallest VLEN at which they are reachable.
+
+    mask_edges_check classifies the low VLMAX bits of v0, so VLMAX-1 ones and a random mask are
+    distinct only when VLMAX >= 2 and VLMAX/2+1 ones only when VLMAX >= 8. The tests use the
+    instruction's largest legal LMUL, at which VLMAX = VLEN * LMUL / SEW.
+    """
+    vector_config = get_instruction_type_config(instr_type).vector_data
+    assert vector_config is not None, f"{instr} ({instr_type}) is not a vector instruction"
+    lmul = get_max_lmul(instr, instr_type, sew, vector_config)
+    for name, vlmax in _MASK_EDGE_MIN_VLMAX.items():
+        vlen = int(vlmax * sew / lmul)
+        if vlen > 32:  # Every vector extension has VLEN >= 32
+            rendered = re.sub(
+                rf"^( *)(bins {name}\b.*\n)",
+                rf"\1`ifdef ZVL{vlen}B_SUPPORTED\n\1    \2\1`endif\n",
+                rendered,
+                count=1,
+                flags=re.MULTILINE,
+            )
+    return rendered
+
+
+_LMUL_NAMES = {-3: "eighth", -2: "fourth", -1: "half", 0: "one", 1: "two", 2: "four", 3: "eight"}
+_VL_LMUL_RE = re.compile(r"cr_vl_lmul_(?:(.+)_)?sew(\d+)")
+
+
+def _zvl_gate(vlen: float) -> str | None:
+    """Return the ZVL<N>B_SUPPORTED macro that guarantees VLEN >= vlen.
+
+    Returns "" when every vector extension does (VLEN >= 32) and None when no macro does (VLEN > 1024).
+    """
+    n = 2 ** math.ceil(math.log2(vlen))
+    if n <= 32:
+        return ""
+    return f"ZVL{n}B_SUPPORTED" if n <= 1024 else None
+
+
+def _ifdef(gate: str, lines: list[str]) -> list[str]:
+    """Wrap 8-space-indented bin lines in `ifdef gate, unless gate is empty."""
+    if not gate:
+        return lines
+    return [f"        `ifdef {gate}\n", *(f"    {line}" for line in lines), "        `endif\n"]
+
+
+def _lmul_text(exponent: int) -> str:
+    return f"1/{2**-exponent}" if exponent < 0 else str(2**exponent)
+
+
+def _render_vl_lmul(suffix: str, sew: int) -> str:
+    """Render cr_vl_lmul[_<suffix>]_sew<sew>: each legal LMUL crossed with vl = EGS, VLMAX and a value in between.
+
+    The LMULs run from the smallest legal at this SEW up to vl_lmul_max(suffix, sew). vl_check codes these vls
+    1, 2 and 3; VLMAX = VLEN * LMUL / SEW must be at least EGS, 2 * EGS and 3 * EGS for them to be distinct, so
+    each bin is guarded on the smallest such ZVL<N>B. Fractional LMUL needs ELEN = 64 when SEW > 32 * LMUL.
+    Element-group suffixes (egs<N>) also get a coverpoint of the LMULs at which VLEN * LMUL >= EGW.
+    """
+    name = f"cr_vl_lmul_{suffix}_sew{sew}" if suffix else f"cr_vl_lmul_sew{sew}"
+    egs = int(m.group(1)) if (m := re.search(r"egs(\d)", suffix)) else 1
+    exps = range(min(get_legal_lmuls(sew)), int(math.log2(vl_lmul_max(suffix, sew))) + 1)
+    lmuls = f"{_lmul_text(exps[0])} to {_lmul_text(exps[-1])}"
+    vlmul = 'get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vlmul")'
+    vsew = f'get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_VTYPE, "vsew") == {int(math.log2(sew)) - 3}'
+    iff = f"iff (ins.trap == 0 & {vsew})"
+    banner = "    " + "/" * 82 + "\n"
+    out = [banner, f"    // {name}\n", banner, "\n"]
+    if egs > 1:
+        out.append(f"    cp_csr_vtype_lmul_{suffix}_sew{sew} : coverpoint {vlmul}  {iff} {{\n")
+        out.append(f"        // LMUL = {lmuls} at which VLEN * LMUL can reach EGW = EGS * SEW = {egs * sew}\n")
+        for e in reversed(exps):
+            gate = _zvl_gate(egs * sew / 2**e)
+            if gate is not None:
+                lines = [f"        bins {_LMUL_NAMES[e]} = {{{e % 8}}};\n"]
+                out += _ifdef(gate, _ifdef("UDB_ELEN_64", lines) if e < 0 and sew > 32 * 2**e else lines)
+        out.append("    }\n\n")
+    vl_check = f"vl_check(ins.hart, ins.issue, {egs})" if egs > 1 else "vl_check(ins.hart, ins.issue)"
+    out.append(f"    {name} : coverpoint {{{vlmul}[2:0],\n")
+    out.append(" " * (41 if egs > 1 else 36) + f"3'({vl_check})}}  {iff}  {{\n")
+    out.append(f"        // LMUL = {lmuls} at SEW = {sew} crossed with vl = {egs}, VLMAX and a value in between.\n")
+    out.append(f"        // VLMAX = VLEN * LMUL / SEW must be at least {egs}, {2 * egs} and {3 * egs} to reach them.\n")
+    for e in exps:
+        lines: list[str] = []
+        for code, kind in enumerate(("one", "vlmax", "legal"), 1):
+            gate = _zvl_gate(code * egs * sew / 2**e)
+            if gate is not None:
+                lines += _ifdef(gate, [f"        bins {_LMUL_NAMES[e]}_{kind} = {{6'b{e % 8:03b}_{code:03b}}};\n"])
+        out += _ifdef("UDB_ELEN_64", lines) if e < 0 and sew > 32 * 2**e else lines
+    out.append("    }\n\n" + banner + "\n")
+    out.append(f"    //// end {name}" + "/" * 48 + "\n")
+    return "".join(out)
 
 
 _LMUL_CROSS_RE = re.compile(r"cp_ssstrictv_lmul(\d+)_(vd|vs1|vs2)_off_group")
@@ -504,27 +604,63 @@ def _indexed_ls_eew(instr: str) -> int | None:
     return int(m.group(3)) if m else None
 
 
-def _should_gate_maxindexeew(arch: str, instr: str) -> tuple[int, str] | None:
-    """Return (eew, macro_prefix) to gate on, or None if no gate should be emitted.
+def _should_gate_maxindexeew(arch: str, instr: str) -> str | None:
+    """Return the macro that gates an indexed LS covergroup, or None if no gate should be emitted.
 
     Unpriv per-SEW Vls{N} arches gate indexed LS covergroups behind
-    MAXINDEXEEW_GE{eew}. Priv MisalignV / ExceptionsVls covergroups gate
-    behind XLEN{eew} so EEW=64 indexed-LS coverage is suppressed on RV32
-    (see sail-riscv issue 1719: Sail RV32 takes illegal-instruction on
-    EEW=64 indexed LS while other sims take a load access fault, producing
-    mismatched mcause in the signature). Vx (vrgather) never gates.
+    MAXINDEXEEW_GE{eew}. MisalignV gates EEW=64 indexed LS behind
+    UDB_MXLEN_64 because its test emits those cases only on RV64.
+    ExceptionsVls emits EEW=64 indexed LS on both XLENs and checks the
+    illegal-instruction case itself, so it never gates. Vx (vrgather)
+    never gates.
     """
     eew = _indexed_ls_eew(instr)
     if not eew or eew <= 8:
         return None
     if arch in _VLS_PER_SEW_ARCHES:
-        return (eew, "MAXINDEXEEW_GE")
-    if arch in ("MisalignV", "ExceptionsVls"):
-        # XLEN16 macro does not exist; XLEN is always >= 32, so only gate eew=64.
-        if eew >= 64:
-            return (eew, "XLEN")
-        return None
+        return f"MAXINDEXEEW_GE{eew}"
+    if arch == "MisalignV" and eew >= 64:
+        return "UDB_MXLEN_64"
     return None
+
+
+# Vector base extensions that testgen requires, in an order where each one a suite uses implies the earlier ones
+# that suite uses (e.g. Vf16 uses Zve32f and Zvfh, Vx64 uses Zve64x and V).
+_VECTOR_BASE_ORDER = ("Zve32x", "Zve32f", "Zve64x", "Zve64f", "Zve64d", "Zvfh", "V")
+
+
+def _vector_base_extension(arch: str, instr: str) -> str:
+    """Return the vector base extension (Zve*, Zvfh or V) that testgen requires for instr in a vector suite."""
+    # XLEN only matters for EEW=64 indexed loads and stores, which MAXINDEXEEW gates instead.
+    required = get_vector_base_extension(arch, instr, 64, int(_get_effew(arch)))
+    assert required is not None, f"no vector base extension for {instr} in {arch}"
+    return next(ext for ext in required if ext.startswith("Zv") or ext == "V")
+
+
+def _vector_floor(arch: str, instr_keys: list[tuple[str, str]]) -> str | None:
+    """Return the least vector base extension any instruction of a vector suite requires, or None if not vector."""
+    if not _is_vector(arch):
+        return None
+    instr_exts = (_vector_base_extension(arch, instr) for instr, _ in instr_keys)
+    return min(instr_exts, key=_VECTOR_BASE_ORDER.index, default=None)
+
+
+def _vector_extension_gate(arch: str, instr: str, vector_floor: str | None) -> str | None:
+    """Return the extension macro a vector covergroup needs beyond its suite's least vector base extension.
+
+    Testgen requires the extension from get_vector_base_extension for each test, so a covergroup is
+    compiled only on configs that select its test.
+    """
+    if vector_floor is None:
+        return None
+    ext = _vector_base_extension(arch, instr)
+    return None if ext == vector_floor else f"{ext.upper()}_SUPPORTED"
+
+
+def _covergroup_gates(arch: str, instr: str, vector_floor: str | None) -> list[str]:
+    """Return the macros that must all be defined for this instruction's covergroup to exist."""
+    gates = (_vector_extension_gate(arch, instr, vector_floor), _should_gate_maxindexeew(arch, instr))
+    return [gate for gate in gates if gate]
 
 
 def _ffLS_feasible(instr: str, sew: int) -> bool:
@@ -583,6 +719,14 @@ def _resolve_coverpoint(cp: str, arch: str, instr: str) -> str | None:
             return None
         cp = re.sub(r"_sew_ge\d+$", "", cp)
 
+    # cr_vl_lmul_ei<EEW>_lmul<N>max (indexed segments) covers the same LMULs as lmul<M>max at this SEW.
+    if (m := re.fullmatch(r"cr_vl_lmul_(ei\d+_lmul\dmax)", cp)) and _is_vector(arch):
+        cp = f"cr_vl_lmul_lmul{int(vl_lmul_max(m.group(1), int(_get_effew(arch))))}max"
+
+    # Element-group register bins depend on EGW = EGS * SEW; the SEW=64 (SHA-512) groups have their own templates.
+    if re.fullmatch(r"cm?p_(v[ds]\d?_)+egs4", cp) and _is_vector(arch) and _get_effew(arch) == "64":
+        cp += "_sew64"
+
     # Append SEW suffix for SEW-dependent coverpoints.
     if any(sew_cp in cp and cp not in SEW_INDEPENDENT_CPS for sew_cp in SEW_DEPENDENT_CPS):
         cp = cp + "_sew" + _get_effew(arch)
@@ -613,6 +757,7 @@ def _gen_instrs(
     has_rv32: bool,
     has_rv64: bool,
     name: str,
+    vector_floor: str | None,
 ) -> tuple[str, str]:
     """Generate covergroup definitions and init content for matching instructions.
 
@@ -628,17 +773,10 @@ def _gen_instrs(
 
         vectorwiden = _is_vector_widen(arch, instr)
 
-        # Gate indexed LS covergroups by MAXINDEXEEW for unpriv per-SEW
-        # Vls{N} arches, and by XLEN for priv MisalignV / ExceptionsVls.
-        # Priv ei64 covergroups are suppressed on RV32 because Sail RV32
-        # takes illegal-instruction on EEW=64 indexed LS while other sims
-        # take a load access fault (see sail-riscv issue 1719). Vx (vrgather)
-        # never gates.
-        gate = _should_gate_maxindexeew(arch, instr)
-        if gate:
-            idx_eew, macro_prefix = gate
-            covergroup_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
-            init_lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
+        gates = _covergroup_gates(arch, instr, vector_floor)
+        for gate in gates:
+            covergroup_lines.append(f"`ifdef {gate}\n")
+            init_lines.append(f"`ifdef {gate}\n")
 
         # Instruction header
         if vectorwiden:
@@ -674,7 +812,12 @@ def _gen_instrs(
             resolved = _resolve_coverpoint(cp, arch, instr)
             if resolved is None:
                 continue
-            rendered = customize_template(templates, resolved, arch, instr) + "\n"
+            if m := _VL_LMUL_RE.fullmatch(resolved):
+                rendered = _render_vl_lmul(m.group(1) or "", int(m.group(2))) + "\n"
+            else:
+                rendered = customize_template(templates, resolved, arch, instr) + "\n"
+            if resolved == "cp_masking_edges" and _is_vector(arch):
+                rendered = _guard_mask_edges(rendered, instr, _instr_type, int(_get_effew(arch)))
             covergroup_lines.append(_filter_per_operand_crosses(rendered, has_vd, has_vs1, has_vs2, max_lmul))
 
         # Instruction footer
@@ -683,7 +826,7 @@ def _gen_instrs(
         else:
             covergroup_lines.append(customize_template(templates, "endgroup", name, instr))
 
-        if gate:
+        for _ in gates:
             covergroup_lines.append("`endif\n")
             init_lines.append("`endif\n")
 
@@ -722,6 +865,7 @@ def _gen_covergroup_samples(
     vector_sample: bool = False,
 ) -> str:
     """Generate covergroup sample function calls for matching instructions and ExtraExtensions rows."""
+    vector_floor = _vector_floor(arch, instr_keys)
     lines: list[str] = []
     for key in sorted(set(instr_keys).union(*extras.values())):
         instr = key[0]
@@ -744,10 +888,8 @@ def _gen_covergroup_samples(
                 lines.append(_gen_sample_arm(templates, instr, base_calls + guarded_calls))
             continue
 
-        gate = _should_gate_maxindexeew(arch, instr)
-        if gate:
-            idx_eew, macro_prefix = gate
-            lines.append(f"`ifdef {macro_prefix}{idx_eew}\n")
+        gates = _covergroup_gates(arch, instr, vector_floor)
+        lines.extend(f"`ifdef {gate}\n" for gate in gates)
 
         if arch.startswith(VECTOR_WIDEN_PREFIXES):
             if _is_vector_widen(arch, instr):
@@ -761,8 +903,7 @@ def _gen_covergroup_samples(
             call = customize_template(templates, "covergroup_case_sample", arch, instr)
             lines.append(_gen_sample_arm(templates, instr, [call]))
 
-        if gate:
-            lines.append("`endif\n")
+        lines.extend("`endif\n" for _ in gates)
 
     return "".join(lines)
 
@@ -816,6 +957,7 @@ def _write_extension_files(
             # Priv vector archs (SsstrictV, ExceptionsV*, MisalignV) have no SEW expansion or EFFEW.
             effew = ""
     instr_keys = _get_sorted_instr_keys(tp, arch) if per_sew else sorted(tp.keys())
+    vector_floor = _vector_floor(arch, instr_keys)
 
     # Priv vector archs (SsstrictV, ExceptionsV*, MisalignV) don't expand per-SEW, so
     # neither the EFFEW defines in header_vector nor the EFFVSEW gate in the vector
@@ -833,14 +975,16 @@ def _write_extension_files(
     for extension, group in [((), tp), *sorted(extras.items())]:
         group_keys = instr_keys if not extension else sorted(group.keys())
         name = _extra_name(arch, extension)
-        instr_content, init_content = _gen_instrs(group_keys, templates, group, arch, True, True, name)
+        instr_content, init_content = _gen_instrs(group_keys, templates, group, arch, True, True, name, vector_floor)
         group_lines, group_init_lines = [instr_content], [init_content]
 
         for rv32, rv64, exclude_marker in ((True, False, "RV64"), (False, True, "RV32")):
             if _any_xlen_exclusion(exclude_marker, group_keys, group):
                 guard = customize_template(templates, "RV32" if rv32 else "RV64", arch)
                 end = customize_template(templates, "end", arch)
-                instr_content, init_content = _gen_instrs(group_keys, templates, group, arch, rv32, rv64, name)
+                instr_content, init_content = _gen_instrs(
+                    group_keys, templates, group, arch, rv32, rv64, name, vector_floor
+                )
                 group_lines.extend([guard, instr_content, end])
                 group_init_lines.extend([guard, init_content, end])
         lines.append(_guard(extension, "".join(group_lines)))

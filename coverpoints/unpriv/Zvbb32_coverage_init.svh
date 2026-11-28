@@ -23,6 +23,12 @@
     Zvbb32_vror_vi_cg = new(); Zvbb32_vror_vi_cg.set_inst_name("obj_Zvbb32_vror_vi");
     Zvbb32_vror_vv_cg = new(); Zvbb32_vror_vv_cg.set_inst_name("obj_Zvbb32_vror_vv");
     Zvbb32_vror_vx_cg = new(); Zvbb32_vror_vx_cg.set_inst_name("obj_Zvbb32_vror_vx");
+`ifdef ZVE64X_SUPPORTED
     Zvbb32_vwsll_vi_cg = new(); Zvbb32_vwsll_vi_cg.set_inst_name("obj_Zvbb32_vwsll_vi");
+`endif
+`ifdef ZVE64X_SUPPORTED
     Zvbb32_vwsll_vv_cg = new(); Zvbb32_vwsll_vv_cg.set_inst_name("obj_Zvbb32_vwsll_vv");
+`endif
+`ifdef ZVE64X_SUPPORTED
     Zvbb32_vwsll_vx_cg = new(); Zvbb32_vwsll_vx_cg.set_inst_name("obj_Zvbb32_vwsll_vx");
+`endif

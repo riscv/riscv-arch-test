@@ -98,6 +98,7 @@ implemented_extensions:
   - { name: Zvl32b, version: "= 1.0.0" }
   - { name: Zvl64b, version: "= 1.0.0" }
   - { name: Zvl128b, version: "= 1.0.0" }
+  - { name: Zvl256b, version: "= 1.0.0" }
 params:
   NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # A params

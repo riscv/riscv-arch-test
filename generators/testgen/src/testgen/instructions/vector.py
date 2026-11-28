@@ -113,6 +113,28 @@ def get_legal_lmuls(sew: int) -> list[int]:
     return legal_lmuls
 
 
+def get_max_lmul(instruction: str, instr_type: str, sew: int, vector_config: VectorTypeConfig) -> float | int:
+    """Return the largest LMUL at which an instruction is legal for an SEW, independent of VLEN.
+
+    Every register group must have EMUL <= 8, and a segment access needs EMUL * NFIELDS <= 8 for its
+    data. Unit-stride and strided accesses have data EMUL = EEW / SEW * LMUL; indexed accesses have
+    data EMUL = LMUL and index EMUL = EEW / SEW * LMUL. Widened register groups cap LMUL at 4; the widened
+    scalars of a widening reduction (vd, vs1) are single registers and do not.
+    """
+    info = parse_vector_instruction_info(instruction, instr_type)
+    if info.whole_registers is not None:
+        return 8  # whole-register moves, loads and stores ignore vtype
+    cap = 4 if vector_config.widened_regs - vector_config.scalar_regs else 8
+    if info.load_store_eew is not None:
+        cap = min(cap, 8 * sew / (info.load_store_eew * info.segments))
+    if info.index_eew is not None:
+        cap = min(cap, 8 / info.segments, 8 * sew / info.index_eew)
+    lmul: float | int = 8
+    while lmul > cap:
+        lmul /= 2
+    return int(lmul) if lmul >= 1 else lmul
+
+
 def get_base_lmul(instruction: str, instr_type: str, sew: int) -> float | int:
     """Return an LMUL that satisfies whole-register and indexed-operation constraints."""
     if instr_type == "VMVR":

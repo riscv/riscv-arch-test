@@ -37,49 +37,49 @@
     MisalignV_vlm_v_cg = new(); MisalignV_vlm_v_cg.set_inst_name("obj_MisalignV_vlm_v");
     MisalignV_vloxei16_v_cg = new(); MisalignV_vloxei16_v_cg.set_inst_name("obj_MisalignV_vloxei16_v");
     MisalignV_vloxei32_v_cg = new(); MisalignV_vloxei32_v_cg.set_inst_name("obj_MisalignV_vloxei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vloxei64_v_cg = new(); MisalignV_vloxei64_v_cg.set_inst_name("obj_MisalignV_vloxei64_v");
 `endif
     MisalignV_vloxei8_v_cg = new(); MisalignV_vloxei8_v_cg.set_inst_name("obj_MisalignV_vloxei8_v");
     MisalignV_vloxseg2ei16_v_cg = new(); MisalignV_vloxseg2ei16_v_cg.set_inst_name("obj_MisalignV_vloxseg2ei16_v");
     MisalignV_vloxseg2ei32_v_cg = new(); MisalignV_vloxseg2ei32_v_cg.set_inst_name("obj_MisalignV_vloxseg2ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vloxseg2ei64_v_cg = new(); MisalignV_vloxseg2ei64_v_cg.set_inst_name("obj_MisalignV_vloxseg2ei64_v");
 `endif
     MisalignV_vloxseg2ei8_v_cg = new(); MisalignV_vloxseg2ei8_v_cg.set_inst_name("obj_MisalignV_vloxseg2ei8_v");
     MisalignV_vloxseg3ei16_v_cg = new(); MisalignV_vloxseg3ei16_v_cg.set_inst_name("obj_MisalignV_vloxseg3ei16_v");
     MisalignV_vloxseg3ei32_v_cg = new(); MisalignV_vloxseg3ei32_v_cg.set_inst_name("obj_MisalignV_vloxseg3ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vloxseg3ei64_v_cg = new(); MisalignV_vloxseg3ei64_v_cg.set_inst_name("obj_MisalignV_vloxseg3ei64_v");
 `endif
     MisalignV_vloxseg3ei8_v_cg = new(); MisalignV_vloxseg3ei8_v_cg.set_inst_name("obj_MisalignV_vloxseg3ei8_v");
     MisalignV_vloxseg4ei16_v_cg = new(); MisalignV_vloxseg4ei16_v_cg.set_inst_name("obj_MisalignV_vloxseg4ei16_v");
     MisalignV_vloxseg4ei32_v_cg = new(); MisalignV_vloxseg4ei32_v_cg.set_inst_name("obj_MisalignV_vloxseg4ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vloxseg4ei64_v_cg = new(); MisalignV_vloxseg4ei64_v_cg.set_inst_name("obj_MisalignV_vloxseg4ei64_v");
 `endif
     MisalignV_vloxseg4ei8_v_cg = new(); MisalignV_vloxseg4ei8_v_cg.set_inst_name("obj_MisalignV_vloxseg4ei8_v");
     MisalignV_vloxseg5ei16_v_cg = new(); MisalignV_vloxseg5ei16_v_cg.set_inst_name("obj_MisalignV_vloxseg5ei16_v");
     MisalignV_vloxseg5ei32_v_cg = new(); MisalignV_vloxseg5ei32_v_cg.set_inst_name("obj_MisalignV_vloxseg5ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vloxseg5ei64_v_cg = new(); MisalignV_vloxseg5ei64_v_cg.set_inst_name("obj_MisalignV_vloxseg5ei64_v");
 `endif
     MisalignV_vloxseg5ei8_v_cg = new(); MisalignV_vloxseg5ei8_v_cg.set_inst_name("obj_MisalignV_vloxseg5ei8_v");
     MisalignV_vloxseg6ei16_v_cg = new(); MisalignV_vloxseg6ei16_v_cg.set_inst_name("obj_MisalignV_vloxseg6ei16_v");
     MisalignV_vloxseg6ei32_v_cg = new(); MisalignV_vloxseg6ei32_v_cg.set_inst_name("obj_MisalignV_vloxseg6ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vloxseg6ei64_v_cg = new(); MisalignV_vloxseg6ei64_v_cg.set_inst_name("obj_MisalignV_vloxseg6ei64_v");
 `endif
     MisalignV_vloxseg6ei8_v_cg = new(); MisalignV_vloxseg6ei8_v_cg.set_inst_name("obj_MisalignV_vloxseg6ei8_v");
     MisalignV_vloxseg7ei16_v_cg = new(); MisalignV_vloxseg7ei16_v_cg.set_inst_name("obj_MisalignV_vloxseg7ei16_v");
     MisalignV_vloxseg7ei32_v_cg = new(); MisalignV_vloxseg7ei32_v_cg.set_inst_name("obj_MisalignV_vloxseg7ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vloxseg7ei64_v_cg = new(); MisalignV_vloxseg7ei64_v_cg.set_inst_name("obj_MisalignV_vloxseg7ei64_v");
 `endif
     MisalignV_vloxseg7ei8_v_cg = new(); MisalignV_vloxseg7ei8_v_cg.set_inst_name("obj_MisalignV_vloxseg7ei8_v");
     MisalignV_vloxseg8ei16_v_cg = new(); MisalignV_vloxseg8ei16_v_cg.set_inst_name("obj_MisalignV_vloxseg8ei16_v");
     MisalignV_vloxseg8ei32_v_cg = new(); MisalignV_vloxseg8ei32_v_cg.set_inst_name("obj_MisalignV_vloxseg8ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vloxseg8ei64_v_cg = new(); MisalignV_vloxseg8ei64_v_cg.set_inst_name("obj_MisalignV_vloxseg8ei64_v");
 `endif
     MisalignV_vloxseg8ei8_v_cg = new(); MisalignV_vloxseg8ei8_v_cg.set_inst_name("obj_MisalignV_vloxseg8ei8_v");
@@ -173,49 +173,49 @@
     MisalignV_vlsseg8e8_v_cg = new(); MisalignV_vlsseg8e8_v_cg.set_inst_name("obj_MisalignV_vlsseg8e8_v");
     MisalignV_vluxei16_v_cg = new(); MisalignV_vluxei16_v_cg.set_inst_name("obj_MisalignV_vluxei16_v");
     MisalignV_vluxei32_v_cg = new(); MisalignV_vluxei32_v_cg.set_inst_name("obj_MisalignV_vluxei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vluxei64_v_cg = new(); MisalignV_vluxei64_v_cg.set_inst_name("obj_MisalignV_vluxei64_v");
 `endif
     MisalignV_vluxei8_v_cg = new(); MisalignV_vluxei8_v_cg.set_inst_name("obj_MisalignV_vluxei8_v");
     MisalignV_vluxseg2ei16_v_cg = new(); MisalignV_vluxseg2ei16_v_cg.set_inst_name("obj_MisalignV_vluxseg2ei16_v");
     MisalignV_vluxseg2ei32_v_cg = new(); MisalignV_vluxseg2ei32_v_cg.set_inst_name("obj_MisalignV_vluxseg2ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vluxseg2ei64_v_cg = new(); MisalignV_vluxseg2ei64_v_cg.set_inst_name("obj_MisalignV_vluxseg2ei64_v");
 `endif
     MisalignV_vluxseg2ei8_v_cg = new(); MisalignV_vluxseg2ei8_v_cg.set_inst_name("obj_MisalignV_vluxseg2ei8_v");
     MisalignV_vluxseg3ei16_v_cg = new(); MisalignV_vluxseg3ei16_v_cg.set_inst_name("obj_MisalignV_vluxseg3ei16_v");
     MisalignV_vluxseg3ei32_v_cg = new(); MisalignV_vluxseg3ei32_v_cg.set_inst_name("obj_MisalignV_vluxseg3ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vluxseg3ei64_v_cg = new(); MisalignV_vluxseg3ei64_v_cg.set_inst_name("obj_MisalignV_vluxseg3ei64_v");
 `endif
     MisalignV_vluxseg3ei8_v_cg = new(); MisalignV_vluxseg3ei8_v_cg.set_inst_name("obj_MisalignV_vluxseg3ei8_v");
     MisalignV_vluxseg4ei16_v_cg = new(); MisalignV_vluxseg4ei16_v_cg.set_inst_name("obj_MisalignV_vluxseg4ei16_v");
     MisalignV_vluxseg4ei32_v_cg = new(); MisalignV_vluxseg4ei32_v_cg.set_inst_name("obj_MisalignV_vluxseg4ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vluxseg4ei64_v_cg = new(); MisalignV_vluxseg4ei64_v_cg.set_inst_name("obj_MisalignV_vluxseg4ei64_v");
 `endif
     MisalignV_vluxseg4ei8_v_cg = new(); MisalignV_vluxseg4ei8_v_cg.set_inst_name("obj_MisalignV_vluxseg4ei8_v");
     MisalignV_vluxseg5ei16_v_cg = new(); MisalignV_vluxseg5ei16_v_cg.set_inst_name("obj_MisalignV_vluxseg5ei16_v");
     MisalignV_vluxseg5ei32_v_cg = new(); MisalignV_vluxseg5ei32_v_cg.set_inst_name("obj_MisalignV_vluxseg5ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vluxseg5ei64_v_cg = new(); MisalignV_vluxseg5ei64_v_cg.set_inst_name("obj_MisalignV_vluxseg5ei64_v");
 `endif
     MisalignV_vluxseg5ei8_v_cg = new(); MisalignV_vluxseg5ei8_v_cg.set_inst_name("obj_MisalignV_vluxseg5ei8_v");
     MisalignV_vluxseg6ei16_v_cg = new(); MisalignV_vluxseg6ei16_v_cg.set_inst_name("obj_MisalignV_vluxseg6ei16_v");
     MisalignV_vluxseg6ei32_v_cg = new(); MisalignV_vluxseg6ei32_v_cg.set_inst_name("obj_MisalignV_vluxseg6ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vluxseg6ei64_v_cg = new(); MisalignV_vluxseg6ei64_v_cg.set_inst_name("obj_MisalignV_vluxseg6ei64_v");
 `endif
     MisalignV_vluxseg6ei8_v_cg = new(); MisalignV_vluxseg6ei8_v_cg.set_inst_name("obj_MisalignV_vluxseg6ei8_v");
     MisalignV_vluxseg7ei16_v_cg = new(); MisalignV_vluxseg7ei16_v_cg.set_inst_name("obj_MisalignV_vluxseg7ei16_v");
     MisalignV_vluxseg7ei32_v_cg = new(); MisalignV_vluxseg7ei32_v_cg.set_inst_name("obj_MisalignV_vluxseg7ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vluxseg7ei64_v_cg = new(); MisalignV_vluxseg7ei64_v_cg.set_inst_name("obj_MisalignV_vluxseg7ei64_v");
 `endif
     MisalignV_vluxseg7ei8_v_cg = new(); MisalignV_vluxseg7ei8_v_cg.set_inst_name("obj_MisalignV_vluxseg7ei8_v");
     MisalignV_vluxseg8ei16_v_cg = new(); MisalignV_vluxseg8ei16_v_cg.set_inst_name("obj_MisalignV_vluxseg8ei16_v");
     MisalignV_vluxseg8ei32_v_cg = new(); MisalignV_vluxseg8ei32_v_cg.set_inst_name("obj_MisalignV_vluxseg8ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vluxseg8ei64_v_cg = new(); MisalignV_vluxseg8ei64_v_cg.set_inst_name("obj_MisalignV_vluxseg8ei64_v");
 `endif
     MisalignV_vluxseg8ei8_v_cg = new(); MisalignV_vluxseg8ei8_v_cg.set_inst_name("obj_MisalignV_vluxseg8ei8_v");
@@ -230,49 +230,49 @@
     MisalignV_vsm_v_cg = new(); MisalignV_vsm_v_cg.set_inst_name("obj_MisalignV_vsm_v");
     MisalignV_vsoxei16_v_cg = new(); MisalignV_vsoxei16_v_cg.set_inst_name("obj_MisalignV_vsoxei16_v");
     MisalignV_vsoxei32_v_cg = new(); MisalignV_vsoxei32_v_cg.set_inst_name("obj_MisalignV_vsoxei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsoxei64_v_cg = new(); MisalignV_vsoxei64_v_cg.set_inst_name("obj_MisalignV_vsoxei64_v");
 `endif
     MisalignV_vsoxei8_v_cg = new(); MisalignV_vsoxei8_v_cg.set_inst_name("obj_MisalignV_vsoxei8_v");
     MisalignV_vsoxseg2ei16_v_cg = new(); MisalignV_vsoxseg2ei16_v_cg.set_inst_name("obj_MisalignV_vsoxseg2ei16_v");
     MisalignV_vsoxseg2ei32_v_cg = new(); MisalignV_vsoxseg2ei32_v_cg.set_inst_name("obj_MisalignV_vsoxseg2ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsoxseg2ei64_v_cg = new(); MisalignV_vsoxseg2ei64_v_cg.set_inst_name("obj_MisalignV_vsoxseg2ei64_v");
 `endif
     MisalignV_vsoxseg2ei8_v_cg = new(); MisalignV_vsoxseg2ei8_v_cg.set_inst_name("obj_MisalignV_vsoxseg2ei8_v");
     MisalignV_vsoxseg3ei16_v_cg = new(); MisalignV_vsoxseg3ei16_v_cg.set_inst_name("obj_MisalignV_vsoxseg3ei16_v");
     MisalignV_vsoxseg3ei32_v_cg = new(); MisalignV_vsoxseg3ei32_v_cg.set_inst_name("obj_MisalignV_vsoxseg3ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsoxseg3ei64_v_cg = new(); MisalignV_vsoxseg3ei64_v_cg.set_inst_name("obj_MisalignV_vsoxseg3ei64_v");
 `endif
     MisalignV_vsoxseg3ei8_v_cg = new(); MisalignV_vsoxseg3ei8_v_cg.set_inst_name("obj_MisalignV_vsoxseg3ei8_v");
     MisalignV_vsoxseg4ei16_v_cg = new(); MisalignV_vsoxseg4ei16_v_cg.set_inst_name("obj_MisalignV_vsoxseg4ei16_v");
     MisalignV_vsoxseg4ei32_v_cg = new(); MisalignV_vsoxseg4ei32_v_cg.set_inst_name("obj_MisalignV_vsoxseg4ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsoxseg4ei64_v_cg = new(); MisalignV_vsoxseg4ei64_v_cg.set_inst_name("obj_MisalignV_vsoxseg4ei64_v");
 `endif
     MisalignV_vsoxseg4ei8_v_cg = new(); MisalignV_vsoxseg4ei8_v_cg.set_inst_name("obj_MisalignV_vsoxseg4ei8_v");
     MisalignV_vsoxseg5ei16_v_cg = new(); MisalignV_vsoxseg5ei16_v_cg.set_inst_name("obj_MisalignV_vsoxseg5ei16_v");
     MisalignV_vsoxseg5ei32_v_cg = new(); MisalignV_vsoxseg5ei32_v_cg.set_inst_name("obj_MisalignV_vsoxseg5ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsoxseg5ei64_v_cg = new(); MisalignV_vsoxseg5ei64_v_cg.set_inst_name("obj_MisalignV_vsoxseg5ei64_v");
 `endif
     MisalignV_vsoxseg5ei8_v_cg = new(); MisalignV_vsoxseg5ei8_v_cg.set_inst_name("obj_MisalignV_vsoxseg5ei8_v");
     MisalignV_vsoxseg6ei16_v_cg = new(); MisalignV_vsoxseg6ei16_v_cg.set_inst_name("obj_MisalignV_vsoxseg6ei16_v");
     MisalignV_vsoxseg6ei32_v_cg = new(); MisalignV_vsoxseg6ei32_v_cg.set_inst_name("obj_MisalignV_vsoxseg6ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsoxseg6ei64_v_cg = new(); MisalignV_vsoxseg6ei64_v_cg.set_inst_name("obj_MisalignV_vsoxseg6ei64_v");
 `endif
     MisalignV_vsoxseg6ei8_v_cg = new(); MisalignV_vsoxseg6ei8_v_cg.set_inst_name("obj_MisalignV_vsoxseg6ei8_v");
     MisalignV_vsoxseg7ei16_v_cg = new(); MisalignV_vsoxseg7ei16_v_cg.set_inst_name("obj_MisalignV_vsoxseg7ei16_v");
     MisalignV_vsoxseg7ei32_v_cg = new(); MisalignV_vsoxseg7ei32_v_cg.set_inst_name("obj_MisalignV_vsoxseg7ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsoxseg7ei64_v_cg = new(); MisalignV_vsoxseg7ei64_v_cg.set_inst_name("obj_MisalignV_vsoxseg7ei64_v");
 `endif
     MisalignV_vsoxseg7ei8_v_cg = new(); MisalignV_vsoxseg7ei8_v_cg.set_inst_name("obj_MisalignV_vsoxseg7ei8_v");
     MisalignV_vsoxseg8ei16_v_cg = new(); MisalignV_vsoxseg8ei16_v_cg.set_inst_name("obj_MisalignV_vsoxseg8ei16_v");
     MisalignV_vsoxseg8ei32_v_cg = new(); MisalignV_vsoxseg8ei32_v_cg.set_inst_name("obj_MisalignV_vsoxseg8ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsoxseg8ei64_v_cg = new(); MisalignV_vsoxseg8ei64_v_cg.set_inst_name("obj_MisalignV_vsoxseg8ei64_v");
 `endif
     MisalignV_vsoxseg8ei8_v_cg = new(); MisalignV_vsoxseg8ei8_v_cg.set_inst_name("obj_MisalignV_vsoxseg8ei8_v");
@@ -338,49 +338,49 @@
     MisalignV_vssseg8e8_v_cg = new(); MisalignV_vssseg8e8_v_cg.set_inst_name("obj_MisalignV_vssseg8e8_v");
     MisalignV_vsuxei16_v_cg = new(); MisalignV_vsuxei16_v_cg.set_inst_name("obj_MisalignV_vsuxei16_v");
     MisalignV_vsuxei32_v_cg = new(); MisalignV_vsuxei32_v_cg.set_inst_name("obj_MisalignV_vsuxei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsuxei64_v_cg = new(); MisalignV_vsuxei64_v_cg.set_inst_name("obj_MisalignV_vsuxei64_v");
 `endif
     MisalignV_vsuxei8_v_cg = new(); MisalignV_vsuxei8_v_cg.set_inst_name("obj_MisalignV_vsuxei8_v");
     MisalignV_vsuxseg2ei16_v_cg = new(); MisalignV_vsuxseg2ei16_v_cg.set_inst_name("obj_MisalignV_vsuxseg2ei16_v");
     MisalignV_vsuxseg2ei32_v_cg = new(); MisalignV_vsuxseg2ei32_v_cg.set_inst_name("obj_MisalignV_vsuxseg2ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsuxseg2ei64_v_cg = new(); MisalignV_vsuxseg2ei64_v_cg.set_inst_name("obj_MisalignV_vsuxseg2ei64_v");
 `endif
     MisalignV_vsuxseg2ei8_v_cg = new(); MisalignV_vsuxseg2ei8_v_cg.set_inst_name("obj_MisalignV_vsuxseg2ei8_v");
     MisalignV_vsuxseg3ei16_v_cg = new(); MisalignV_vsuxseg3ei16_v_cg.set_inst_name("obj_MisalignV_vsuxseg3ei16_v");
     MisalignV_vsuxseg3ei32_v_cg = new(); MisalignV_vsuxseg3ei32_v_cg.set_inst_name("obj_MisalignV_vsuxseg3ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsuxseg3ei64_v_cg = new(); MisalignV_vsuxseg3ei64_v_cg.set_inst_name("obj_MisalignV_vsuxseg3ei64_v");
 `endif
     MisalignV_vsuxseg3ei8_v_cg = new(); MisalignV_vsuxseg3ei8_v_cg.set_inst_name("obj_MisalignV_vsuxseg3ei8_v");
     MisalignV_vsuxseg4ei16_v_cg = new(); MisalignV_vsuxseg4ei16_v_cg.set_inst_name("obj_MisalignV_vsuxseg4ei16_v");
     MisalignV_vsuxseg4ei32_v_cg = new(); MisalignV_vsuxseg4ei32_v_cg.set_inst_name("obj_MisalignV_vsuxseg4ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsuxseg4ei64_v_cg = new(); MisalignV_vsuxseg4ei64_v_cg.set_inst_name("obj_MisalignV_vsuxseg4ei64_v");
 `endif
     MisalignV_vsuxseg4ei8_v_cg = new(); MisalignV_vsuxseg4ei8_v_cg.set_inst_name("obj_MisalignV_vsuxseg4ei8_v");
     MisalignV_vsuxseg5ei16_v_cg = new(); MisalignV_vsuxseg5ei16_v_cg.set_inst_name("obj_MisalignV_vsuxseg5ei16_v");
     MisalignV_vsuxseg5ei32_v_cg = new(); MisalignV_vsuxseg5ei32_v_cg.set_inst_name("obj_MisalignV_vsuxseg5ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsuxseg5ei64_v_cg = new(); MisalignV_vsuxseg5ei64_v_cg.set_inst_name("obj_MisalignV_vsuxseg5ei64_v");
 `endif
     MisalignV_vsuxseg5ei8_v_cg = new(); MisalignV_vsuxseg5ei8_v_cg.set_inst_name("obj_MisalignV_vsuxseg5ei8_v");
     MisalignV_vsuxseg6ei16_v_cg = new(); MisalignV_vsuxseg6ei16_v_cg.set_inst_name("obj_MisalignV_vsuxseg6ei16_v");
     MisalignV_vsuxseg6ei32_v_cg = new(); MisalignV_vsuxseg6ei32_v_cg.set_inst_name("obj_MisalignV_vsuxseg6ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsuxseg6ei64_v_cg = new(); MisalignV_vsuxseg6ei64_v_cg.set_inst_name("obj_MisalignV_vsuxseg6ei64_v");
 `endif
     MisalignV_vsuxseg6ei8_v_cg = new(); MisalignV_vsuxseg6ei8_v_cg.set_inst_name("obj_MisalignV_vsuxseg6ei8_v");
     MisalignV_vsuxseg7ei16_v_cg = new(); MisalignV_vsuxseg7ei16_v_cg.set_inst_name("obj_MisalignV_vsuxseg7ei16_v");
     MisalignV_vsuxseg7ei32_v_cg = new(); MisalignV_vsuxseg7ei32_v_cg.set_inst_name("obj_MisalignV_vsuxseg7ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsuxseg7ei64_v_cg = new(); MisalignV_vsuxseg7ei64_v_cg.set_inst_name("obj_MisalignV_vsuxseg7ei64_v");
 `endif
     MisalignV_vsuxseg7ei8_v_cg = new(); MisalignV_vsuxseg7ei8_v_cg.set_inst_name("obj_MisalignV_vsuxseg7ei8_v");
     MisalignV_vsuxseg8ei16_v_cg = new(); MisalignV_vsuxseg8ei16_v_cg.set_inst_name("obj_MisalignV_vsuxseg8ei16_v");
     MisalignV_vsuxseg8ei32_v_cg = new(); MisalignV_vsuxseg8ei32_v_cg.set_inst_name("obj_MisalignV_vsuxseg8ei32_v");
-`ifdef XLEN64
+`ifdef UDB_MXLEN_64
     MisalignV_vsuxseg8ei64_v_cg = new(); MisalignV_vsuxseg8ei64_v_cg.set_inst_name("obj_MisalignV_vsuxseg8ei64_v");
 `endif
     MisalignV_vsuxseg8ei8_v_cg = new(); MisalignV_vsuxseg8ei8_v_cg.set_inst_name("obj_MisalignV_vsuxseg8ei8_v");

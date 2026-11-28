@@ -74,6 +74,10 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             suffix += f"_emul{get_lmul_flag(16 / test_data.config.sew)}"
             ignore_vector_safety = True
 
+    # Any gather index in vs1 is legal, so keep its edge values instead of reducing them to [0, 2*VLMAX)
+    if register == "vs1" and type_config.vector_data.index_register == "vs1":
+        ignore_vector_safety = True
+
     test_chunks = []
     for edge in edges:
         label = make_and_register_edge_label(register, edge, suffix, test_data)

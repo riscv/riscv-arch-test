@@ -23,14 +23,20 @@ coverpoints:
     description: In supervisor mode, read/write/set/clear from each U-mode CSR if F/V are supported
   - name: cp_csr_insufficient_priv
     description: Read Machine CSRS 300-3FF, 700-7FF, B00-BFF, F000-FFF, excluding 7AA (mscontext)
-  - name: cp_scause_write
+  - name: |-
+      cp_scause_write_exception
+      cp_scause_write_interrupt
     goal: |-
       Write scause values
       (WLRL)
     description: |-
-      Write scause values:
-      with interrupt = 1: 0-15
-      with interrupt = 0: 0-64
+      Write and read back every code 0-31 with Interrupt = 0 and 1 on Ss1p12 or later.
+      Before Ss1p12, test only supported supervisor causes: gate page faults on Sv32 or Sv39,
+      supervisor interrupts on their UDB *_INTR_IMPL parameters, H causes on H (and guest-external
+      interrupts on GEILEN > 0), software check on Zicfilp or Zicfiss, and counter overflow on Sscofpmf.
+      Do not write machine interrupt codes 3, 7 or 11 before Ss1p12.
+    expectation: Each value reads back as written
+    bins: 64 on Ss1p12 or later; otherwise one per supported supervisor exception or interrupt code
   - name: cp_sstatus_sd_write
     goal: |-
       Writing to the CSR field

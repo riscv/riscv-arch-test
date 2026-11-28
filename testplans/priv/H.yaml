@@ -112,9 +112,9 @@ coverpoints:
       - H_vscsrs_v0
   - name: cp_hstatus_vgein
     goal: VGEIN can hold values between 0 and GEILEN
-    description: Write {0, 1, GEILEN-1, GEILEN} to hstatus.VGEIN; only 0 when GEILEN = 0.  Larger values are WLRL, so they are not written.
+    description: Write and read back every hstatus.VGEIN value from 0 through GEILEN, inclusive. Only write 0 when GEILEN = 0. Never write values above GEILEN.
     expectation: Each value reads back as written
-    bins: 4 (1 with GEILEN = 0)
+    bins: GEILEN + 1
     rules:
       - hstatus_vgein_wlrl
   - heading: Tests executed in HS-mode (H_vscause_cg)
@@ -124,9 +124,11 @@ coverpoints:
     goal: vscause WLRL fields writable
     description: |-
       Write each exception code 0-31 with interrupt = 0 and each interrupt code 0-31 with interrupt = 1, and read back.
-      Without Priv 1.12, only the codes that are defined in Priv 1.11.  Codes 32 and up are reserved or custom, so they are WLRL values that need not be held.
+      Before Ss1p12, use the same supported supervisor causes and configuration gates as scause:
+      exclude machine interrupt codes 3, 7 and 11, gate supervisor interrupts on their UDB *_INTR_IMPL
+      parameters, and gate guest-external interrupts on GEILEN > 0. Codes 32 and up are not tested.
     expectation: Each value reads back as written
-    bins: 32 exceptions + 32 interrupts (13 + 6 before Priv 1.12)
+    bins: 64 on Ss1p12 or later; otherwise one per supported supervisor exception or interrupt code
   - heading: Tests executed in VS-mode (H_vscsr_cg)
   - name: cp_csr_insufficient_priv
     goal: M-mode CSRs are inaccessible from VS-mode

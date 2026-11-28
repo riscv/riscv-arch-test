@@ -1,0 +1,1 @@
+../../rocket/rocket-saturn-rv64gcvh/link.ld

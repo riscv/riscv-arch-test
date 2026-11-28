@@ -12,13 +12,21 @@ Common code for Ssnpm (S->U), Smmpm (M-mode), SmnpmS (M->S), SmnpmU (M->U)
 test generators.
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from testgen.asm.csr import gen_csr_write_sigupd
 from testgen.asm.helpers import arch_block, comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
-from testgen.priv.extensions.sv.page_tables import RV64_SV_MODES, SV39, PteFlags, create_page_mapping
+from testgen.priv.extensions.sv.page_tables import (
+    RV64_SV_MODES,
+    SV39,
+    PteFlags,
+    SvMode,
+    create_page_mapping,
+    lower_table_data,
+)
 
 # ── Constants ──────────────────────────────────────────────────────────────
 
@@ -309,12 +317,21 @@ def data_slvl_tables(mode: str, table_label: str = "rvtest_slvl{}_pg_tbl") -> li
 # ── Page tables and MPRV data (Smmpm / Ssnpm) ───────────────────────────
 
 
-def mprv_data_section() -> list[str]:
-    """Return data pages and optional lower-level tables for MPRV probes."""
+def mprv_data_section(*, seam: bool = False) -> list[str]:
+    """Return data pages and optional lower-level tables for MPRV probes.
+
+    *seam* adds pm_hi_page, SEAM_PAGE and the rvtest_slvl tables that map_seam_pages walks, for
+    generate_mprv_seam_tests.
+    """
     lines = [*data_page("pm_lo_page"), *data_page("mprv_page")]
     for mode in SV_MODES:
         guard = f"{mode.upper()}_SUPPORTED"
         lines.extend(_ifdef(guard, data_slvl_tables(mode, _MPRV_TABLE_LABEL + mode)))
+    if seam:
+        lines.extend(data_page("pm_hi_page"))
+        for mode in _SEAM_MODES:
+            lines.extend(_ifdef(f"{mode.upper()}_SUPPORTED", lower_table_data(SV_MODES[mode])))
+        lines.extend(data_page(SEAM_PAGE))
     return lines
 
 
@@ -1036,6 +1053,183 @@ def generate_misaligned_tests(prefix: str, test_data: TestData, cg: str) -> list
     ]
 
 
+# Loads and stores whose misaligned forms straddle a page: (mnemonic, bytes, feature guard)
+_SEAM_LOADS = [("lh", 2, None), ("lw", 4, None), ("ld", 8, None), ("flw", 4, "F_SUPPORTED"), ("fld", 8, "D_SUPPORTED")]
+_SEAM_STORES = [("sh", 2, None), ("sw", 4, None), ("sd", 8, None), ("fsw", 4, "F_SUPPORTED"), ("fsd", 8, "D_SUPPORTED")]
+# The page that the lower seam page maps to.  It is not the page below pm_hi_page, so an access that runs on
+# from the physical address of its first part does not reach the bytes of the upper seam page.
+SEAM_PAGE = "pm_seam_page"
+# Distinct bytes on either side of the seam: the last dword of SEAM_PAGE, the first dword of pm_hi_page, and the
+# value the stores write
+_SEAM_SEED_LO = 0x1122_3344_5566_7788
+_SEAM_SEED_HI = 0x99AA_BBCC_DDEE_FF00
+_SEAM_STORE = 0xA1B2_C3D4_E5F6_0718
+
+
+def seam_pages(mode: str, pmlen: int) -> tuple[int, int] | None:
+    """The virtual pages on either side of bit 63 - PMLEN, the sign bit of the masked address: the last page of the
+    lower half and the first page of the upper half.
+
+    None unless *mode* translates exactly the bits that masking keeps, as Sv57 with PMLEN 7 and Sv48 with PMLEN 16 do.
+    A narrower mode finds the lower page non-canonical, and in a wider one the test image's identity-mapped root
+    entry holds the lower page.
+    """
+    if pmlen == 0 or mode not in SV_MODES or SV_MODES[mode].va_bits != 64 - pmlen:
+        return None
+    sign = 1 << (63 - pmlen)
+    return sign - 0x1000, (1 << 64) - sign
+
+
+# The satp modes that translate both seam pages for some PMLEN
+_SEAM_MODES = [mode for mode in MODES if any(seam_pages(mode, pmlen) for _, pmlen, _ in PMM_CONFIGS)]
+
+
+def map_seam_pages(mode: str, pmlen: int, *, user: bool) -> list[str]:
+    """Map the lower seam page to SEAM_PAGE and the upper one to pm_hi_page with 4 KiB read/write leaves.
+
+    The walks share the rvtest_slvl tables with map_pm_hi_page: below the root the lower page takes the last entry
+    of each table and the upper page the first, as HIGH_VA does, and both upper-half addresses reach pm_hi_page.
+    """
+    lo, hi = seam_pages(mode, pmlen) or (0, 0)
+    lines = [f"# {mode.upper()}: map {lo:#x} -> {SEAM_PAGE} and {hi:#x} -> pm_hi_page"]
+    for va, pa in ((lo, SEAM_PAGE), (hi, "pm_hi_page")):
+        lines.extend(
+            create_page_mapping(
+                SV_MODES[mode],
+                leaf_level=0,
+                leaf_flags=PteFlags(execute=False, user=user),
+                virtual_address=hex(va),
+                physical_address=pa,
+            )
+        )
+    return lines
+
+
+def _seam_probe(
+    mnemonic: str,
+    address: int,
+    tag: int,
+    store: bool,
+    check_memory: bool,
+    bin_name: str,
+    test_data: TestData,
+    cp: str,
+    cg: str,
+    wrap: Callable[[list[str]], list[str]],
+    upper_page: str,
+) -> list[str]:
+    """One access at *address* with bits 63:48 XORed with *tag*, after seeding both sides of the seam: the end of
+    SEAM_PAGE and the start of *upper_page*.
+
+    A load records rd.  A store records the two dwords around the seam when *check_memory* is set; a store that
+    faults may have written its first part, so its memory is not checked.
+    """
+    addr, base, value = test_data.int_regs.get_registers(3)
+    fp = test_data.float_regs.get_register() if mnemonic.startswith("f") else None
+    data = f"f{fp}" if fp is not None else f"x{value}"
+    lines = [
+        f"LI(x{addr}, {address ^ (tag << 48):#x})   # masks to {address:#x}",
+        f"LA(x{base}, {SEAM_PAGE} + 0xFF8)",
+        f"LI(x{value}, {_SEAM_SEED_LO:#x})",
+        f"sd x{value}, 0(x{base})",
+        f"LA(x{base}, {upper_page})",
+        f"LI(x{value}, {_SEAM_SEED_HI:#x})",
+        f"sd x{value}, 0(x{base})",
+        f"LI(x{value}, {(_SEAM_STORE if store else SENTINEL):#x})",
+    ]
+    width = "w" if mnemonic in ("flw", "fsw") else "d"
+    if fp is not None:
+        lines.append(f"fmv.{width}.x f{fp}, x{value}")
+    lines.extend(wrap([test_data.add_testcase(bin_name, cp, cg), f"{mnemonic} {data}, 0(x{addr})"]))
+    if not store:
+        # An FP result is moved to x{value}: the FP signature check uses fp_sigupd_temp, which U-mode cannot reach
+        if fp is not None:
+            lines.append(f"fmv.x.{width} x{value}, f{fp}")
+        lines.append(write_sigupd(value, test_data))
+    elif check_memory:
+        lines.extend(
+            [
+                f"LA(x{base}, {SEAM_PAGE} + 0xFF8)",
+                f"ld x{value}, 0(x{base})",
+                write_sigupd(value, test_data),
+                f"LA(x{base}, {upper_page})",
+                f"ld x{value}, 0(x{base})",
+                write_sigupd(value, test_data),
+            ]
+        )
+    test_data.int_regs.return_registers([addr, base, value])
+    if fp is not None:
+        test_data.float_regs.return_register(fp)
+    return lines
+
+
+def generate_seam_tests(
+    prefix: str,
+    sv: SvMode,
+    pmlen: int,
+    test_data: TestData,
+    cg: str,
+    *,
+    cp: str | None = None,
+    tsbi: bool = False,
+    wrap: Callable[[list[str]], list[str]] = lambda lines: lines,
+    upper_page: str = "pm_hi_page",
+) -> list[str]:
+    """Misaligned loads and stores that start in the lower seam page (see seam_pages) and end in the upper one.
+
+    Masking each byte of the access (pm_misaligned_equivalence) sign extends the bytes past bit 63 - PMLEN, so they
+    reach the first page of the upper half; masking only the start address and adding gives a non-canonical address.
+    Every split of each access width runs with no tag and with every masked bit set, first with both pages mapped
+    in *sv*'s tables to SEAM_PAGE and *upper_page*, then with the upper page's leaf cleared, where the access takes a
+    page fault whose xtval is the upper page's address.  *cp* defaults to cp_pmlen_misaligned_seam_<sv>.  *tsbi*
+    edits that leaf through T-SBI, and *wrap* surrounds each access.
+    """
+    lo, hi = seam_pages(sv.name, pmlen) or (0, 0)
+    cp = cp or f"cp_pmlen_misaligned_seam_{sv.name}"
+    fence = "hfence.vvma" if sv.stage == "vs" else "sfence.vma"
+    full_tag = ((1 << pmlen) - 1) << (16 - pmlen)
+    leaf, saved = test_data.int_regs.get_registers(2)
+    lines = [
+        comment_banner(
+            f"{prefix} {cp}: misaligned accesses across bit {63 - pmlen}, the sign bit of the masked address",
+            f"Each byte is masked on its own, so the bytes past {lo + 0xFFF:#x} are at {hi:#x}",
+        ),
+    ]
+
+    def run(instr: str) -> str:
+        return tsbi_call(instr) if tsbi else instr
+
+    for fault in (False, True):
+        if fault:
+            lines.extend(
+                [
+                    f"# Clear the leaf PTE of {hi:#x}: the part in the upper page takes a page fault",
+                    f"LA(x{leaf}, {sv.pte_address(0, hex(hi))})",
+                    run(f"ld x{saved}, 0(x{leaf})"),
+                    run(f"sd x0, 0(x{leaf})"),
+                    run(fence),
+                ]
+            )
+        outcome = "fault" if fault else "ok"
+        for store, table in ((False, _SEAM_LOADS), (True, _SEAM_STORES)):
+            for mnemonic, size, guard in table:
+                body = []
+                for in_page in range(1, size):
+                    for tag in (0, full_tag):
+                        bin_name = f"{prefix}_{outcome}_{mnemonic}_{in_page}_up{tag:04X}"
+                        address = lo + 0x1000 - in_page
+                        body.extend(
+                            _seam_probe(
+                                mnemonic, address, tag, store, not fault, bin_name, test_data, cp, cg, wrap, upper_page
+                            )
+                        )
+                lines.extend(_ifdef(guard, body) if guard else body)
+        if fault:
+            lines.extend([run(f"sd x{saved}, 0(x{leaf})"), run(fence)])
+    test_data.int_regs.return_registers([leaf, saved])
+    return _ifdef("UDB_MISALIGNED_LDST", lines)
+
+
 def generate_mxr_tests(
     prefix: str,
     test_data: TestData,
@@ -1424,3 +1618,29 @@ def generate_mprv_lower_mode_tests(
         ]
     )
     return lines
+
+
+def generate_mprv_seam_tests(test_data: TestData, cg: str, *, mpp: str, pmm_csr: str) -> list[str]:
+    """generate_seam_tests from M-mode with MPRV=1 and MPP=*mpp*, so *pmm_csr*.PMM masks each access, for every
+    satp mode and PMM whose seam pages translate.  MPRV is cleared after each access, so the checks are untranslated.
+    """
+    user = mpp == "PRV_U"
+
+    def wrap(lines: list[str]) -> list[str]:
+        return [*set_mprv(True, test_data, mpp), *lines, *set_mprv(False, test_data)]
+
+    lines = []
+    for mode in _SEAM_MODES:
+        for pmm, pmlen, label in PMM_CONFIGS:
+            if seam_pages(mode, pmlen) is None:
+                continue
+            body = [
+                *map_seam_pages(mode, pmlen, user=user),
+                *satp_setup(mode, test_data),
+                *set_pmm_field(pmm_csr, pmm, pmlen, test_data),
+                *generate_seam_tests(f"mprv_{label}_{mode}", SV_MODES[mode], pmlen, test_data, cg, wrap=wrap),
+                *set_pmm_field(pmm_csr, 0b00, 0, test_data),
+                *satp_clear(),
+            ]
+            lines.extend(_ifdef(f"{mode.upper()}_SUPPORTED", pmm_ifdef(pmm_csr, pmlen, body)))
+    return [*lines, *mprv_teardown(test_data, sum_bit=False, mxr=False)]

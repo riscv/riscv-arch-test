@@ -66,12 +66,14 @@ from testgen.priv.extensions.sv.page_tables import (
 )
 from testgen.priv.extensions.ZpmCommon import (
     PMM_CONFIGS,
+    SEAM_PAGE,
     SENTINEL,
     VALUE_NEW,
     VALUE_OLD,
     HeldAddress,
     csr_op,
     data_page,
+    generate_seam_tests,
     pmm_ifdef,
     probe_amo,
     probe_cbo,
@@ -79,6 +81,7 @@ from testgen.priv.extensions.ZpmCommon import (
     probe_store,
     probe_vec,
     probe_zacas,
+    seam_pages,
     set_pmm_field,
     set_sse,
 )
@@ -1464,6 +1467,56 @@ def _zicfiss(test_data: TestData, pmm: int, mode: str) -> list[str]:
     return _wrap("paged", gated(body, "defined(ZICFISS_SUPPORTED)"))
 
 
+# ── Misaligned accesses across the sign bit of the masked address ─────────
+
+
+def _seam(test_data: TestData, pair: _Pair, pmm: int) -> list[str]:
+    """cp_vs_ and cp_vu_pmlen_misaligned_seam_<vsatp mode>: generate_seam_tests in VS-mode with henvcfg.PMM = pmm and
+    in VU-mode with senvcfg.PMM = pmm.  The VS stage maps the lower seam page to SEAM_PAGE and the upper one to
+    pm_lo_page, whose leaf _HIGH_VA shares, and each access runs alone in the guest mode."""
+    assert pair.vs is not None
+    vs, pmlen = pair.vs, _PMLEN[pmm]
+    pages = seam_pages(vs.name, pmlen) or (0, 0)
+    lines = []
+    for mode, field in (("VS", "henvcfg"), ("VU", "senvcfg")):
+        flags = PteFlags(execute=False, user=mode == "VU")
+
+        def maps(unmap: bool, flags: PteFlags = flags) -> list[str]:
+            return [
+                *(
+                    line
+                    for va, page in zip(pages, (SEAM_PAGE, "pm_lo_page"))
+                    for line in _page_map(test_data, vs, va, page, flags, flags, unmap)
+                ),
+                "hfence.vvma",
+            ]
+
+        def wrap(body: list[str], mode: str = mode) -> list[str]:
+            return [f"RVTEST_TSBI_GOTO_{mode}MODE", *body, "RVTEST_TSBI_GOTO_SMODE"]
+
+        lines.extend(
+            [
+                *_setup(test_data, pair, mode == "VU"),
+                *maps(unmap=False),
+                *_pmm_case(test_data, field, pmm),
+                *generate_seam_tests(
+                    f"{pair.name}_{mode.lower()}_pmm{pmm:02b}",
+                    vs,
+                    pmlen,
+                    test_data,
+                    _CG,
+                    cp=f"cp_{mode.lower()}_pmlen_misaligned_seam_{vs.name}",
+                    wrap=wrap,
+                    upper_page="pm_lo_page",
+                ),
+                *maps(unmap=True),
+                *_clear_pmm(test_data),
+                *guest_translation_teardown(test_data),
+            ]
+        )
+    return pmm_ifdef("henvcfg", pmlen, lines)
+
+
 # ── Chunks ─────────────────────────────────────────────────────────────────
 
 
@@ -1526,6 +1579,17 @@ def _make_pair(test_data: TestData, pair: _Pair) -> list[TestChunk]:
                 lambda: _gstage_no_pmm(test_data, pair),
             )
         )
+    for pmm, pmlen, _ in PMM_CONFIGS:
+        if pair.vs is not None and seam_pages(pair.vs.name, pmlen):
+            chunk = _chunk(
+                test_data,
+                None,
+                f"cp_vs_pmlen_misaligned_seam_{pair.vs.name}, cp_vu_pmlen_misaligned_seam_{pair.vs.name}",
+                f"Misaligned accesses across bit {63 - pmlen} of the masked guest virtual address",
+                lambda pmm=pmm: _seam(test_data, pair, pmm),
+            )
+            chunk.raw_data.extend([f".ifndef {SEAM_PAGE}", *data_page(SEAM_PAGE), ".endif"])
+            chunks.append(chunk)
     return chunks
 
 

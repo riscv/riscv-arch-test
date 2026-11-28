@@ -31,3 +31,20 @@ coverpoints:
     bins: 2 MXR * 3 mseccfg.PMM * 3 menvcfg.PMM * 1 MPRV * 1 MPP (S) * 2 satp.MODE * 3 addresses * 2 instructions (lw, sw)
     rules:
       - pm_mprv_spvp
+  - name: |-
+      cp_pmlen_misaligned_seam_sv57
+      cp_pmlen_misaligned_seam_sv48
+    goal: Verify that pointer masking applies to each byte of a misaligned access across the sign bit of the masked address when M-mode accesses memory as S-mode via MPRV.
+    description: |-
+      Same accesses as cp_pmlen_misaligned_seam_sv57 and cp_pmlen_misaligned_seam_sv48 in Ssnpm, made from M-mode with mstatus.MPRV=1 and mstatus.MPP=S, so menvcfg.PMM masks each byte.
+
+      Test Environment:
+       Only if misaligned loads and stores are performed in hardware (MISALIGNED_LDST).
+       In M-mode map the two pages around the seam as supervisor pages and set menvcfg.PMM=10 with satp.MODE=Sv57, or menvcfg.PMM=11 with satp.MODE=Sv48.
+       Set mstatus.MPRV=1 and mstatus.MPP=S just before each access and clear MPRV after it, so the checks are not translated.
+    expectation: As cp_pmlen_misaligned_seam_sv57 and cp_pmlen_misaligned_seam_sv48 in Ssnpm, with the trap taken in M-mode and mtval = the upper page's address.
+    bins: 1 mode (M) × 1 MPRV × 1 MPP (S) × {Sv57 with PMLEN=7, Sv48 with PMLEN=16} × instructions {lh, lw, ld, sh, sw, sd, flw, fsw, fld, fsd} × {completes, page fault}
+    rules:
+      - pm_misaligned_equivalence
+      - pm_mprv_spvp
+      - pm_csr_hw_apply

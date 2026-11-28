@@ -6,11 +6,14 @@
 ##################################
 
 
+from typing import Literal
+
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
 from testgen.formatters.registry import get_instruction_type_config
+from testgen.instructions.vector import runs_at_vlmax
 from testgen.instructions.vector_params import generate_random_vector_params
 
 
@@ -24,15 +27,21 @@ def make_imm_5bit(instr_name: str, instr_type: str, coverpoint: str, test_data: 
 
     instr_type_config = get_instruction_type_config(instr_type)
     assert instr_type_config.vector_data is not None, "vector_data must be provided for Vector instruction types"
-    vl = instr_type_config.vector_data.egs
+    vl: int | Literal["vlmax"] = instr_type_config.vector_data.egs
     lmul = instr_type_config.vector_data.egs
+    suite: Literal["base", "length"] = "base"
+    if runs_at_vlmax(instr_name, coverpoint):
+        suite = "length"
+        vl = "vlmax"
 
     test_chunks = []
     for imm in imm_vals:
         desc = f"{coverpoint} (Test imm={imm})"
         bin_name = f"imm{imm}"
 
-        params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=lmul, vl=vl, immval=imm)
+        params = generate_random_vector_params(
+            test_data, instr_name, instr_type, lmul=lmul, vl=vl, immval=imm, suite=suite
+        )
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 
         test_chunks.append(tc)

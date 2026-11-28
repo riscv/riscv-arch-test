@@ -125,3 +125,26 @@ def get_base_lmul(instruction: str, instr_type: str, sew: int) -> float | int:
         return sew / info.load_store_eew
 
     return 1
+
+
+# Coverpoints whose base-suite tests run at vl=1 and so cannot observe the operand they vary. These run at vl=VLMAX
+# in the length suite instead.
+_VLMAX_COVERPOINTS: dict[str, frozenset[str]] = {
+    # At vl=1, a slide1 writes only the scalar and never reads vs2
+    "vslide1up.vx": frozenset({"cp_vs2"}),
+    "vslide1down.vx": frozenset({"cp_vs2"}),
+    "vfslide1up.vf": frozenset({"cp_vs2"}),
+    "vfslide1down.vf": frozenset({"cp_vs2"}),
+    # At vl=1, viota.m writes 0 for any mask
+    "viota.m": frozenset({"cp_vs2", "cp_vs2_edges_eew1"}),
+    # A vcompress mask only selects among elements when vl > 1
+    "vcompress.vm": frozenset({"cp_vs1_edges"}),
+    # A slide by a nonzero immediate moves no data at vl=1
+    "vslideup.vi": frozenset({"cp_imm_5bit_u"}),
+    "vslidedown.vi": frozenset({"cp_imm_5bit_u"}),
+}
+
+
+def runs_at_vlmax(instruction: str, coverpoint: str) -> bool:
+    """Return True if a coverpoint's tests for an instruction run at vl=VLMAX in the length suite."""
+    return coverpoint in _VLMAX_COVERPOINTS.get(instruction, frozenset())

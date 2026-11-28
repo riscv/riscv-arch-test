@@ -319,12 +319,15 @@ def _add_exception_cases(
 
 
 def _begin_test(test_data: TestData, regs: SvRegs, sv: SvMode, mode: str, family: str) -> TestChunk:
-    envmask = "MENVCFG_CBCFE | MENVCFG_CBIE" if family == "zicbom" else "MENVCFG_CBZE"
-    scratch = f"x{regs.scratch}"
-    # T-SBI calls preserve every register but a0-a2, so the mask survives for senvcfg.
-    setup = [f"LI({scratch}, {envmask})", tsbi_call(f"csrs menvcfg, {scratch}")]
-    if mode == "Umode":
-        setup.append(f"csrs senvcfg, {scratch}")
+    setup = []
+    # No envcfg bit controls prefetch, and harts without Zicbop may not have menvcfg.
+    if family != "zicbop":
+        envmask = "MENVCFG_CBCFE | MENVCFG_CBIE" if family == "zicbom" else "MENVCFG_CBZE"
+        scratch = f"x{regs.scratch}"
+        # T-SBI calls preserve every register but a0-a2, so the mask survives for senvcfg.
+        setup = [f"LI({scratch}, {envmask})", tsbi_call(f"csrs menvcfg, {scratch}")]
+        if mode == "Umode":
+            setup.append(f"csrs senvcfg, {scratch}")
     qualifier = "_exceptions" if family != "zicbop" else ""
     return begin_sv_test(
         test_data,
@@ -407,7 +410,8 @@ def make_svzicbo_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Sv",
-    required_extensions=["Sv32", "Zicbop"],
+    # prefetch.i/r/w are HINTs (ORI with rd = x0), so the test runs with or without Zicbop
+    required_extensions=["Sv32"],
     march_extensions=["Zicbop"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
@@ -437,7 +441,8 @@ def make_svzicbo_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Sv",
-    required_extensions=["Sv39", "Zicbop"],
+    # prefetch.i/r/w are HINTs (ORI with rd = x0), so the test runs with or without Zicbop
+    required_extensions=["Sv39"],
     march_extensions=["Zicbop"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
@@ -467,7 +472,8 @@ def make_svzicbo_sv48_zicboz(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Sv",
-    required_extensions=["Sv48", "Zicbop"],
+    # prefetch.i/r/w are HINTs (ORI with rd = x0), so the test runs with or without Zicbop
+    required_extensions=["Sv48"],
     march_extensions=["Zicbop"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
@@ -497,7 +503,8 @@ def make_svzicbo_sv57_zicboz(test_data: TestData) -> list[TestChunk]:
 
 @add_priv_test_generator(
     "Sv",
-    required_extensions=["Sv57", "Zicbop"],
+    # prefetch.i/r/w are HINTs (ORI with rd = x0), so the test runs with or without Zicbop
+    required_extensions=["Sv57"],
     march_extensions=["Zicbop"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )

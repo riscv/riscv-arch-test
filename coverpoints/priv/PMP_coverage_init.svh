@@ -27,9 +27,7 @@
 `ifdef ZCA_SUPPORTED
     PMP_Zca_cg = new();    PMP_Zca_cg.set_inst_name("obj_PMP_Zca");
 `endif
-`ifdef PMP_HAS_ZICBO
     PMP_Zicbo_cg = new();    PMP_Zicbo_cg.set_inst_name("obj_PMP_Zicbo");
-`endif
 `ifdef PMP_HAS_SV
     PMP_Sv_cg = new();    PMP_Sv_cg.set_inst_name("obj_PMP_Sv");
 `endif

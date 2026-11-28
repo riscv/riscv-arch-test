@@ -16,6 +16,10 @@ exclude_extensions:
   - Sm_mcsr_walk
   - Sm_shadow
   - Sm_xret
+  # On RV32, mstatush.MDT resets to 0 with Smdbltrp; it must reset to 1. QEMU sets MDT at reset only when
+  # MXL > 32 (https://gitlab.com/qemu-project/qemu/-/issues/4810). On RV32 and RV64, -cpu max also sets the reserved
+  # misa.G bit, so cp_misa_reset fails (https://gitlab.com/qemu-project/qemu/-/issues/4811).
+  - Sm_reset
   # QEMU accepts UXL=1, which Sail cannot model yet (https://github.com/riscv/sail-riscv/issues/1150)
   - S-
   # senvcfg.CBIE can be written with reserved 0b10 (same as menvcfg, QEMU #4216). On RV32, a write to mstateen0

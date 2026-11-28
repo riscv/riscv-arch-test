@@ -16,6 +16,13 @@
   #define RVTEST_SAIL_MACROS
 #endif
 #include "rvmodel_macros.h"
+// The DUT build sends illegal instructions from S- and U-mode to M-mode first for invisible emulation
+// (see RVTEST_SAVE_MEDELEG_ILLEGAL), then forwards them to S in software. sail_macros.h turns emulation
+// off for the signature build, so record this before it does: a test whose result depends on the
+// hardware route must skip the same cases in both builds.
+#if (defined(RVMODEL_INVISIBLE_TRAP_HANDLER) || defined(RVTEST_EMULATE_TIME_CSR)) && defined(S_SUPPORTED)
+  #define RVTEST_ILLEGAL_THROUGH_M
+#endif
 #ifdef RVTEST_SAIL_MACROS
   #include "sail_macros.h"
 #endif

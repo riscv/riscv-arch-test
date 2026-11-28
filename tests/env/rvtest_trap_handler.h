@@ -3089,9 +3089,7 @@ excpt_\__MODE__\()hndlr_tbl:
 //
 //  S-mode handler (stvec, S_SUPPORTED only): handles illegal-instruction
 //  traps delegated to S-mode via medeleg[2] (set by RVTEST_BOOT_TO_SMODE).
-//  With H, it also handles the virtual-instruction traps from VS and VU
-//  delegated to HS-mode via medeleg[22] (hedeleg = 0), and sret returns to
-//  the virtual mode. Any other S-mode trap is forwarded to Strampoline.
+//  Any other S-mode trap is forwarded to Strampoline.
 //
 //  Assumptions:
 //    - The tests do not enable interrupts when the handler uses vectored mode.
@@ -3250,14 +3248,9 @@ strap_handler_fastillegalinstr:
         SREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // stash caller's a1
         csrr a1, scause
         xori a1, a1, 2                  // a1 = 0 iff scause == 2 (illegal instruction)
-#ifdef H_SUPPORTED
-        beqz a1, fast_Shandled_cause
-        xori a1, a1, 2 ^ 22             // a1 = 0 iff scause == 22 (virtual instruction, from VS or VU)
-#endif
-        bnez a1, fast_Sothertrap        // not illegal (or virtual) instruction — restore regs and use the S
-                                        // framework handler (NOT fast_Mothertrap: the M trampoline's mscratch
-                                        // access is itself illegal from S-mode and creates a trap loop)
-fast_Shandled_cause:
+        bnez a1, fast_Sothertrap        // not illegal — restore regs and use the S framework handler
+                                        // (NOT fast_Mothertrap: the M trampoline's mscratch access
+                                        // is itself illegal from S-mode and creates a trap loop)
         // Same test-body check as the M handler: only traps taken in the test code segment
         // may use the fast path, because it signature-updates through x2, which is not
         // loaded until the end of boot. See the M handler for the full rationale.

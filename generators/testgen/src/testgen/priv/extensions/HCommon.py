@@ -394,7 +394,7 @@ def hlv_tests(test_data: TestData, tc: TestChunk, covergroup: str, modes: tuple[
             f"or x{va_reg}, x{va_reg}, x{tmp}    # guest virtual address of H_hlv_data",
         ]
         test_data.int_regs.return_registers([pte, addr, tmp])
-        return [*lines, *guest_translation_setup(test_data, g, vs, "VSmode")]
+        return guest_translation_setup(test_data, g, vs, "VSmode", lines)
 
     lines = [
         comment_banner(
@@ -529,7 +529,7 @@ def guest_fault_tests(
             pte, addr, tmp = test_data.int_regs.get_registers(3)
             ptes = leaves(g, vs, user, (pte, addr, tmp))
             test_data.int_regs.return_registers([pte, addr, tmp])
-            return [*ptes, *guest_translation_setup(test_data, g, vs, "VUmode" if user else "VSmode")]
+            return guest_translation_setup(test_data, g, vs, "VUmode" if user else "VSmode", ptes)
 
         lines.extend([*per_xlen(mappings), f"LI(x{rd}, 42)", f"RVTEST_TSBI_GOTO_{mode.upper()}MODE"])
         for bin_name, coverpoint, instr, address in faults:

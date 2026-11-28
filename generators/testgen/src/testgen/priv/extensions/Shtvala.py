@@ -137,7 +137,7 @@ def _hlsv_tests(test_data: TestData) -> list[str]:
         pte, addr, tmp = test_data.int_regs.get_registers(3)
         leaves = _leaves(g, vs, True, (pte, addr, tmp))
         test_data.int_regs.return_registers([pte, addr, tmp])
-        return [*leaves, *guest_translation_setup(test_data, g, vs, "VUmode")]
+        return guest_translation_setup(test_data, g, vs, "VUmode", leaves)
 
     addr, rd = test_data.int_regs.get_registers(2)
     lines = [
@@ -229,7 +229,7 @@ def _hlsv_straddle_tests(test_data: TestData) -> list[str]:
         pte, addr, tmp = test_data.int_regs.get_registers(3)
         leaves = _straddle_leaves(g, vs, True, (pte, addr, tmp))
         test_data.int_regs.return_registers([pte, addr, tmp])
-        return [*leaves, *guest_translation_setup(test_data, g, vs, "VUmode")]
+        return guest_translation_setup(test_data, g, vs, "VUmode", leaves)
 
     lines = [f"#if {TWO_STAGE_GATE}", *per_xlen(mappings)]
     addr, rd, tinst, zero = test_data.int_regs.get_registers(4)

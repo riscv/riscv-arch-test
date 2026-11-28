@@ -177,9 +177,13 @@ def identity_map_image(
     ]
 
 
-def guest_translation_setup(test_data: TestData, g: SvMode | None, vs: SvMode | None, priv_mode: str) -> list[str]:
-    """Identity map the test image in both stages, map the guest code alias, register it in the V save area, and
-    turn on hgatp and vsatp.  A None stage stays Bare.  The alias is user accessible when ``priv_mode`` is "VUmode".
+def guest_translation_setup(
+    test_data: TestData, g: SvMode | None, vs: SvMode | None, priv_mode: str, ptes: Iterable[str] = ()
+) -> list[str]:
+    """Identity map the test image in both stages, map the guest code alias, write ``ptes``, register the alias in the
+    V save area, and turn on hgatp and vsatp.  A None stage stays Bare.  The alias is user accessible when
+    ``priv_mode`` is "VUmode".  ``ptes`` holds the test's own PTEs, written after the identity map so they replace it
+    where the test image shares their root entry.
     """
     alias = vs or g
     if alias is None:
@@ -217,6 +221,7 @@ def guest_translation_setup(test_data: TestData, g: SvMode | None, vs: SvMode | 
                 superpage=True,
             )
         )
+    lines.extend(ptes)
     lines.extend(
         [
             "// Register the alias of rvtest_code_begin",

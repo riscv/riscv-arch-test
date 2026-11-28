@@ -5,13 +5,15 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
+
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
         .balign 8; .global tohost; tohost: .dword 0;         \
         .balign 8; .global fromhost; fromhost: .dword 0;     \
         .popsection;
-
-#define STANDARD_SM_SUPPORTED
 
 ##### STARTUP #####
 
@@ -91,14 +93,6 @@
   li      t2, SETIE_SRC2; \
   sw      t2, 0(t1);
 
-// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
-// if defined.  For most DUTs, the default should work and this macro
-// should not be defined.  If the DUT has no standard M-mode CSRs, do not
-// define STANDARD_SM_SUPPORTED.  If a nonconforming
-// M-mode is implemented, define this macro to set up the necessary
-// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
-//#define RVMODEL_BOOT_TO_MMODE
-
 ##### TERMINATION #####
 
 # Terminate test with a pass indication.
@@ -146,22 +140,7 @@
   j 1b                       ; /* Loop */             \
 3:
 
-##### Access Fault #####
-
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
-
-##### Machine Interrupts #####
-
-// Interrupt latency configuration
-#define RVMODEL_INTERRUPT_LATENCY 10
-
-#define RVMODEL_TIMER_INT_SOON_DELAY 10000
-
 ##### Machine Timer #####
-
-#define RVMODEL_MTIMECMP_ADDRESS  0x02004000  /* Address of mtimecmp CSR */
-
-#define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
 
 // using APLIC to trigger external interrupts
 // - writing source number to ADDR_SETIPNUM sets the interrupt pending
@@ -177,7 +156,6 @@
   sw      _R2, 0(_R1); /* clear source 1 interrupt */
 
 #define CLINT_BASE_ADDRESS 0x02000000
-#define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
 ##### Supervisor Interrupts #####
 
@@ -197,10 +175,6 @@
 
 ##### Sscofpmf #####
 
-#define RVMODEL_HPM_COUNTER 3   // HPM counter used by the Sscofpmf tests (3 to 31)
-// Selector 12 is the Load event in whisper.json. The Sail reference counts EV_FENCE for the same
-// selector (sail.json) and triggers it with a fence (sail_macros.h).
-#define RVMODEL_MHPMEVENT_VAL  12
 #define RVMODEL_MHPMEVENT_CODE(_R1, _R2)  \
     lw _R2, 0(_R1)
 

@@ -20,6 +20,10 @@ exclude_extensions:
   # No illegal-instruction exception: README.md#L209
   - Exceptions_Sm-
   - Exceptions_Zc
+  - Hello_trap
+  - ConfigCheck_tval
+  # mtvec.MODE reads back as written although only direct mode is implemented: rtl/serv_ctrl.v#L75
+  - ConfigCheck_tvec
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-serv.sh"

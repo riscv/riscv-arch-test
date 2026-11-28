@@ -6,9 +6,11 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
-#define RVMODEL_DATA_SECTION
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
 
-#define STANDARD_SM_SUPPORTED
+#define RVMODEL_DATA_SECTION
 
 # The testbench console/termination mailbox.
 #   Quote: "#define STDOUT 0xd0580000"
@@ -71,31 +73,5 @@
   addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
   j 1b                       ; /* Loop */             \
 3:
-
-##### Access faults #####
-
-# Fetches fault only in the ICCM region (0xE) outside the ICCM (0xEE00_0000-0xEE07_FFFF).
-# Loads and stores fault only in the DCCM/PIC region (0xF) outside the DCCM (0xF004_0000)
-# and PIC (0xF00C_0000). Elsewhere, accesses go to the system bus.
-# No address that faults for all access types, so RVMODEL_ACCESS_FAULT_ADDRESS is not defined.
-#   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/memory-map.md#L247
-#   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/tools/Makefile#L16
-#   https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/design/ifu/ifu_ifc_ctl.sv#L273
-#define RVMODEL_ACCESS_FAULT_ADDRESS_FETCH 0xE0000000
-#define RVMODEL_ACCESS_FAULT_ADDRESS_LOAD  0xF0000000
-#define RVMODEL_ACCESS_FAULT_ADDRESS_STORE 0xF0000000
-
-##### Interrupt Latency #####
-
-#define RVMODEL_INTERRUPT_LATENCY 10
-
-##### Machine Timer #####
-
-# VeeR EH1 has no mtime/mtimecmp: the PRM states the SoC must supply them, and the
-# testbench does not.  Leaving RVMODEL_MTIME_ADDRESS undefined disables all machine
-# timer interrupt testing, which is the documented behaviour in check_defines.h.
-//#define RVMODEL_MTIME_ADDRESS
-//#define RVMODEL_MTIMECMP_ADDRESS
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 #endif // _RVMODEL_MACROS_H

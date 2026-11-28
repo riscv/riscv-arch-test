@@ -7,6 +7,10 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
+
 #define RVMODEL_DATA_SECTION \
         .pushsection .data,"aw",@progbits;                             \
         .p2align 3; .global _semihost_exit_pass;                          \
@@ -15,23 +19,12 @@
         _semihost_exit_fail: .dword 0x20023; .dword 1;                  \
         .popsection
 
-#define STANDARD_SM_SUPPORTED
-
 ##### STARTUP #####
 
 # Perform boot operations. Can be empty or left undefined unless needed for
 # DUT-specific behavior such as turning on a memory controller or
 # initializing custom state.
 // RVMODEL_BOOT is defined with the interrupt controllers below
-
-// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
-// if defined.  For most DUTs, the default should work and this macro
-// should not be defined.  If the DUT has no standard M-mode CSRs, do not
-// define STANDARD_SM_SUPPORTED.  If a nonconforming
-// M-mode is implemented, define this macro to set up the necessary
-// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
-//#define RVMODEL_BOOT_TO_MMODE
-
 
 ##### TERMINATION #####
 
@@ -157,25 +150,9 @@
   j 1b                       ;/* Loop */             \
 3:
 
-
-##### Access Fault #####
-
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000100
-
-##### Machine Timer #####
-
-#define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
-
-#define RVMODEL_MTIMECMP_ADDRESS 0x02004000 /* Address of mtimecmp CSR */
-
 ##### Machine Interrupts #####
 
-#define RVMODEL_INTERRUPT_LATENCY 10
-
-#define RVMODEL_TIMER_INT_SOON_DELAY 1000
-
 #define CLINT_BASE_ADDRESS 0x02000000
-#define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
 /* With Smaia, the run command selects QEMU's virt machine with aia=aplic-imsic, which replaces the PLIC with an
  * APLIC in MSI mode feeding an IMSIC per hart. The M-level interrupt file is at IMSIC_M_FILE and the S-level file
@@ -267,12 +244,6 @@
   RVTEST_TSBI_CSR_WRITE_A1(CSR_HSTATUS)
 
 ##### Sscofpmf #####
-#define RVMODEL_HPM_COUNTER 3   // HPM counter used by the Sscofpmf tests (3 to 31)
-// Selector 2 is QEMU's instructions-retired event (RISCV_PMU_EVENT_HW_INSTRUCTIONS), so any
-// instruction counts, including the nop below. sail.json maps EV_FENCE to the same selector and
-// the Sail reference counts the fence that its build runs in place of RVMODEL_MHPMEVENT_CODE.
-// The tests check only whether the counter moved and whether it overflowed, not by how much.
-#define RVMODEL_MHPMEVENT_VAL  0x02
 #define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \
     nop
 

@@ -132,8 +132,12 @@
   invisible_Memulate:
     li      T3, 0
     // T1=mepc and T2=instruction are read-only. T3=action, T4=destination GPR number, and T5=value.
-    #ifdef RVMODEL_INVISIBLE_TRAP_HANDLER
-      RVMODEL_INVISIBLE_TRAP_HANDLER(T1, T2, T3, T4, T5)
+    // The DUT's emulation is in the driver (rvtest_driver.h). ra belongs to the trapped
+    // code, so it is spilled to save-area slot 0 around the call.
+    #ifdef RVTEST_DUT_INVISIBLE_TRAP_HANDLER
+      SREG    ra, trap_sv_off+0*REGWIDTH(sp)
+      call    rvmodel_invisible_trap_handler
+      LREG    ra, trap_sv_off+0*REGWIDTH(sp)
       bnez    T3, invisible_Mdispatch
     #endif
     #ifdef RVTEST_EMULATE_TIME_CSR

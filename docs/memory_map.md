@@ -8,9 +8,9 @@ The test memory map has several requirements:
 - Ensure that the addresses of the test code body are the same when running it on the RISC-V Sail model to produce expected results and on a DUT to check against the expected results.
 - Ensure the addresses of test data are the same when running on the RISC-V Sail model and on a DUT so expected results do not differ for address-dependent results.
 
-The second requirement is subtle. The program is compiled twice, once to run on the RISC-V Sail model to produce an expected signature (the results), and once to run on a DUT to check against the expected signature. The `RVMODEL` macros may differ between the Sail model and DUT because the two targets might use different methods of printing to the console, terminating a simulation, etc.
+The second requirement is subtle. The test is assembled twice, once to run on the RISC-V Sail model to produce an expected signature (the results), and once as the certified object that runs on a DUT to check against the expected signature. Neither build sees the DUT's `rvmodel_macros.h`: the `RVMODEL` macros are assembled separately into a driver, one for the Sail model (from `sail_macros.h`) and one for the DUT (from `rvmodel_macros.h`), and each test object is linked with one of them. The two drivers differ because the two targets might use different methods of printing to the console, terminating a simulation, etc.
 
-The address of the test code body (the part that tests a feature and checks expected results) must be the same because some instructions (such as `auipc`) produce an expected result that depends on the address. Moreover, instructions that trap record the trap address in `xepc`, which should match on the Sail model and the DUT. Therefore, the `RVMODEL` macros cannot be called directly in the test code body because they might expand to different sizes for Sail vs. the DUT. Instead, they go in a different section placed after the test code body and are called from the test body via `jal`.
+The address of the test code body (the part that tests a feature and checks expected results) must be the same because some instructions (such as `auipc`) produce an expected result that depends on the address. Moreover, instructions that trap record the trap address in `xepc`, which should match on the Sail model and the DUT. Therefore, the driver goes in a different section placed after the test code body and data, and the test body calls it.
 
 Some instructions (such as AMOs) may use the address of the scratch region of memory as part of the result, so the `.data` section must have constant addresses between the Sail model and DUT as well.
 
@@ -18,17 +18,17 @@ Some instructions (such as AMOs) may use the address of the scratch region of me
 
 The linker places the following output sections in order:
 
-| Section                             | Permissions | Contents                                                                                                                                   |
-| ----------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `.text.init`                        | R X         | Entry point (`rvtest_entry_point`), boot call, and jump to `.text.rvtest`.                                                                 |
-| `.text.rvtest`                      | R X         | All test code: initialization, trap handlers, the test body, and failure-reporting code.                                                   |
-| `.rodata` (aligned to 0x4000)       | R           | Read-only C data such as string literals.                                                                                                  |
-| `.data`                             | RW          | Initialized test data and the signature region (see below).                                                                                |
-| `.bss`                              | RW          | Zero-initialized C data, bounded by `__bss_start` and `__bss_end`.                                                                         |
-| Stack                               | RW          | `__stack_size * __num_harts` bytes, bounded by `__stack_bottom` and `__stack_top`.                                                         |
-| `.text.rvmodel` (aligned to 0x1000) | R X         | Out-of-line DUT-specific helpers (`rvmodel_boot`, `rvmodel_halt_pass`, etc.) and catch-all for remaining `.text`/`.text.*` input sections. |
+| Section                             | Permissions | Contents                                                                                                                                    |
+| ----------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.text.init`                        | R X         | Entry point (`rvtest_entry_point`), boot call, and jump to `.text.rvtest`.                                                                  |
+| `.text.rvtest`                      | R X         | All test code: initialization, trap handlers, the test body, and failure-reporting code.                                                    |
+| `.rodata` (aligned to 0x4000)       | R           | Read-only C data such as string literals.                                                                                                   |
+| `.data`                             | RW          | Initialized test data and the signature region (see below).                                                                                 |
+| `.bss`                              | RW          | Zero-initialized C data, bounded by `__bss_start` and `__bss_end`.                                                                          |
+| Stack                               | RW          | `__stack_size * __num_harts` bytes, bounded by `__stack_bottom` and `__stack_top`.                                                          |
+| `.text.rvmodel` (aligned to 0x1000) | R X         | Out-of-line helpers (`rvmodel_boot`, the invisible trap handler), the driver, and catch-all for remaining `.text`/`.text.*` input sections. |
 
-Any additional DUT-specific data sections (such as `.tohost` for HTIF) are emitted via `.pushsection` in the RVMODEL macros and placed by the linker as orphan sections.
+Any additional DUT-specific data sections (such as `.tohost` for HTIF) are emitted via `.pushsection` in `RVMODEL_DATA_SECTION`, which the driver expands, and placed by the linker as orphan sections.
 
 `rvtest_entry_point` is the first symbol in the `.text.init` section (which is the first section), so its address is set by `TEST_BASE` at the top of the linker script. For most DUTs, `TEST_BASE` is the same as `RAM_ORIGIN` and should be set to the reset vector of your processor. Advanced users can set the starting address to a different address, run a custom bootloader, and then jump to `rvtest_entry_point` to start the test. When `RAM_ORIGIN` differs from `TEST_BASE`, the `.text.init` output section uses an explicit `TEST_BASE` address so the linker does not start it at the beginning of the `MEMORY` region.
 
@@ -62,36 +62,35 @@ Additional details on what each section contains and why each section is needed 
 
 ## `.rodata`, `.data`, `.bss`, and Stack Layout
 
-| Symbol / Region                        | Purpose                                                                                                                                                                                     |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `scratch`                              | Scratch memory for loads/stores not part of the signature. Pre-initialized with distinct marker values.                                                                                     |
-| `fp_sigupd_temp`                       | Temporary memory used by floating-point signature updates.                                                                                                                                  |
-| Trap save areas                        | One save area per privilege mode trap handler.                                                                                                                                              |
-| `rvtest_data_begin`                    | Start of test specific data label.                                                                                                                                                          |
-| _(test-specific data)_                 | Data defined by individual tests between `RVTEST_DATA_BEGIN` and `RVTEST_DATA_END`.                                                                                                         |
-| Page tables                            | Root page tables for S-mode, H-mode, and VS-mode (when corresponding trap routines are defined).                                                                                            |
-| Failure scratch & strings              | Scratch area for failure reporting, followed by diagnostic strings (`successstr`, `failstr`, etc.).                                                                                         |
-| `rvtest_data_end`                      | End of test specific data label.                                                                                                                                                            |
-| `begin_signature` / `rvtest_sig_begin` | Start of the signature region (aligned to 16 bytes).                                                                                                                                        |
-| _(signature data)_                     | Main signature region written by test code via `RVTEST_SIGUPD`.                                                                                                                             |
-| _(trap signature)_                     | Trap handler signature region (whenever a trap handler is defined, which should be whenever there is any privileged support).                                                               |
-| `end_signature` / `rvtest_sig_end`     | End of the signature region.                                                                                                                                                                |
-| `RVMODEL_DATA_SECTION`                 | DUT-specific data defined in `rvmodel_macros.h` (e.g. `tohost`/`fromhost` for HTIF). May be empty. Placed last so variable-size DUT data does not affect any test-visible symbol addresses. |
+| Symbol / Region                        | Purpose                                                                                                                       |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `scratch`                              | Scratch memory for loads/stores not part of the signature. Pre-initialized with distinct marker values.                       |
+| `fp_sigupd_temp`                       | Temporary memory used by floating-point signature updates.                                                                    |
+| Trap save areas                        | One save area per privilege mode trap handler.                                                                                |
+| `rvtest_data_begin`                    | Start of test specific data label.                                                                                            |
+| _(test-specific data)_                 | Data defined by individual tests between `RVTEST_DATA_BEGIN` and `RVTEST_DATA_END`.                                           |
+| Page tables                            | Root page tables for S-mode, H-mode, and VS-mode (when corresponding trap routines are defined).                              |
+| Failure scratch & strings              | Scratch area for failure reporting, followed by diagnostic strings (`successstr`, `failstr`, etc.).                           |
+| `rvtest_data_end`                      | End of test specific data label.                                                                                              |
+| `begin_signature` / `rvtest_sig_begin` | Start of the signature region (aligned to 16 bytes).                                                                          |
+| _(signature data)_                     | Main signature region written by test code via `RVTEST_SIGUPD`.                                                               |
+| _(trap signature)_                     | Trap handler signature region (whenever a trap handler is defined, which should be whenever there is any privileged support). |
+| `end_signature` / `rvtest_sig_end`     | End of the signature region.                                                                                                  |
 
 The `.bss` section defines `__bss_start` and `__bss_end`; C test startup clears this range before calling `main`. The stack region follows `.bss`; each hart gets `__stack_size` bytes, and the total stack allocation is `__stack_size * __num_harts`.
 
-All addresses in these data sections are constant and DUT-independent except for the contents of `RVMODEL_DATA_SECTION`, which is why it is placed last. This ensures the rest of the data layout has addresses that are the same for both the reference model and DUT.
+All addresses in these data sections are constant and DUT-independent. The DUT-specific data (`RVMODEL_DATA_SECTION`, e.g. `tohost`/`fromhost` for HTIF) comes from the driver, which is linked after the test object, so it cannot move any test-visible symbol. This ensures the data layout has addresses that are the same for both the reference model and DUT.
 
 ## `.text.rvmodel` Section Layout
 
-| Symbol / Region        | Purpose                                                                                            |
-| ---------------------- | -------------------------------------------------------------------------------------------------- |
-| `rvmodel_boot`         | DUT-specific boot code (`RVMODEL_BOOT`), I/O init (`RVMODEL_IO_INIT`), then jump to `rvtest_init`. |
-| `rvmodel_io_write_str` | Wrapper for `RVMODEL_IO_WRITE_STR`.                                                                |
-| `rvmodel_halt_pass`    | Wrapper for `RVMODEL_HALT_PASS`.                                                                   |
-| `rvmodel_halt_fail`    | Wrapper for `RVMODEL_HALT_FAIL`.                                                                   |
-| Interrupt helpers      | `rvtest_set_msw_int_m`, etc. (when trap routines are defined).                                     |
+| Symbol / Region        | Purpose                                                                                                                                                                                |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rvmodel_boot`         | Test object: calls the driver's `rvmodel_dut_boot` (`RVMODEL_BOOT`) and `rvmodel_dut_io_init` (`RVMODEL_IO_INIT`), then boots to the test's privilege mode and jumps to `rvtest_init`. |
+| `rvmodel_io_write_str` | Driver: wrapper for `RVMODEL_IO_WRITE_STR`.                                                                                                                                            |
+| `rvmodel_halt_pass`    | Driver: wrapper for `RVMODEL_HALT_PASS`.                                                                                                                                               |
+| `rvmodel_halt_fail`    | Driver: wrapper for `RVMODEL_HALT_FAIL`.                                                                                                                                               |
+| Interrupt helpers      | Driver: `rvtest_set_msw_int_m`, etc. (when trap routines are defined).                                                                                                                 |
 
-This section also acts as a catch-all for any remaining `.text` or `.text.*` input sections that might be provided by the DUT.
+The driver routines are listed in [tests/env/rvtest_driver.h](../tests/env/rvtest_driver.h). Because the test object is linked first, its part of `.text.rvmodel` comes first and the driver follows it. This section also acts as a catch-all for any remaining `.text` or `.text.*` input sections that might be provided by the DUT.
 
-`.text.rvmodel` must be a separate section at the end of the test that follows `.data` because the `RVMODEL` macros expand to different code sizes in the DUT build versus the Sail reference-model build. If this variable-size code were in `.text.rvtest` (before `.data`), the `.data` section would start at different addresses in the two ELFs. Because some tests write address-dependent values (e.g. `mtval`) into the signature, different `scratch` or `begin_signature` addresses cause signature mismatches. Placing all `RVMODEL` code after `.data` ensures that test code and test data have identical addresses in both builds.
+`.text.rvmodel` must be a separate section at the end of the test that follows `.data` because the driver differs in size between the DUT and the Sail reference model. If this variable-size code were in `.text.rvtest` (before `.data`), the `.data` section would start at different addresses in the two ELFs. Because some tests write address-dependent values (e.g. `mtval`) into the signature, different `scratch` or `begin_signature` addresses cause signature mismatches. Placing all `RVMODEL` code after `.data` ensures that test code and test data have identical addresses in both builds.

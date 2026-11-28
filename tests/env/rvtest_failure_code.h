@@ -2422,6 +2422,8 @@
         .string "\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     abortstr:
         .string "\"The trap handler aborted the test before normal completion!\"";
+    // The driver's default interrupt routines (RVTEST_DFLT_INT_HNDLR) load this address.
+    .global unexpected_int_str
     unexpected_int_str:
         .string "\nRVCP: An interrupt was raised or taken that rvmodel_macros.h does not define a macro to set or clear. The test was aborted.\n"
     trap_vector_overlap_str:

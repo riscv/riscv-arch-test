@@ -7,9 +7,11 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
-#define RVMODEL_DATA_SECTION
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
 
-#define STANDARD_SM_SUPPORTED
+#define RVMODEL_DATA_SECTION
 
 # Testbench addresses.  All three sit in the strongly-ordered device region
 # 0x0100_0000-0x01FF_FFFF, so stores to them are never absorbed by the D-cache.
@@ -89,28 +91,7 @@
   j 1b                       ; /* Loop */             \
 3:
 
-##### Access faults #####
-
-# The SoC's AXI interconnect routes 0x0200_0000-0x0FFF_FFFF to an error responder that
-# returns SLVERR.  0x0200_0000 is outside every sail.json memory region too.
-#   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/smart_run/logical/axi/axi_interconnect128.v#L362-L363
-# Loads, stores and LR/SC are not tested: a load bus error is an imprecise access fault
-# (user manual 5.2.3), and a store bus error raises no fault.
-#define RVMODEL_ACCESS_FAULT_ADDRESS_FETCH 0x02000000
-#define RVMODEL_ACCESS_FAULT_ADDRESS_AMO   0x02000000
-
-##### Interrupt Latency #####
-
-#define RVMODEL_INTERRUPT_LATENCY 10
-
 ##### Machine Timer #####
-
-# RVMODEL_MTIME_ADDRESS and RVMODEL_MTIMECMP_ADDRESS are undefined.  The CLINT has no
-# memory-mapped mtime (only the time CSR reads it), and its mtimecmp at 0xB400_4000 is
-# more than 2 GB from the tests, beyond the reach of the LA macro the framework uses
-# to access it.
-#   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/clint/rtl/ct_clint_func.v#L148-L168
-#define RVMODEL_TIMER_INT_SOON_DELAY 10000
 
 # The CLINT is at APB base 0xB000_0000 + 0x0400_0000.
 #   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/ciu/rtl/ct_ciu_apbif.v#L367-L375

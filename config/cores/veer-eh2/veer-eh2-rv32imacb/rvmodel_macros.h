@@ -7,9 +7,11 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
-#define RVMODEL_DATA_SECTION
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
 
-#define STANDARD_SM_SUPPORTED
+#define RVMODEL_DATA_SECTION
 
 # The testbench console/termination mailbox.
 #   Quote: "#define STDOUT 0xd0580000"
@@ -68,26 +70,6 @@
   addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
   j 1b                       ; /* Loop */             \
 3:
-
-##### Access faults #####
-
-# With no access windows requested, veer.config enables four instruction and four data
-# access windows that leave region 0x9 as a hole (RV_EXTERNAL_MEM_HOLE = 0x90000000).
-# Fetches, loads and stores there raise access faults.
-#   Quote: "# Create the memory map hole for random testing"
-#   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/configs/veer.config#L1944-L1999
-#   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/docs/source/memory-map.md#L182-L190
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x90000000
-
-##### Interrupt Latency #####
-
-#define RVMODEL_INTERRUPT_LATENCY 10
-
-##### Machine Timer #####
-
-# VeeR EH2 has no mtime/mtimecmp and the testbench supplies none, so RVMODEL_MTIME_ADDRESS
-# and RVMODEL_MTIMECMP_ADDRESS are not defined.
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 ##### Machine Interrupts #####
 

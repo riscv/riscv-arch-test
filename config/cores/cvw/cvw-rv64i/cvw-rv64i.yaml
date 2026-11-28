@@ -119,3 +119,8 @@ params:
       false,
     ]
   NUM_PMP_ENTRIES: 0
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  RVMODEL_ACCESS_FAULT_ADDRESS: 0x00000000

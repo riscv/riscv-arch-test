@@ -5,9 +5,11 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
-#define RVMODEL_DATA_SECTION
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
 
-#define STANDARD_SM_SUPPORTED
+#define RVMODEL_DATA_SECTION
 
 ##### STARTUP #####
 
@@ -17,10 +19,6 @@
 # .option arch, +zicsr is needed because I tests compile with -march=rv32i
 # which does not include Zicsr (binutils >= 2.38).
 //#define RVMODEL_BOOT \
-
-
-# This DUT does not generate access faults. Comment out RVMODEL_ACCESS_FAULT_ADDRESS to prevent testing them.
-//#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 
 ##### TERMINATION #####
 
@@ -58,17 +56,6 @@
   addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
   j 1b                       ; /* Loop */             \
 3:
-
-##### Interrupt Latency #####
-
-#define RVMODEL_INTERRUPT_LATENCY 10
-
-##### Machine Timer #####
-
-# MTIME is not implemented on this DUT. Comment out to prevent testing them.
-//#define RVMODEL_MTIME_ADDRESS    0x0200BFF8
-//#define RVMODEL_MTIMECMP_ADDRESS 0x02004000
-#define RVMODEL_TIMER_INT_SOON_DELAY 10000
 
 ##### Machine Interrupts #####
 

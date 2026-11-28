@@ -478,3 +478,19 @@ params:
       false,
       false,
     ]
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  RVMODEL_ACCESS_FAULT_ADDRESS: 0x00000000
+  RVMODEL_MSIP_ADDRESS: 0x02000000
+  RVMODEL_MTIME_ADDRESS: 0x0200BFF8
+  RVMODEL_MTIMECMP_ADDRESS: 0x02004000
+  RVMODEL_INTERRUPT_LATENCY: 10
+  # Wally's mtime advances one tick per core clock, and the code between arming
+  # mtimecmp and reaching the lower privilege mode (three CLINT stores plus
+  # T-SBI mode switch) can take well over 100 cycles on a pipelined core
+  # with caches.  With a delay of 100 the timer interrupt fires while still in
+  # M-mode with MIE=1, so the trap records MPP=M instead of MPP=U/S.
+  RVMODEL_TIMER_INT_SOON_DELAY: 10000
+  STANDARD_SM_SUPPORTED: true

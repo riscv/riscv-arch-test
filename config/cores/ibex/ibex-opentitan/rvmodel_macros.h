@@ -7,9 +7,11 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
-#define RVMODEL_DATA_SECTION
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
 
-#define STANDARD_SM_SUPPORTED
+#define RVMODEL_DATA_SECTION
 
 # Ibex Simple System device map.
 #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/examples/simple_system/rtl/ibex_simple_system.sv#L118-L123
@@ -48,31 +50,5 @@
   addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
   j 1b                       ; /* Loop */             \
 3:
-
-##### Access faults #####
-
-# No fetch address faults. Simple System ties the instruction error off and indexes the RAM
-# with addr[19:2] for every fetch. So RVMODEL_ACCESS_FAULT_ADDRESS and
-# RVMODEL_ACCESS_FAULT_ADDRESS_FETCH are not defined.
-#   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/examples/simple_system/rtl/ibex_simple_system.sv#L134
-#   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/shared/rtl/ram_2p.sv#L48
-# Loads and stores to an address that no bus device decodes get a bus error.
-#   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/shared/rtl/bus.sv#L99
-#define RVMODEL_ACCESS_FAULT_ADDRESS_LOAD  0x80000000
-#define RVMODEL_ACCESS_FAULT_ADDRESS_STORE 0x80000000
-
-##### Interrupt Latency #####
-
-#define RVMODEL_INTERRUPT_LATENCY 10
-
-##### Machine Timer #####
-
-# mtime increments once per clock cycle.
-#   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/shared/rtl/timer.sv#L35-L38
-#define RVMODEL_MTIME_ADDRESS     0x00030000
-#define RVMODEL_MTIMECMP_ADDRESS  0x00030008
-# Arming the timer from U-mode takes four T-SBI round trips of about 900 cycles each, so the
-# delay must exceed about 2700 cycles for the interrupt to arrive after the setup returns.
-#define RVMODEL_TIMER_INT_SOON_DELAY 10000
 
 #endif // _RVMODEL_MACROS_H

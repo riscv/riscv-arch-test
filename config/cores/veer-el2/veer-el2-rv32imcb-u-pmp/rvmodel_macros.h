@@ -7,9 +7,11 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
-#define RVMODEL_DATA_SECTION
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
 
-#define STANDARD_SM_SUPPORTED
+#define RVMODEL_DATA_SECTION
 
 # The testbench console/termination mailbox.
 #   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/testbench/tb_top.sv#L100
@@ -73,28 +75,6 @@
   addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
   j 1b                       ; /* Loop */             \
 3:
-
-##### Access faults #####
-
-# Fetches fault only in the ICCM region (0xE) outside the ICCM (0xEE00_0000-0xEE00_FFFF).
-# Loads and stores fault only in the DCCM/PIC region (0xF) outside the DCCM (0xF004_0000)
-# and PIC (0xF00C_0000). The testbench backs every other address with memory.
-# No address faults for all access types, so RVMODEL_ACCESS_FAULT_ADDRESS is not defined.
-#   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/memory-map.md#L265-L335
-#   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/ifu/el2_ifu_ifc_ctl.sv#L238
-#   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/lsu/el2_lsu_addrcheck.sv#L200
-#define RVMODEL_ACCESS_FAULT_ADDRESS_FETCH 0xE0000000
-#define RVMODEL_ACCESS_FAULT_ADDRESS_LOAD  0xF0000000
-#define RVMODEL_ACCESS_FAULT_ADDRESS_STORE 0xF0000000
-
-##### Interrupt Latency #####
-
-#define RVMODEL_INTERRUPT_LATENCY 10
-
-##### Machine Timer #####
-
-# EL2 has no mtime or mtimecmp; the SoC must provide them and the testbench does not.
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
 
 ##### Machine Interrupts #####
 

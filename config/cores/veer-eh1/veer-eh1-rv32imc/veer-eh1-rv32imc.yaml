@@ -281,3 +281,22 @@ params:
       false,
       false,
     ]
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  RVMODEL_ACCESS_FAULT_ADDRESS_LOAD: 0xF0000000
+  RVMODEL_ACCESS_FAULT_ADDRESS_STORE: 0xF0000000
+  RVMODEL_ACCESS_FAULT_ADDRESS_FETCH: 0xE0000000
+  RVMODEL_INTERRUPT_LATENCY: 10
+  RVMODEL_TIMER_INT_SOON_DELAY: 100
+  STANDARD_SM_SUPPORTED: true
+  # Not set: RVMODEL_ACCESS_FAULT_ADDRESS. No address faults for every access type, so
+  # the per-type addresses above are used. Fetches fault only in the ICCM region (0xE)
+  # outside the ICCM, and loads/stores only in the DCCM/PIC region (0xF) outside the
+  # DCCM and PIC; elsewhere accesses go to the system bus.
+  # https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/docs/source/memory-map.md#L247
+  # Not set: RVMODEL_MTIME_ADDRESS, RVMODEL_MTIMECMP_ADDRESS. VeeR EH1 has no
+  # mtime/mtimecmp: the PRM states the SoC must supply them, and the testbench does not.
+  # Leaving RVMODEL_MTIME_ADDRESS undefined disables all machine timer interrupt testing,
+  # which is the documented behaviour in check_defines.h.

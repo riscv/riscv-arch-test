@@ -4,9 +4,11 @@
 The test suites may be provided by multiple suppliers, but must meet a common set of requirements to interoperate transparently for the user:
 
 * All tests use a common set of DUT configuration files so the user only has to write them once:
-** `<dut>.yaml` for the UDB configuration including supported extensions and parameter values
-** `rvmodel_macros.h` for the RVMODEL DUT-Specific Macros
+** `<dut>.yaml` for the UDB configuration including supported extensions, parameter values, and the `dut_environment` block of device addresses and timings
+** `rvmodel_macros.h` for the RVMODEL DUT-Specific Macros, which are assembled into a driver library
 ** `link.ld` for the linker script
+
+* Tests are built without `rvmodel_macros.h`, into certified objects that are linked with the DUT's driver library, so a DUT owner never has to share their macros
 
 * All tests are self-checking
 ** Able to run on simulators, RTL, and hardware

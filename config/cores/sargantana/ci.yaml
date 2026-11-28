@@ -43,6 +43,9 @@ exclude_extensions:
   - Sm_shadow-
   # senvcfg.CBIE keeps the reserved 0b10: csr:csr_bsc.sv#L1344-L1345 (https://github.com/bsc-loca/sargantana/issues/113 item 8)
   - S_scsr-
+  # misa.V reads 1, but the vector unit is not RVV 1.0, so the config does not claim V:
+  # https://github.com/bsc-loca/sargantana/blob/8db4398b/includes/def_pkg.sv#L92
+  - ConfigCheck_misa
   # mideleg is applied after the interrupt is picked by cause, so a delegated SEI hides an M-level STI:
   # csr:csr_bsc.sv#L2026-L2075 (https://github.com/bsc-loca/sargantana/issues/127)
   - InterruptsSm_priority_mideleg

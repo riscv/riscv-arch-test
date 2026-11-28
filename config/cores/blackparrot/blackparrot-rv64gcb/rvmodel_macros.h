@@ -10,14 +10,15 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
+
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
         .balign 8; .global tohost; tohost: .dword 0;         \
         .balign 8; .global fromhost; fromhost: .dword 0;     \
         .popsection;
-
-// BlackParrot implements a standard M-mode (priv 1.11)
-#define STANDARD_SM_SUPPORTED
 
 // STARTUP //
 
@@ -66,33 +67,11 @@
 
 // Access Fault //
 
-// In Bare translation mode a fetch, load or store whose address has a bit at or above the 40-bit
-// physical address width set raises an access fault:
-//   "// Fault if accessing an address > physically supported
-//    wire eaddr_oob_fault_v = ~trans_r & |r_etag_r[etag_width_p-1:ptag_width_p];"
-//   https://github.com/black-parrot/black-parrot/blob/18bad897633ffd57394746cfc31496e26d20ff0a/bp_common/src/v/bp_mmu.sv#L163-L164
-// No lower address faults for loads and stores: the "host I/O" region, physical address bit 33
-// and up, is by design checked only for fetches
-// (https://github.com/black-parrot/black-parrot/issues/1364).
-// Bits 63:38 are all set because the PC and the address reported in mtval and stval keep only the
-// 39-bit virtual address width, sign-extended: this address is kept exactly, while one such as
-// 0x100_0000_0000 becomes the valid address 0, so a jump there runs the code at address 0
-// (https://github.com/black-parrot/black-parrot/pull/1357) and a load reports mtval = 0
-// (https://github.com/black-parrot/black-parrot/pull/1355).
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0xFFFFFFC000000000
-
 // Interrupt Latency //
-
-#define RVMODEL_INTERRUPT_LATENCY 10
 
 // Machine Timer //
 
-// mtime counts core clocks (mtimesel resets to 0, which selects clk_i) and is read through a
-// gray-code synchronizer, so allow a generous delay between arming and leaving M-mode.
-#define RVMODEL_TIMER_INT_SOON_DELAY 2000
 #define CLINT_BASE_ADDRESS 0x00300000
-#define RVMODEL_MTIME_ADDRESS    (CLINT_BASE_ADDRESS + 0xBFF8)
-#define RVMODEL_MTIMECMP_ADDRESS (CLINT_BASE_ADDRESS + 0x4000)
 
 // Machine Interrupts //
 
@@ -100,7 +79,6 @@
 // 0xC000 (M) and 0xC008 (S):
 //   "assign m_external_irq_o = plic_r[0]; assign s_external_irq_o = plic_r[1];"
 //   https://github.com/black-parrot/black-parrot/blob/18bad897633ffd57394746cfc31496e26d20ff0a/bp_me/src/v/dev/bp_me_clint_slice.sv#L196-L197
-#define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 #define BP_MEIP_ADDRESS      (CLINT_BASE_ADDRESS + 0xC000)
 #define BP_SEIP_ADDRESS      (CLINT_BASE_ADDRESS + 0xC008)
 

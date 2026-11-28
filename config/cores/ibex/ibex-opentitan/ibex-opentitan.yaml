@@ -443,3 +443,25 @@ params:
       false,
       false, # 24..31
     ]
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  # No fetch address faults. Simple System ties the instruction error off and indexes the RAM
+  # with addr[19:2] for every fetch. So RVMODEL_ACCESS_FAULT_ADDRESS and
+  # RVMODEL_ACCESS_FAULT_ADDRESS_FETCH are not defined.
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/examples/simple_system/rtl/ibex_simple_system.sv#L134
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/shared/rtl/ram_2p.sv#L48
+  # Loads and stores to an address that no bus device decodes get a bus error.
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/shared/rtl/bus.sv#L99
+  RVMODEL_ACCESS_FAULT_ADDRESS_LOAD: 0x80000000
+  RVMODEL_ACCESS_FAULT_ADDRESS_STORE: 0x80000000
+  # mtime increments once per clock cycle.
+  #   https://github.com/lowRISC/ibex/blob/e9f55342edbd27e9e17a0e41b1c95a81abb5eac8/shared/rtl/timer.sv#L35-L38
+  RVMODEL_MTIME_ADDRESS: 0x00030000
+  RVMODEL_MTIMECMP_ADDRESS: 0x00030008
+  RVMODEL_INTERRUPT_LATENCY: 10
+  # Arming the timer from U-mode takes four T-SBI round trips of about 900 cycles each, so the
+  # delay must exceed about 2700 cycles for the interrupt to arrive after the setup returns.
+  RVMODEL_TIMER_INT_SOON_DELAY: 10000
+  STANDARD_SM_SUPPORTED: true

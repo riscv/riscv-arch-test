@@ -65,3 +65,31 @@ def make_cr_fs1_fs3_edges(instr_name: str, instr_type: str, coverpoint: str, tes
                 return_testcase_registers(test_data, params)
 
     return test_chunks
+
+
+@add_coverpoint_generator("cr_fs1_fs2_fs3_edges_frm4")
+def make_cr_fs1_fs2_fs3_edges_frm4(
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
+) -> list[TestChunk]:
+    """Generate the full three-source FMA edge product crossed with rounding modes."""
+    if instr_type != "FR4":
+        raise ValueError(f"{coverpoint} requires FR4, got {instr_type}")
+    edges = _fp_edges_for(coverpoint, "cr_fs1_fs2_fs3_edges_frm4")
+    frm_modes = ("dyn", "rdn", "rmm", "rne", "rtz", "rup")
+    test_chunks: list[TestChunk] = []
+    for i, value1 in enumerate(edges):
+        for j, value2 in enumerate(edges):
+            for k, value3 in enumerate(edges):
+                for frm_mode in frm_modes:
+                    params = generate_random_params(
+                        test_data, instr_type, fs1val=value1, fs2val=value2, fs3val=value3, frm=frm_mode
+                    )
+                    desc = f"{coverpoint} (fs1={value1:#x}, fs2={value2:#x}, fs3={value3:#x}, frm={frm_mode})"
+                    tc = format_single_testcase(
+                        instr_name, instr_type, test_data, params, desc, f"b{i}_{j}_{k}_{frm_mode}", coverpoint
+                    )
+                    # Three-source testcases need smaller groups to stay below the 500 KB file limit.
+                    tc.split_name = f"{coverpoint}_{len(test_chunks) // 400}"
+                    test_chunks.append(tc)
+                    return_testcase_registers(test_data, params)
+    return test_chunks

@@ -172,14 +172,14 @@ normative_rule_definitions:
   - name: fmadd-s_op
     coverpoint:
       [
-        "F_fmadd_s_cg/{cp_fs3, cp_fd, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}",
+        "F_fmadd_s_cg/{cp_fs3, cp_fd, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4, cr_fs1_fs2_fs3_edges_frm4}",
       ]
   # insn:fmsub.s[] multiplies the values in rs1 and rs2, subtracts the value in rs3, and
   # writes the final result to rd. insn:fmsub.s[] computes (rs1×rs2)−rs3.
   - name: fmsub-s_op
     coverpoint:
       [
-        "F_fmsub_s_cg/{cp_fs3, cp_fd, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}",
+        "F_fmsub_s_cg/{cp_fs3, cp_fd, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4, cr_fs1_fs2_fs3_edges_frm4}",
       ]
   # insn:fnmsub.s[] multiplies the values in rs1 and rs2, negates the product, adds the
   # value in rs3, and writes the final result to rd. insn:fnmsub.s[] computes
@@ -187,7 +187,7 @@ normative_rule_definitions:
   - name: fnmsub-s_op
     coverpoint:
       [
-        "F_fnmsub_s_cg/{cp_fs3, cp_fd, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}",
+        "F_fnmsub_s_cg/{cp_fs3, cp_fd, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4, cr_fs1_fs2_fs3_edges_frm4}",
       ]
   # insn:fnmadd.s[] multiplies the values in rs1 and rs2, negates the product, subtracts
   # the value in rs3, and writes the final result to rd. insn:fnmadd.s[] computes
@@ -195,15 +195,15 @@ normative_rule_definitions:
   - name: fnmadd-s_op
     coverpoint:
       [
-        "F_fnmadd_s_cg/{cp_fs3, cp_fd, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4}",
+        "F_fnmadd_s_cg/{cp_fs3, cp_fd, cr_fs1_fs2_edges_frm4, cr_fs1_fs3_edges_frm4, cr_fs1_fs2_fs3_edges_frm4}",
       ]
   # The fused multiply-add instructions must set the invalid operation exception flag
   # when the multiplicands are ∞ and zero, even when the addend is a quiet NaN.
   - name: fma_nv_flag
-    # TODO: the FMA crosses multiply inf by zero only with non-NaN addends; needs a directed case
-    # with fs1/fs2 = inf/zero and a quiet-NaN fs3 for each FMA instruction and precision
     coverpoint:
-      ["Needs test: FMA with multiplicands ∞ and zero and a quiet-NaN addend."]
+      [
+        "{F_fmadd_s_cg, F_fmsub_s_cg, F_fnmadd_s_cg, F_fnmsub_s_cg}/cr_fs1_fs2_fs3_edges_frm4",
+      ]
   # insn:fcvt.w.s[] or insn:fcvt.l.s[] converts a floating-point number in
   # floating-point register rs1 to a signed 32-bit or 64-bit integer, respectively, in
   # integer register rd

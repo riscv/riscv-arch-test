@@ -151,7 +151,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "{Zfh_fadd_h_cg, Zfh_fdiv_h_cg}/cr_fs1_fs2_edges_frm_H",
-        "Zfh_fmadd_h_cg/cr_fs1_fs2_edges_frm4_H",
+        "Zfh_fmadd_h_cg/{cr_fs1_fs2_edges_frm4_H, cr_fs1_fs2_fs3_edges_frm4_H}",
         "Zfh_fsqrt_h_cg/cp_fs1_edges_H",
       ]
   # insn:fcvt.w.h[] or insn:fcvt.l.h[] converts a half-precision floating-point number

@@ -140,7 +140,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "{D_fadd_d_cg, D_fdiv_d_cg}/cr_fs1_fs2_edges_frm_D",
-        "D_fmadd_d_cg/cr_fs1_fs2_edges_frm4_D",
+        "D_fmadd_d_cg/{cr_fs1_fs2_edges_frm4_D, cr_fs1_fs2_fs3_edges_frm4_D}",
         "D_fsqrt_d_cg/cp_fs1_edges_D",
       ]
   # insn:fcvt.w.d[] or insn:fcvt.l.d[] converts a double-precision floating-point number

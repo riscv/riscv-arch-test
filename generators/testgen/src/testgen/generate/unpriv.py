@@ -16,7 +16,7 @@ from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.state import TestData
-from testgen.data.test_chunk import TestChunk, split_test_chunks
+from testgen.data.test_chunk import TestChunk, group_test_chunks
 from testgen.formatters.registry import get_instruction_type_config
 from testgen.instructions.vector import parse_vector_instruction_info
 from testgen.io.templates import canonicalize_extensions
@@ -173,7 +173,7 @@ def _generate_unpriv_tests_for_instruction(
         all_test_chunks.extend(generate_tests_for_coverpoint(instr_name, instr_type, coverpoint, test_data))
 
     # Split into test files and write
-    test_files = split_test_chunks(all_test_chunks, TESTCASES_PER_FILE)
+    test_files = [files for _, group in group_test_chunks(all_test_chunks, TESTCASES_PER_FILE) for files in group]
     for file_idx, test_file_chunks in enumerate(test_files):
         _append_sig_reg_reset(test_file_chunks)
         if is_vector:

@@ -20,6 +20,7 @@ The basic coverpoints are defined in <<t-unprivileged-coverpoints>>. Modified co
 |cr_fs1_fs2_edges_frm|26 * 26 * 6|Cross product of fs1 and fs2 edges and rounding modes
 |cr_fs1_fs2_edges_frm4|26 * 26 * 6|Cross product of fs1 and fs2 edges and rounding modes for fma
 |cr_fs1_fs3_edges_frm4|26 * 26 * 6|Cross product of fs1 and fs3 edges and rounding modes for fma
+|cr_fs1_fs2_fs3_edges_frm4|26 * 26 * 26 * 6|Cross product of fs1, fs2, and fs3 edges and rounding modes for fma
 |===
 
 These coverpoints do not yet certify that floating-point operations conform to the IEEE 754 standard.  More robust coverpoints based on the IBM suite are under development.

@@ -134,6 +134,15 @@
   `define MAXINDEXEEW_GE8
 `endif
 
+// The Zicsr tests' CSR (RVTEST_TEST_CSR in tests/env/utils.h): with no F, Zve32x or S, a hart with U-mode, Zicntr
+// and a writable mcounteren.IR tests the read-only instret from U-mode, so the tests make no CSR writes, and
+// covergroupgen guards the Zicsr coverpoints that need one.
+`ifndef F_SUPPORTED `ifndef ZVE32X_SUPPORTED `ifndef S_SUPPORTED
+  `ifdef ZICNTR_SUPPORTED `ifdef U_SUPPORTED `ifdef UDB_MCOUNTENABLE_EN_2
+    `define RVTEST_READ_ONLY_TEST_CSR
+  `endif `endif `endif
+`endif `endif `endif
+
 // Set register type length
 `define XLEN_BITS         bit        [`UDB_MXLEN-1:0]
 `define SIGNED_XLEN_BITS  bit signed [`UDB_MXLEN-1:0]

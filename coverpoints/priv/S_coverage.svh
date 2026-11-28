@@ -585,757 +585,781 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
     // counter access in supervisor mode
 
     mcounteren_ones: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN){
-        bins ones = {32'b11111111111111111111111111111111};
+        bins ones = {`UDB_MCOUNTENABLE_EN_MASK};
     }
     mcounteren_zeros: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN){
         bins zeros = {32'b0};
     }
     counters_scounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCOUNTEREN)[31:0]} {
-    bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
-    bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
-    bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
+    `ifdef UDB_MCOUNTENABLE_EN_0 `ifdef UDB_SCOUNTENABLE_EN_0
+      bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
+    `endif `endif
+    `ifdef UDB_MCOUNTENABLE_EN_1 `ifdef UDB_SCOUNTENABLE_EN_1
+      bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
+    `endif `endif
+    `ifdef UDB_MCOUNTENABLE_EN_2 `ifdef UDB_SCOUNTENABLE_EN_2
+      bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
+    `endif `endif
     `ifdef ZIHPM_SUPPORTED
-      `ifdef UDB_HPM_COUNTER_EN_3
+      `ifdef UDB_HPM_COUNTER_EN_3 `ifdef UDB_MCOUNTENABLE_EN_3 `ifdef UDB_SCOUNTENABLE_EN_3
         bins hpmcounter3_enabled   = {44'b110000000011_00000000000000000000000000001000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_4
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_4 `ifdef UDB_MCOUNTENABLE_EN_4 `ifdef UDB_SCOUNTENABLE_EN_4
         bins hpmcounter4_enabled   = {44'b110000000100_00000000000000000000000000010000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_5
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_5 `ifdef UDB_MCOUNTENABLE_EN_5 `ifdef UDB_SCOUNTENABLE_EN_5
         bins hpmcounter5_enabled   = {44'b110000000101_00000000000000000000000000100000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_6
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_6 `ifdef UDB_MCOUNTENABLE_EN_6 `ifdef UDB_SCOUNTENABLE_EN_6
         bins hpmcounter6_enabled   = {44'b110000000110_00000000000000000000000001000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_7
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_7 `ifdef UDB_MCOUNTENABLE_EN_7 `ifdef UDB_SCOUNTENABLE_EN_7
         bins hpmcounter7_enabled   = {44'b110000000111_00000000000000000000000010000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_8
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_8 `ifdef UDB_MCOUNTENABLE_EN_8 `ifdef UDB_SCOUNTENABLE_EN_8
         bins hpmcounter8_enabled   = {44'b110000001000_00000000000000000000000100000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_9
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_9 `ifdef UDB_MCOUNTENABLE_EN_9 `ifdef UDB_SCOUNTENABLE_EN_9
         bins hpmcounter9_enabled   = {44'b110000001001_00000000000000000000001000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_10
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_10 `ifdef UDB_MCOUNTENABLE_EN_10 `ifdef UDB_SCOUNTENABLE_EN_10
         bins hpmcounter10_enabled  = {44'b110000001010_00000000000000000000010000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_11
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_11 `ifdef UDB_MCOUNTENABLE_EN_11 `ifdef UDB_SCOUNTENABLE_EN_11
         bins hpmcounter11_enabled  = {44'b110000001011_00000000000000000000100000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_12
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_12 `ifdef UDB_MCOUNTENABLE_EN_12 `ifdef UDB_SCOUNTENABLE_EN_12
         bins hpmcounter12_enabled  = {44'b110000001100_00000000000000000001000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_13
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_13 `ifdef UDB_MCOUNTENABLE_EN_13 `ifdef UDB_SCOUNTENABLE_EN_13
         bins hpmcounter13_enabled  = {44'b110000001101_00000000000000000010000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_14
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_14 `ifdef UDB_MCOUNTENABLE_EN_14 `ifdef UDB_SCOUNTENABLE_EN_14
         bins hpmcounter14_enabled  = {44'b110000001110_00000000000000000100000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_15
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_15 `ifdef UDB_MCOUNTENABLE_EN_15 `ifdef UDB_SCOUNTENABLE_EN_15
         bins hpmcounter15_enabled  = {44'b110000001111_00000000000000001000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_16
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_16 `ifdef UDB_MCOUNTENABLE_EN_16 `ifdef UDB_SCOUNTENABLE_EN_16
         bins hpmcounter16_enabled  = {44'b110000010000_00000000000000010000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_17
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_17 `ifdef UDB_MCOUNTENABLE_EN_17 `ifdef UDB_SCOUNTENABLE_EN_17
         bins hpmcounter17_enabled  = {44'b110000010001_00000000000000100000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_18
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_18 `ifdef UDB_MCOUNTENABLE_EN_18 `ifdef UDB_SCOUNTENABLE_EN_18
         bins hpmcounter18_enabled  = {44'b110000010010_00000000000001000000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_19
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_19 `ifdef UDB_MCOUNTENABLE_EN_19 `ifdef UDB_SCOUNTENABLE_EN_19
         bins hpmcounter19_enabled  = {44'b110000010011_00000000000010000000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_20
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_20 `ifdef UDB_MCOUNTENABLE_EN_20 `ifdef UDB_SCOUNTENABLE_EN_20
         bins hpmcounter20_enabled  = {44'b110000010100_00000000000100000000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_21
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_21 `ifdef UDB_MCOUNTENABLE_EN_21 `ifdef UDB_SCOUNTENABLE_EN_21
         bins hpmcounter21_enabled  = {44'b110000010101_00000000001000000000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_22
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_22 `ifdef UDB_MCOUNTENABLE_EN_22 `ifdef UDB_SCOUNTENABLE_EN_22
         bins hpmcounter22_enabled  = {44'b110000010110_00000000010000000000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_23
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_23 `ifdef UDB_MCOUNTENABLE_EN_23 `ifdef UDB_SCOUNTENABLE_EN_23
         bins hpmcounter23_enabled  = {44'b110000010111_00000000100000000000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_24
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_24 `ifdef UDB_MCOUNTENABLE_EN_24 `ifdef UDB_SCOUNTENABLE_EN_24
         bins hpmcounter24_enabled  = {44'b110000011000_00000001000000000000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_25
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_25 `ifdef UDB_MCOUNTENABLE_EN_25 `ifdef UDB_SCOUNTENABLE_EN_25
         bins hpmcounter25_enabled  = {44'b110000011001_00000010000000000000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_26
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_26 `ifdef UDB_MCOUNTENABLE_EN_26 `ifdef UDB_SCOUNTENABLE_EN_26
         bins hpmcounter26_enabled  = {44'b110000011010_00000100000000000000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_27
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_27 `ifdef UDB_MCOUNTENABLE_EN_27 `ifdef UDB_SCOUNTENABLE_EN_27
         bins hpmcounter27_enabled  = {44'b110000011011_00001000000000000000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_28
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_28 `ifdef UDB_MCOUNTENABLE_EN_28 `ifdef UDB_SCOUNTENABLE_EN_28
         bins hpmcounter28_enabled  = {44'b110000011100_00010000000000000000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_29
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_29 `ifdef UDB_MCOUNTENABLE_EN_29 `ifdef UDB_SCOUNTENABLE_EN_29
         bins hpmcounter29_enabled  = {44'b110000011101_00100000000000000000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_30
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_30 `ifdef UDB_MCOUNTENABLE_EN_30 `ifdef UDB_SCOUNTENABLE_EN_30
         bins hpmcounter30_enabled  = {44'b110000011110_01000000000000000000000000000000};
-      `endif
-      `ifdef UDB_HPM_COUNTER_EN_31
+      `endif `endif `endif
+      `ifdef UDB_HPM_COUNTER_EN_31 `ifdef UDB_MCOUNTENABLE_EN_31 `ifdef UDB_SCOUNTENABLE_EN_31
         bins hpmcounter31_enabled  = {44'b110000011111_10000000000000000000000000000000};
-      `endif
+      `endif `endif `endif
     `endif
 
-    bins cycle_disabled         = {44'b110000000000_11111111111111111111111111111110};
-    bins time_disabled          = {44'b110000000001_11111111111111111111111111111101};
-    bins instret_disabled       = {44'b110000000010_11111111111111111111111111111011};
+    bins cycle_disabled         = {{12'b110000000000, `UDB_SCOUNTENABLE_EN_MASK & ~32'h1}};
+    bins time_disabled          = {{12'b110000000001, `UDB_SCOUNTENABLE_EN_MASK & ~32'h2}};
+    bins instret_disabled       = {{12'b110000000010, `UDB_SCOUNTENABLE_EN_MASK & ~32'h4}};
     `ifdef ZIHPM_SUPPORTED
       `ifdef UDB_HPM_COUNTER_EN_3
-        bins hpmcounter3_disabled   = {44'b110000000011_11111111111111111111111111110111};
+        bins hpmcounter3_disabled   = {{12'b110000000011, `UDB_SCOUNTENABLE_EN_MASK & ~32'h8}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_4
-        bins hpmcounter4_disabled   = {44'b110000000100_11111111111111111111111111101111};
+        bins hpmcounter4_disabled   = {{12'b110000000100, `UDB_SCOUNTENABLE_EN_MASK & ~32'h10}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_5
-        bins hpmcounter5_disabled   = {44'b110000000101_11111111111111111111111111011111};
+        bins hpmcounter5_disabled   = {{12'b110000000101, `UDB_SCOUNTENABLE_EN_MASK & ~32'h20}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_6
-        bins hpmcounter6_disabled   = {44'b110000000110_11111111111111111111111110111111};
+        bins hpmcounter6_disabled   = {{12'b110000000110, `UDB_SCOUNTENABLE_EN_MASK & ~32'h40}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_7
-        bins hpmcounter7_disabled   = {44'b110000000111_11111111111111111111111101111111};
+        bins hpmcounter7_disabled   = {{12'b110000000111, `UDB_SCOUNTENABLE_EN_MASK & ~32'h80}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_8
-        bins hpmcounter8_disabled   = {44'b110000001000_11111111111111111111111011111111};
+        bins hpmcounter8_disabled   = {{12'b110000001000, `UDB_SCOUNTENABLE_EN_MASK & ~32'h100}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_9
-        bins hpmcounter9_disabled   = {44'b110000001001_11111111111111111111110111111111};
+        bins hpmcounter9_disabled   = {{12'b110000001001, `UDB_SCOUNTENABLE_EN_MASK & ~32'h200}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_10
-        bins hpmcounter10_disabled  = {44'b110000001010_11111111111111111111101111111111};
+        bins hpmcounter10_disabled  = {{12'b110000001010, `UDB_SCOUNTENABLE_EN_MASK & ~32'h400}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_11
-        bins hpmcounter11_disabled  = {44'b110000001011_11111111111111111111011111111111};
+        bins hpmcounter11_disabled  = {{12'b110000001011, `UDB_SCOUNTENABLE_EN_MASK & ~32'h800}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_12
-        bins hpmcounter12_disabled  = {44'b110000001100_11111111111111111110111111111111};
+        bins hpmcounter12_disabled  = {{12'b110000001100, `UDB_SCOUNTENABLE_EN_MASK & ~32'h1000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_13
-        bins hpmcounter13_disabled  = {44'b110000001101_11111111111111111101111111111111};
+        bins hpmcounter13_disabled  = {{12'b110000001101, `UDB_SCOUNTENABLE_EN_MASK & ~32'h2000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_14
-        bins hpmcounter14_disabled  = {44'b110000001110_11111111111111111011111111111111};
+        bins hpmcounter14_disabled  = {{12'b110000001110, `UDB_SCOUNTENABLE_EN_MASK & ~32'h4000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_15
-        bins hpmcounter15_disabled  = {44'b110000001111_11111111111111110111111111111111};
+        bins hpmcounter15_disabled  = {{12'b110000001111, `UDB_SCOUNTENABLE_EN_MASK & ~32'h8000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_16
-        bins hpmcounter16_disabled  = {44'b110000010000_11111111111111101111111111111111};
+        bins hpmcounter16_disabled  = {{12'b110000010000, `UDB_SCOUNTENABLE_EN_MASK & ~32'h10000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_17
-        bins hpmcounter17_disabled  = {44'b110000010001_11111111111111011111111111111111};
+        bins hpmcounter17_disabled  = {{12'b110000010001, `UDB_SCOUNTENABLE_EN_MASK & ~32'h20000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_18
-        bins hpmcounter18_disabled  = {44'b110000010010_11111111111110111111111111111111};
+        bins hpmcounter18_disabled  = {{12'b110000010010, `UDB_SCOUNTENABLE_EN_MASK & ~32'h40000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_19
-        bins hpmcounter19_disabled  = {44'b110000010011_11111111111101111111111111111111};
+        bins hpmcounter19_disabled  = {{12'b110000010011, `UDB_SCOUNTENABLE_EN_MASK & ~32'h80000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_20
-        bins hpmcounter20_disabled  = {44'b110000010100_11111111111011111111111111111111};
+        bins hpmcounter20_disabled  = {{12'b110000010100, `UDB_SCOUNTENABLE_EN_MASK & ~32'h100000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_21
-        bins hpmcounter21_disabled  = {44'b110000010101_11111111110111111111111111111111};
+        bins hpmcounter21_disabled  = {{12'b110000010101, `UDB_SCOUNTENABLE_EN_MASK & ~32'h200000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_22
-        bins hpmcounter22_disabled  = {44'b110000010110_11111111101111111111111111111111};
+        bins hpmcounter22_disabled  = {{12'b110000010110, `UDB_SCOUNTENABLE_EN_MASK & ~32'h400000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_23
-        bins hpmcounter23_disabled  = {44'b110000010111_11111111011111111111111111111111};
+        bins hpmcounter23_disabled  = {{12'b110000010111, `UDB_SCOUNTENABLE_EN_MASK & ~32'h800000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_24
-        bins hpmcounter24_disabled  = {44'b110000011000_11111110111111111111111111111111};
+        bins hpmcounter24_disabled  = {{12'b110000011000, `UDB_SCOUNTENABLE_EN_MASK & ~32'h1000000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_25
-        bins hpmcounter25_disabled  = {44'b110000011001_11111101111111111111111111111111};
+        bins hpmcounter25_disabled  = {{12'b110000011001, `UDB_SCOUNTENABLE_EN_MASK & ~32'h2000000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_26
-        bins hpmcounter26_disabled  = {44'b110000011010_11111011111111111111111111111111};
+        bins hpmcounter26_disabled  = {{12'b110000011010, `UDB_SCOUNTENABLE_EN_MASK & ~32'h4000000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_27
-        bins hpmcounter27_disabled  = {44'b110000011011_11110111111111111111111111111111};
+        bins hpmcounter27_disabled  = {{12'b110000011011, `UDB_SCOUNTENABLE_EN_MASK & ~32'h8000000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_28
-        bins hpmcounter28_disabled  = {44'b110000011100_11101111111111111111111111111111};
+        bins hpmcounter28_disabled  = {{12'b110000011100, `UDB_SCOUNTENABLE_EN_MASK & ~32'h10000000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_29
-        bins hpmcounter29_disabled  = {44'b110000011101_11011111111111111111111111111111};
+        bins hpmcounter29_disabled  = {{12'b110000011101, `UDB_SCOUNTENABLE_EN_MASK & ~32'h20000000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_30
-        bins hpmcounter30_disabled  = {44'b110000011110_10111111111111111111111111111111};
+        bins hpmcounter30_disabled  = {{12'b110000011110, `UDB_SCOUNTENABLE_EN_MASK & ~32'h40000000}};
       `endif
       `ifdef UDB_HPM_COUNTER_EN_31
-        bins hpmcounter31_disabled  = {44'b110000011111_01111111111111111111111111111111};
+        bins hpmcounter31_disabled  = {{12'b110000011111, `UDB_SCOUNTENABLE_EN_MASK & ~32'h80000000}};
       `endif
     `endif
 
     `ifdef UDB_MXLEN_32
-        bins cycleh_enabled         = {44'b110010000000_00000000000000000000000000000001};
-        bins timeh_enabled          = {44'b110010000001_00000000000000000000000000000010};
-        bins instreth_enabled       = {44'b110010000010_00000000000000000000000000000100};
+        `ifdef UDB_MCOUNTENABLE_EN_0 `ifdef UDB_SCOUNTENABLE_EN_0
+          bins cycleh_enabled         = {44'b110010000000_00000000000000000000000000000001};
+        `endif `endif
+        `ifdef UDB_MCOUNTENABLE_EN_1 `ifdef UDB_SCOUNTENABLE_EN_1
+          bins timeh_enabled          = {44'b110010000001_00000000000000000000000000000010};
+        `endif `endif
+        `ifdef UDB_MCOUNTENABLE_EN_2 `ifdef UDB_SCOUNTENABLE_EN_2
+          bins instreth_enabled       = {44'b110010000010_00000000000000000000000000000100};
+        `endif `endif
         `ifdef ZIHPM_SUPPORTED
-          `ifdef UDB_HPM_COUNTER_EN_3
+          `ifdef UDB_HPM_COUNTER_EN_3 `ifdef UDB_MCOUNTENABLE_EN_3 `ifdef UDB_SCOUNTENABLE_EN_3
             bins hpmcounter3h_enabled   = {44'b110010000011_00000000000000000000000000001000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_4
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_4 `ifdef UDB_MCOUNTENABLE_EN_4 `ifdef UDB_SCOUNTENABLE_EN_4
             bins hpmcounter4h_enabled   = {44'b110010000100_00000000000000000000000000010000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_5
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_5 `ifdef UDB_MCOUNTENABLE_EN_5 `ifdef UDB_SCOUNTENABLE_EN_5
             bins hpmcounter5h_enabled   = {44'b110010000101_00000000000000000000000000100000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_6
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_6 `ifdef UDB_MCOUNTENABLE_EN_6 `ifdef UDB_SCOUNTENABLE_EN_6
             bins hpmcounter6h_enabled   = {44'b110010000110_00000000000000000000000001000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_7
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_7 `ifdef UDB_MCOUNTENABLE_EN_7 `ifdef UDB_SCOUNTENABLE_EN_7
             bins hpmcounter7h_enabled   = {44'b110010000111_00000000000000000000000010000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_8
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_8 `ifdef UDB_MCOUNTENABLE_EN_8 `ifdef UDB_SCOUNTENABLE_EN_8
             bins hpmcounter8h_enabled   = {44'b110010001000_00000000000000000000000100000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_9
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_9 `ifdef UDB_MCOUNTENABLE_EN_9 `ifdef UDB_SCOUNTENABLE_EN_9
             bins hpmcounter9h_enabled   = {44'b110010001001_00000000000000000000001000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_10
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_10 `ifdef UDB_MCOUNTENABLE_EN_10 `ifdef UDB_SCOUNTENABLE_EN_10
             bins hpmcounter10h_enabled  = {44'b110010001010_00000000000000000000010000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_11
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_11 `ifdef UDB_MCOUNTENABLE_EN_11 `ifdef UDB_SCOUNTENABLE_EN_11
             bins hpmcounter11h_enabled  = {44'b110010001011_00000000000000000000100000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_12
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_12 `ifdef UDB_MCOUNTENABLE_EN_12 `ifdef UDB_SCOUNTENABLE_EN_12
             bins hpmcounter12h_enabled  = {44'b110010001100_00000000000000000001000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_13
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_13 `ifdef UDB_MCOUNTENABLE_EN_13 `ifdef UDB_SCOUNTENABLE_EN_13
             bins hpmcounter13h_enabled  = {44'b110010001101_00000000000000000010000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_14
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_14 `ifdef UDB_MCOUNTENABLE_EN_14 `ifdef UDB_SCOUNTENABLE_EN_14
             bins hpmcounter14h_enabled  = {44'b110010001110_00000000000000000100000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_15
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_15 `ifdef UDB_MCOUNTENABLE_EN_15 `ifdef UDB_SCOUNTENABLE_EN_15
             bins hpmcounter15h_enabled  = {44'b110010001111_00000000000000001000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_16
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_16 `ifdef UDB_MCOUNTENABLE_EN_16 `ifdef UDB_SCOUNTENABLE_EN_16
             bins hpmcounter16h_enabled  = {44'b110010010000_00000000000000010000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_17
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_17 `ifdef UDB_MCOUNTENABLE_EN_17 `ifdef UDB_SCOUNTENABLE_EN_17
             bins hpmcounter17h_enabled  = {44'b110010010001_00000000000000100000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_18
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_18 `ifdef UDB_MCOUNTENABLE_EN_18 `ifdef UDB_SCOUNTENABLE_EN_18
             bins hpmcounter18h_enabled  = {44'b110010010010_00000000000001000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_19
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_19 `ifdef UDB_MCOUNTENABLE_EN_19 `ifdef UDB_SCOUNTENABLE_EN_19
             bins hpmcounter19h_enabled  = {44'b110010010011_00000000000010000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_20
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_20 `ifdef UDB_MCOUNTENABLE_EN_20 `ifdef UDB_SCOUNTENABLE_EN_20
             bins hpmcounter20h_enabled  = {44'b110010010100_00000000000100000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_21
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_21 `ifdef UDB_MCOUNTENABLE_EN_21 `ifdef UDB_SCOUNTENABLE_EN_21
             bins hpmcounter21h_enabled  = {44'b110010010101_00000000001000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_22
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_22 `ifdef UDB_MCOUNTENABLE_EN_22 `ifdef UDB_SCOUNTENABLE_EN_22
             bins hpmcounter22h_enabled  = {44'b110010010110_00000000010000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_23
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_23 `ifdef UDB_MCOUNTENABLE_EN_23 `ifdef UDB_SCOUNTENABLE_EN_23
             bins hpmcounter23h_enabled  = {44'b110010010111_00000000100000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_24
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_24 `ifdef UDB_MCOUNTENABLE_EN_24 `ifdef UDB_SCOUNTENABLE_EN_24
             bins hpmcounter24h_enabled  = {44'b110010011000_00000001000000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_25
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_25 `ifdef UDB_MCOUNTENABLE_EN_25 `ifdef UDB_SCOUNTENABLE_EN_25
             bins hpmcounter25h_enabled  = {44'b110010011001_00000010000000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_26
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_26 `ifdef UDB_MCOUNTENABLE_EN_26 `ifdef UDB_SCOUNTENABLE_EN_26
             bins hpmcounter26h_enabled  = {44'b110010011010_00000100000000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_27
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_27 `ifdef UDB_MCOUNTENABLE_EN_27 `ifdef UDB_SCOUNTENABLE_EN_27
             bins hpmcounter27h_enabled  = {44'b110010011011_00001000000000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_28
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_28 `ifdef UDB_MCOUNTENABLE_EN_28 `ifdef UDB_SCOUNTENABLE_EN_28
             bins hpmcounter28h_enabled  = {44'b110010011100_00010000000000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_29
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_29 `ifdef UDB_MCOUNTENABLE_EN_29 `ifdef UDB_SCOUNTENABLE_EN_29
             bins hpmcounter29h_enabled  = {44'b110010011101_00100000000000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_30
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_30 `ifdef UDB_MCOUNTENABLE_EN_30 `ifdef UDB_SCOUNTENABLE_EN_30
             bins hpmcounter30h_enabled  = {44'b110010011110_01000000000000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_31
+          `endif `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_31 `ifdef UDB_MCOUNTENABLE_EN_31 `ifdef UDB_SCOUNTENABLE_EN_31
             bins hpmcounter31h_enabled  = {44'b110010011111_10000000000000000000000000000000};
-          `endif
+          `endif `endif `endif
         `endif
 
-        bins cycleh_disabled         = {44'b110010000000_11111111111111111111111111111110};
-        bins timeh_disabled          = {44'b110010000001_11111111111111111111111111111101};
-        bins instreth_disabled       = {44'b110010000010_11111111111111111111111111111011};
+        bins cycleh_disabled         = {{12'b110010000000, `UDB_SCOUNTENABLE_EN_MASK & ~32'h1}};
+        bins timeh_disabled          = {{12'b110010000001, `UDB_SCOUNTENABLE_EN_MASK & ~32'h2}};
+        bins instreth_disabled       = {{12'b110010000010, `UDB_SCOUNTENABLE_EN_MASK & ~32'h4}};
         `ifdef ZIHPM_SUPPORTED
           `ifdef UDB_HPM_COUNTER_EN_3
-            bins hpmcounter3h_disabled   = {44'b110010000011_11111111111111111111111111110111};
+            bins hpmcounter3h_disabled   = {{12'b110010000011, `UDB_SCOUNTENABLE_EN_MASK & ~32'h8}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_4
-            bins hpmcounter4h_disabled   = {44'b110010000100_11111111111111111111111111101111};
+            bins hpmcounter4h_disabled   = {{12'b110010000100, `UDB_SCOUNTENABLE_EN_MASK & ~32'h10}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_5
-            bins hpmcounter5h_disabled   = {44'b110010000101_11111111111111111111111111011111};
+            bins hpmcounter5h_disabled   = {{12'b110010000101, `UDB_SCOUNTENABLE_EN_MASK & ~32'h20}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_6
-            bins hpmcounter6h_disabled   = {44'b110010000110_11111111111111111111111110111111};
+            bins hpmcounter6h_disabled   = {{12'b110010000110, `UDB_SCOUNTENABLE_EN_MASK & ~32'h40}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_7
-            bins hpmcounter7h_disabled   = {44'b110010000111_11111111111111111111111101111111};
+            bins hpmcounter7h_disabled   = {{12'b110010000111, `UDB_SCOUNTENABLE_EN_MASK & ~32'h80}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_8
-            bins hpmcounter8h_disabled   = {44'b110010001000_11111111111111111111111011111111};
+            bins hpmcounter8h_disabled   = {{12'b110010001000, `UDB_SCOUNTENABLE_EN_MASK & ~32'h100}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_9
-            bins hpmcounter9h_disabled   = {44'b110010001001_11111111111111111111110111111111};
+            bins hpmcounter9h_disabled   = {{12'b110010001001, `UDB_SCOUNTENABLE_EN_MASK & ~32'h200}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_10
-            bins hpmcounter10h_disabled  = {44'b110010001010_11111111111111111111101111111111};
+            bins hpmcounter10h_disabled  = {{12'b110010001010, `UDB_SCOUNTENABLE_EN_MASK & ~32'h400}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_11
-            bins hpmcounter11h_disabled  = {44'b110010001011_11111111111111111111011111111111};
+            bins hpmcounter11h_disabled  = {{12'b110010001011, `UDB_SCOUNTENABLE_EN_MASK & ~32'h800}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_12
-            bins hpmcounter12h_disabled  = {44'b110010001100_11111111111111111110111111111111};
+            bins hpmcounter12h_disabled  = {{12'b110010001100, `UDB_SCOUNTENABLE_EN_MASK & ~32'h1000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_13
-            bins hpmcounter13h_disabled  = {44'b110010001101_11111111111111111101111111111111};
+            bins hpmcounter13h_disabled  = {{12'b110010001101, `UDB_SCOUNTENABLE_EN_MASK & ~32'h2000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_14
-            bins hpmcounter14h_disabled  = {44'b110010001110_11111111111111111011111111111111};
+            bins hpmcounter14h_disabled  = {{12'b110010001110, `UDB_SCOUNTENABLE_EN_MASK & ~32'h4000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_15
-            bins hpmcounter15h_disabled  = {44'b110010001111_11111111111111110111111111111111};
+            bins hpmcounter15h_disabled  = {{12'b110010001111, `UDB_SCOUNTENABLE_EN_MASK & ~32'h8000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_16
-            bins hpmcounter16h_disabled  = {44'b110010010000_11111111111111101111111111111111};
+            bins hpmcounter16h_disabled  = {{12'b110010010000, `UDB_SCOUNTENABLE_EN_MASK & ~32'h10000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_17
-            bins hpmcounter17h_disabled  = {44'b110010010001_11111111111111011111111111111111};
+            bins hpmcounter17h_disabled  = {{12'b110010010001, `UDB_SCOUNTENABLE_EN_MASK & ~32'h20000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_18
-            bins hpmcounter18h_disabled  = {44'b110010010010_11111111111110111111111111111111};
+            bins hpmcounter18h_disabled  = {{12'b110010010010, `UDB_SCOUNTENABLE_EN_MASK & ~32'h40000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_19
-            bins hpmcounter19h_disabled  = {44'b110010010011_11111111111101111111111111111111};
+            bins hpmcounter19h_disabled  = {{12'b110010010011, `UDB_SCOUNTENABLE_EN_MASK & ~32'h80000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_20
-            bins hpmcounter20h_disabled  = {44'b110010010100_11111111111011111111111111111111};
+            bins hpmcounter20h_disabled  = {{12'b110010010100, `UDB_SCOUNTENABLE_EN_MASK & ~32'h100000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_21
-            bins hpmcounter21h_disabled  = {44'b110010010101_11111111110111111111111111111111};
+            bins hpmcounter21h_disabled  = {{12'b110010010101, `UDB_SCOUNTENABLE_EN_MASK & ~32'h200000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_22
-            bins hpmcounter22h_disabled  = {44'b110010010110_11111111101111111111111111111111};
+            bins hpmcounter22h_disabled  = {{12'b110010010110, `UDB_SCOUNTENABLE_EN_MASK & ~32'h400000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_23
-            bins hpmcounter23h_disabled  = {44'b110010010111_11111111011111111111111111111111};
+            bins hpmcounter23h_disabled  = {{12'b110010010111, `UDB_SCOUNTENABLE_EN_MASK & ~32'h800000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_24
-            bins hpmcounter24h_disabled  = {44'b110010011000_11111110111111111111111111111111};
+            bins hpmcounter24h_disabled  = {{12'b110010011000, `UDB_SCOUNTENABLE_EN_MASK & ~32'h1000000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_25
-            bins hpmcounter25h_disabled  = {44'b110010011001_11111101111111111111111111111111};
+            bins hpmcounter25h_disabled  = {{12'b110010011001, `UDB_SCOUNTENABLE_EN_MASK & ~32'h2000000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_26
-            bins hpmcounter26h_disabled  = {44'b110010011010_11111011111111111111111111111111};
+            bins hpmcounter26h_disabled  = {{12'b110010011010, `UDB_SCOUNTENABLE_EN_MASK & ~32'h4000000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_27
-            bins hpmcounter27h_disabled  = {44'b110010011011_11110111111111111111111111111111};
+            bins hpmcounter27h_disabled  = {{12'b110010011011, `UDB_SCOUNTENABLE_EN_MASK & ~32'h8000000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_28
-            bins hpmcounter28h_disabled  = {44'b110010011100_11101111111111111111111111111111};
+            bins hpmcounter28h_disabled  = {{12'b110010011100, `UDB_SCOUNTENABLE_EN_MASK & ~32'h10000000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_29
-            bins hpmcounter29h_disabled  = {44'b110010011101_11011111111111111111111111111111};
+            bins hpmcounter29h_disabled  = {{12'b110010011101, `UDB_SCOUNTENABLE_EN_MASK & ~32'h20000000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_30
-            bins hpmcounter30h_disabled  = {44'b110010011110_10111111111111111111111111111111};
+            bins hpmcounter30h_disabled  = {{12'b110010011110, `UDB_SCOUNTENABLE_EN_MASK & ~32'h40000000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_31
-            bins hpmcounter31h_disabled  = {44'b110010011111_01111111111111111111111111111111};
+            bins hpmcounter31h_disabled  = {{12'b110010011111, `UDB_SCOUNTENABLE_EN_MASK & ~32'h80000000}};
           `endif
         `endif
     `endif
 }
     counters_mcounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN)[31:0] } {
-        bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
-        bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
-        bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
+        `ifdef UDB_MCOUNTENABLE_EN_0
+          bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
+        `endif
+        `ifdef UDB_MCOUNTENABLE_EN_1
+          bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
+        `endif
+        `ifdef UDB_MCOUNTENABLE_EN_2
+          bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
+        `endif
         `ifdef ZIHPM_SUPPORTED
-          `ifdef UDB_HPM_COUNTER_EN_3
+          `ifdef UDB_HPM_COUNTER_EN_3 `ifdef UDB_MCOUNTENABLE_EN_3
             bins hpmcounter3_enabled   = {44'b110000000011_00000000000000000000000000001000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_4
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_4 `ifdef UDB_MCOUNTENABLE_EN_4
             bins hpmcounter4_enabled   = {44'b110000000100_00000000000000000000000000010000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_5
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_5 `ifdef UDB_MCOUNTENABLE_EN_5
             bins hpmcounter5_enabled   = {44'b110000000101_00000000000000000000000000100000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_6
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_6 `ifdef UDB_MCOUNTENABLE_EN_6
             bins hpmcounter6_enabled   = {44'b110000000110_00000000000000000000000001000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_7
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_7 `ifdef UDB_MCOUNTENABLE_EN_7
             bins hpmcounter7_enabled   = {44'b110000000111_00000000000000000000000010000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_8
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_8 `ifdef UDB_MCOUNTENABLE_EN_8
             bins hpmcounter8_enabled   = {44'b110000001000_00000000000000000000000100000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_9
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_9 `ifdef UDB_MCOUNTENABLE_EN_9
             bins hpmcounter9_enabled   = {44'b110000001001_00000000000000000000001000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_10
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_10 `ifdef UDB_MCOUNTENABLE_EN_10
             bins hpmcounter10_enabled  = {44'b110000001010_00000000000000000000010000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_11
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_11 `ifdef UDB_MCOUNTENABLE_EN_11
             bins hpmcounter11_enabled  = {44'b110000001011_00000000000000000000100000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_12
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_12 `ifdef UDB_MCOUNTENABLE_EN_12
             bins hpmcounter12_enabled  = {44'b110000001100_00000000000000000001000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_13
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_13 `ifdef UDB_MCOUNTENABLE_EN_13
             bins hpmcounter13_enabled  = {44'b110000001101_00000000000000000010000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_14
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_14 `ifdef UDB_MCOUNTENABLE_EN_14
             bins hpmcounter14_enabled  = {44'b110000001110_00000000000000000100000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_15
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_15 `ifdef UDB_MCOUNTENABLE_EN_15
             bins hpmcounter15_enabled  = {44'b110000001111_00000000000000001000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_16
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_16 `ifdef UDB_MCOUNTENABLE_EN_16
             bins hpmcounter16_enabled  = {44'b110000010000_00000000000000010000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_17
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_17 `ifdef UDB_MCOUNTENABLE_EN_17
             bins hpmcounter17_enabled  = {44'b110000010001_00000000000000100000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_18
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_18 `ifdef UDB_MCOUNTENABLE_EN_18
             bins hpmcounter18_enabled  = {44'b110000010010_00000000000001000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_19
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_19 `ifdef UDB_MCOUNTENABLE_EN_19
             bins hpmcounter19_enabled  = {44'b110000010011_00000000000010000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_20
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_20 `ifdef UDB_MCOUNTENABLE_EN_20
             bins hpmcounter20_enabled  = {44'b110000010100_00000000000100000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_21
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_21 `ifdef UDB_MCOUNTENABLE_EN_21
             bins hpmcounter21_enabled  = {44'b110000010101_00000000001000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_22
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_22 `ifdef UDB_MCOUNTENABLE_EN_22
             bins hpmcounter22_enabled  = {44'b110000010110_00000000010000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_23
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_23 `ifdef UDB_MCOUNTENABLE_EN_23
             bins hpmcounter23_enabled  = {44'b110000010111_00000000100000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_24
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_24 `ifdef UDB_MCOUNTENABLE_EN_24
             bins hpmcounter24_enabled  = {44'b110000011000_00000001000000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_25
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_25 `ifdef UDB_MCOUNTENABLE_EN_25
             bins hpmcounter25_enabled  = {44'b110000011001_00000010000000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_26
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_26 `ifdef UDB_MCOUNTENABLE_EN_26
             bins hpmcounter26_enabled  = {44'b110000011010_00000100000000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_27
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_27 `ifdef UDB_MCOUNTENABLE_EN_27
             bins hpmcounter27_enabled  = {44'b110000011011_00001000000000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_28
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_28 `ifdef UDB_MCOUNTENABLE_EN_28
             bins hpmcounter28_enabled  = {44'b110000011100_00010000000000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_29
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_29 `ifdef UDB_MCOUNTENABLE_EN_29
             bins hpmcounter29_enabled  = {44'b110000011101_00100000000000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_30
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_30 `ifdef UDB_MCOUNTENABLE_EN_30
             bins hpmcounter30_enabled  = {44'b110000011110_01000000000000000000000000000000};
-          `endif
-          `ifdef UDB_HPM_COUNTER_EN_31
+          `endif `endif
+          `ifdef UDB_HPM_COUNTER_EN_31 `ifdef UDB_MCOUNTENABLE_EN_31
             bins hpmcounter31_enabled  = {44'b110000011111_10000000000000000000000000000000};
-          `endif
+          `endif `endif
         `endif
 
-        bins cycle_disabled         = {44'b110000000000_11111111111111111111111111111110};
-        bins time_disabled          = {44'b110000000001_11111111111111111111111111111101};
-        bins instret_disabled       = {44'b110000000010_11111111111111111111111111111011};
+        bins cycle_disabled         = {{12'b110000000000, `UDB_MCOUNTENABLE_EN_MASK & ~32'h1}};
+        bins time_disabled          = {{12'b110000000001, `UDB_MCOUNTENABLE_EN_MASK & ~32'h2}};
+        bins instret_disabled       = {{12'b110000000010, `UDB_MCOUNTENABLE_EN_MASK & ~32'h4}};
         `ifdef ZIHPM_SUPPORTED
           `ifdef UDB_HPM_COUNTER_EN_3
-            bins hpmcounter3_disabled   = {44'b110000000011_11111111111111111111111111110111};
+            bins hpmcounter3_disabled   = {{12'b110000000011, `UDB_MCOUNTENABLE_EN_MASK & ~32'h8}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_4
-            bins hpmcounter4_disabled   = {44'b110000000100_11111111111111111111111111101111};
+            bins hpmcounter4_disabled   = {{12'b110000000100, `UDB_MCOUNTENABLE_EN_MASK & ~32'h10}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_5
-            bins hpmcounter5_disabled   = {44'b110000000101_11111111111111111111111111011111};
+            bins hpmcounter5_disabled   = {{12'b110000000101, `UDB_MCOUNTENABLE_EN_MASK & ~32'h20}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_6
-            bins hpmcounter6_disabled   = {44'b110000000110_11111111111111111111111110111111};
+            bins hpmcounter6_disabled   = {{12'b110000000110, `UDB_MCOUNTENABLE_EN_MASK & ~32'h40}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_7
-            bins hpmcounter7_disabled   = {44'b110000000111_11111111111111111111111101111111};
+            bins hpmcounter7_disabled   = {{12'b110000000111, `UDB_MCOUNTENABLE_EN_MASK & ~32'h80}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_8
-            bins hpmcounter8_disabled   = {44'b110000001000_11111111111111111111111011111111};
+            bins hpmcounter8_disabled   = {{12'b110000001000, `UDB_MCOUNTENABLE_EN_MASK & ~32'h100}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_9
-            bins hpmcounter9_disabled   = {44'b110000001001_11111111111111111111110111111111};
+            bins hpmcounter9_disabled   = {{12'b110000001001, `UDB_MCOUNTENABLE_EN_MASK & ~32'h200}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_10
-            bins hpmcounter10_disabled  = {44'b110000001010_11111111111111111111101111111111};
+            bins hpmcounter10_disabled  = {{12'b110000001010, `UDB_MCOUNTENABLE_EN_MASK & ~32'h400}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_11
-            bins hpmcounter11_disabled  = {44'b110000001011_11111111111111111111011111111111};
+            bins hpmcounter11_disabled  = {{12'b110000001011, `UDB_MCOUNTENABLE_EN_MASK & ~32'h800}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_12
-            bins hpmcounter12_disabled  = {44'b110000001100_11111111111111111110111111111111};
+            bins hpmcounter12_disabled  = {{12'b110000001100, `UDB_MCOUNTENABLE_EN_MASK & ~32'h1000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_13
-            bins hpmcounter13_disabled  = {44'b110000001101_11111111111111111101111111111111};
+            bins hpmcounter13_disabled  = {{12'b110000001101, `UDB_MCOUNTENABLE_EN_MASK & ~32'h2000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_14
-            bins hpmcounter14_disabled  = {44'b110000001110_11111111111111111011111111111111};
+            bins hpmcounter14_disabled  = {{12'b110000001110, `UDB_MCOUNTENABLE_EN_MASK & ~32'h4000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_15
-            bins hpmcounter15_disabled  = {44'b110000001111_11111111111111110111111111111111};
+            bins hpmcounter15_disabled  = {{12'b110000001111, `UDB_MCOUNTENABLE_EN_MASK & ~32'h8000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_16
-            bins hpmcounter16_disabled  = {44'b110000010000_11111111111111101111111111111111};
+            bins hpmcounter16_disabled  = {{12'b110000010000, `UDB_MCOUNTENABLE_EN_MASK & ~32'h10000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_17
-            bins hpmcounter17_disabled  = {44'b110000010001_11111111111111011111111111111111};
+            bins hpmcounter17_disabled  = {{12'b110000010001, `UDB_MCOUNTENABLE_EN_MASK & ~32'h20000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_18
-            bins hpmcounter18_disabled  = {44'b110000010010_11111111111110111111111111111111};
+            bins hpmcounter18_disabled  = {{12'b110000010010, `UDB_MCOUNTENABLE_EN_MASK & ~32'h40000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_19
-            bins hpmcounter19_disabled  = {44'b110000010011_11111111111101111111111111111111};
+            bins hpmcounter19_disabled  = {{12'b110000010011, `UDB_MCOUNTENABLE_EN_MASK & ~32'h80000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_20
-            bins hpmcounter20_disabled  = {44'b110000010100_11111111111011111111111111111111};
+            bins hpmcounter20_disabled  = {{12'b110000010100, `UDB_MCOUNTENABLE_EN_MASK & ~32'h100000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_21
-            bins hpmcounter21_disabled  = {44'b110000010101_11111111110111111111111111111111};
+            bins hpmcounter21_disabled  = {{12'b110000010101, `UDB_MCOUNTENABLE_EN_MASK & ~32'h200000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_22
-            bins hpmcounter22_disabled  = {44'b110000010110_11111111101111111111111111111111};
+            bins hpmcounter22_disabled  = {{12'b110000010110, `UDB_MCOUNTENABLE_EN_MASK & ~32'h400000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_23
-            bins hpmcounter23_disabled  = {44'b110000010111_11111111011111111111111111111111};
+            bins hpmcounter23_disabled  = {{12'b110000010111, `UDB_MCOUNTENABLE_EN_MASK & ~32'h800000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_24
-            bins hpmcounter24_disabled  = {44'b110000011000_11111110111111111111111111111111};
+            bins hpmcounter24_disabled  = {{12'b110000011000, `UDB_MCOUNTENABLE_EN_MASK & ~32'h1000000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_25
-            bins hpmcounter25_disabled  = {44'b110000011001_11111101111111111111111111111111};
+            bins hpmcounter25_disabled  = {{12'b110000011001, `UDB_MCOUNTENABLE_EN_MASK & ~32'h2000000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_26
-            bins hpmcounter26_disabled  = {44'b110000011010_11111011111111111111111111111111};
+            bins hpmcounter26_disabled  = {{12'b110000011010, `UDB_MCOUNTENABLE_EN_MASK & ~32'h4000000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_27
-            bins hpmcounter27_disabled  = {44'b110000011011_11110111111111111111111111111111};
+            bins hpmcounter27_disabled  = {{12'b110000011011, `UDB_MCOUNTENABLE_EN_MASK & ~32'h8000000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_28
-            bins hpmcounter28_disabled  = {44'b110000011100_11101111111111111111111111111111};
+            bins hpmcounter28_disabled  = {{12'b110000011100, `UDB_MCOUNTENABLE_EN_MASK & ~32'h10000000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_29
-            bins hpmcounter29_disabled  = {44'b110000011101_11011111111111111111111111111111};
+            bins hpmcounter29_disabled  = {{12'b110000011101, `UDB_MCOUNTENABLE_EN_MASK & ~32'h20000000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_30
-            bins hpmcounter30_disabled  = {44'b110000011110_10111111111111111111111111111111};
+            bins hpmcounter30_disabled  = {{12'b110000011110, `UDB_MCOUNTENABLE_EN_MASK & ~32'h40000000}};
           `endif
           `ifdef UDB_HPM_COUNTER_EN_31
-            bins hpmcounter31_disabled  = {44'b110000011111_01111111111111111111111111111111};
+            bins hpmcounter31_disabled  = {{12'b110000011111, `UDB_MCOUNTENABLE_EN_MASK & ~32'h80000000}};
           `endif
         `endif
 
         `ifdef UDB_MXLEN_32
-            bins cycleh_enabled         = {44'b110010000000_00000000000000000000000000000001};
-            bins timeh_enabled          = {44'b110010000001_00000000000000000000000000000010};
-            bins instreth_enabled       = {44'b110010000010_00000000000000000000000000000100};
+            `ifdef UDB_MCOUNTENABLE_EN_0
+              bins cycleh_enabled         = {44'b110010000000_00000000000000000000000000000001};
+            `endif
+            `ifdef UDB_MCOUNTENABLE_EN_1
+              bins timeh_enabled          = {44'b110010000001_00000000000000000000000000000010};
+            `endif
+            `ifdef UDB_MCOUNTENABLE_EN_2
+              bins instreth_enabled       = {44'b110010000010_00000000000000000000000000000100};
+            `endif
             `ifdef ZIHPM_SUPPORTED
-              `ifdef UDB_HPM_COUNTER_EN_3
+              `ifdef UDB_HPM_COUNTER_EN_3 `ifdef UDB_MCOUNTENABLE_EN_3
                 bins hpmcounter3h_enabled   = {44'b110010000011_00000000000000000000000000001000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_4
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_4 `ifdef UDB_MCOUNTENABLE_EN_4
                 bins hpmcounter4h_enabled   = {44'b110010000100_00000000000000000000000000010000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_5
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_5 `ifdef UDB_MCOUNTENABLE_EN_5
                 bins hpmcounter5h_enabled   = {44'b110010000101_00000000000000000000000000100000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_6
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_6 `ifdef UDB_MCOUNTENABLE_EN_6
                 bins hpmcounter6h_enabled   = {44'b110010000110_00000000000000000000000001000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_7
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_7 `ifdef UDB_MCOUNTENABLE_EN_7
                 bins hpmcounter7h_enabled   = {44'b110010000111_00000000000000000000000010000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_8
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_8 `ifdef UDB_MCOUNTENABLE_EN_8
                 bins hpmcounter8h_enabled   = {44'b110010001000_00000000000000000000000100000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_9
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_9 `ifdef UDB_MCOUNTENABLE_EN_9
                 bins hpmcounter9h_enabled   = {44'b110010001001_00000000000000000000001000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_10
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_10 `ifdef UDB_MCOUNTENABLE_EN_10
                 bins hpmcounter10h_enabled  = {44'b110010001010_00000000000000000000010000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_11
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_11 `ifdef UDB_MCOUNTENABLE_EN_11
                 bins hpmcounter11h_enabled  = {44'b110010001011_00000000000000000000100000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_12
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_12 `ifdef UDB_MCOUNTENABLE_EN_12
                 bins hpmcounter12h_enabled  = {44'b110010001100_00000000000000000001000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_13
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_13 `ifdef UDB_MCOUNTENABLE_EN_13
                 bins hpmcounter13h_enabled  = {44'b110010001101_00000000000000000010000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_14
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_14 `ifdef UDB_MCOUNTENABLE_EN_14
                 bins hpmcounter14h_enabled  = {44'b110010001110_00000000000000000100000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_15
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_15 `ifdef UDB_MCOUNTENABLE_EN_15
                 bins hpmcounter15h_enabled  = {44'b110010001111_00000000000000001000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_16
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_16 `ifdef UDB_MCOUNTENABLE_EN_16
                 bins hpmcounter16h_enabled  = {44'b110010010000_00000000000000010000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_17
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_17 `ifdef UDB_MCOUNTENABLE_EN_17
                 bins hpmcounter17h_enabled  = {44'b110010010001_00000000000000100000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_18
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_18 `ifdef UDB_MCOUNTENABLE_EN_18
                 bins hpmcounter18h_enabled  = {44'b110010010010_00000000000001000000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_19
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_19 `ifdef UDB_MCOUNTENABLE_EN_19
                 bins hpmcounter19h_enabled  = {44'b110010010011_00000000000010000000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_20
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_20 `ifdef UDB_MCOUNTENABLE_EN_20
                 bins hpmcounter20h_enabled  = {44'b110010010100_00000000000100000000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_21
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_21 `ifdef UDB_MCOUNTENABLE_EN_21
                 bins hpmcounter21h_enabled  = {44'b110010010101_00000000001000000000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_22
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_22 `ifdef UDB_MCOUNTENABLE_EN_22
                 bins hpmcounter22h_enabled  = {44'b110010010110_00000000010000000000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_23
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_23 `ifdef UDB_MCOUNTENABLE_EN_23
                 bins hpmcounter23h_enabled  = {44'b110010010111_00000000100000000000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_24
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_24 `ifdef UDB_MCOUNTENABLE_EN_24
                 bins hpmcounter24h_enabled  = {44'b110010011000_00000001000000000000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_25
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_25 `ifdef UDB_MCOUNTENABLE_EN_25
                 bins hpmcounter25h_enabled  = {44'b110010011001_00000010000000000000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_26
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_26 `ifdef UDB_MCOUNTENABLE_EN_26
                 bins hpmcounter26h_enabled  = {44'b110010011010_00000100000000000000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_27
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_27 `ifdef UDB_MCOUNTENABLE_EN_27
                 bins hpmcounter27h_enabled  = {44'b110010011011_00001000000000000000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_28
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_28 `ifdef UDB_MCOUNTENABLE_EN_28
                 bins hpmcounter28h_enabled  = {44'b110010011100_00010000000000000000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_29
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_29 `ifdef UDB_MCOUNTENABLE_EN_29
                 bins hpmcounter29h_enabled  = {44'b110010011101_00100000000000000000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_30
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_30 `ifdef UDB_MCOUNTENABLE_EN_30
                 bins hpmcounter30h_enabled  = {44'b110010011110_01000000000000000000000000000000};
-              `endif
-              `ifdef UDB_HPM_COUNTER_EN_31
+              `endif `endif
+              `ifdef UDB_HPM_COUNTER_EN_31 `ifdef UDB_MCOUNTENABLE_EN_31
                 bins hpmcounter31h_enabled  = {44'b110010011111_10000000000000000000000000000000};
-              `endif
+              `endif `endif
             `endif
 
-            bins cycleh_disabled         = {44'b110010000000_11111111111111111111111111111110};
-            bins timeh_disabled          = {44'b110010000001_11111111111111111111111111111101};
-            bins instreth_disabled       = {44'b110010000010_11111111111111111111111111111011};
+            bins cycleh_disabled         = {{12'b110010000000, `UDB_MCOUNTENABLE_EN_MASK & ~32'h1}};
+            bins timeh_disabled          = {{12'b110010000001, `UDB_MCOUNTENABLE_EN_MASK & ~32'h2}};
+            bins instreth_disabled       = {{12'b110010000010, `UDB_MCOUNTENABLE_EN_MASK & ~32'h4}};
             `ifdef ZIHPM_SUPPORTED
               `ifdef UDB_HPM_COUNTER_EN_3
-                bins hpmcounter3h_disabled   = {44'b110010000011_11111111111111111111111111110111};
+                bins hpmcounter3h_disabled   = {{12'b110010000011, `UDB_MCOUNTENABLE_EN_MASK & ~32'h8}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_4
-                bins hpmcounter4h_disabled   = {44'b110010000100_11111111111111111111111111101111};
+                bins hpmcounter4h_disabled   = {{12'b110010000100, `UDB_MCOUNTENABLE_EN_MASK & ~32'h10}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_5
-                bins hpmcounter5h_disabled   = {44'b110010000101_11111111111111111111111111011111};
+                bins hpmcounter5h_disabled   = {{12'b110010000101, `UDB_MCOUNTENABLE_EN_MASK & ~32'h20}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_6
-                bins hpmcounter6h_disabled   = {44'b110010000110_11111111111111111111111110111111};
+                bins hpmcounter6h_disabled   = {{12'b110010000110, `UDB_MCOUNTENABLE_EN_MASK & ~32'h40}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_7
-                bins hpmcounter7h_disabled   = {44'b110010000111_11111111111111111111111101111111};
+                bins hpmcounter7h_disabled   = {{12'b110010000111, `UDB_MCOUNTENABLE_EN_MASK & ~32'h80}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_8
-                bins hpmcounter8h_disabled   = {44'b110010001000_11111111111111111111111011111111};
+                bins hpmcounter8h_disabled   = {{12'b110010001000, `UDB_MCOUNTENABLE_EN_MASK & ~32'h100}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_9
-                bins hpmcounter9h_disabled   = {44'b110010001001_11111111111111111111110111111111};
+                bins hpmcounter9h_disabled   = {{12'b110010001001, `UDB_MCOUNTENABLE_EN_MASK & ~32'h200}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_10
-                bins hpmcounter10h_disabled  = {44'b110010001010_11111111111111111111101111111111};
+                bins hpmcounter10h_disabled  = {{12'b110010001010, `UDB_MCOUNTENABLE_EN_MASK & ~32'h400}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_11
-                bins hpmcounter11h_disabled  = {44'b110010001011_11111111111111111111011111111111};
+                bins hpmcounter11h_disabled  = {{12'b110010001011, `UDB_MCOUNTENABLE_EN_MASK & ~32'h800}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_12
-                bins hpmcounter12h_disabled  = {44'b110010001100_11111111111111111110111111111111};
+                bins hpmcounter12h_disabled  = {{12'b110010001100, `UDB_MCOUNTENABLE_EN_MASK & ~32'h1000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_13
-                bins hpmcounter13h_disabled  = {44'b110010001101_11111111111111111101111111111111};
+                bins hpmcounter13h_disabled  = {{12'b110010001101, `UDB_MCOUNTENABLE_EN_MASK & ~32'h2000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_14
-                bins hpmcounter14h_disabled  = {44'b110010001110_11111111111111111011111111111111};
+                bins hpmcounter14h_disabled  = {{12'b110010001110, `UDB_MCOUNTENABLE_EN_MASK & ~32'h4000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_15
-                bins hpmcounter15h_disabled  = {44'b110010001111_11111111111111110111111111111111};
+                bins hpmcounter15h_disabled  = {{12'b110010001111, `UDB_MCOUNTENABLE_EN_MASK & ~32'h8000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_16
-                bins hpmcounter16h_disabled  = {44'b110010010000_11111111111111101111111111111111};
+                bins hpmcounter16h_disabled  = {{12'b110010010000, `UDB_MCOUNTENABLE_EN_MASK & ~32'h10000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_17
-                bins hpmcounter17h_disabled  = {44'b110010010001_11111111111111011111111111111111};
+                bins hpmcounter17h_disabled  = {{12'b110010010001, `UDB_MCOUNTENABLE_EN_MASK & ~32'h20000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_18
-                bins hpmcounter18h_disabled  = {44'b110010010010_11111111111110111111111111111111};
+                bins hpmcounter18h_disabled  = {{12'b110010010010, `UDB_MCOUNTENABLE_EN_MASK & ~32'h40000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_19
-                bins hpmcounter19h_disabled  = {44'b110010010011_11111111111101111111111111111111};
+                bins hpmcounter19h_disabled  = {{12'b110010010011, `UDB_MCOUNTENABLE_EN_MASK & ~32'h80000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_20
-                bins hpmcounter20h_disabled  = {44'b110010010100_11111111111011111111111111111111};
+                bins hpmcounter20h_disabled  = {{12'b110010010100, `UDB_MCOUNTENABLE_EN_MASK & ~32'h100000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_21
-                bins hpmcounter21h_disabled  = {44'b110010010101_11111111110111111111111111111111};
+                bins hpmcounter21h_disabled  = {{12'b110010010101, `UDB_MCOUNTENABLE_EN_MASK & ~32'h200000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_22
-                bins hpmcounter22h_disabled  = {44'b110010010110_11111111101111111111111111111111};
+                bins hpmcounter22h_disabled  = {{12'b110010010110, `UDB_MCOUNTENABLE_EN_MASK & ~32'h400000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_23
-                bins hpmcounter23h_disabled  = {44'b110010010111_11111111011111111111111111111111};
+                bins hpmcounter23h_disabled  = {{12'b110010010111, `UDB_MCOUNTENABLE_EN_MASK & ~32'h800000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_24
-                bins hpmcounter24h_disabled  = {44'b110010011000_11111110111111111111111111111111};
+                bins hpmcounter24h_disabled  = {{12'b110010011000, `UDB_MCOUNTENABLE_EN_MASK & ~32'h1000000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_25
-                bins hpmcounter25h_disabled  = {44'b110010011001_11111101111111111111111111111111};
+                bins hpmcounter25h_disabled  = {{12'b110010011001, `UDB_MCOUNTENABLE_EN_MASK & ~32'h2000000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_26
-                bins hpmcounter26h_disabled  = {44'b110010011010_11111011111111111111111111111111};
+                bins hpmcounter26h_disabled  = {{12'b110010011010, `UDB_MCOUNTENABLE_EN_MASK & ~32'h4000000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_27
-                bins hpmcounter27h_disabled  = {44'b110010011011_11110111111111111111111111111111};
+                bins hpmcounter27h_disabled  = {{12'b110010011011, `UDB_MCOUNTENABLE_EN_MASK & ~32'h8000000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_28
-                bins hpmcounter28h_disabled  = {44'b110010011100_11101111111111111111111111111111};
+                bins hpmcounter28h_disabled  = {{12'b110010011100, `UDB_MCOUNTENABLE_EN_MASK & ~32'h10000000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_29
-                bins hpmcounter29h_disabled  = {44'b110010011101_11011111111111111111111111111111};
+                bins hpmcounter29h_disabled  = {{12'b110010011101, `UDB_MCOUNTENABLE_EN_MASK & ~32'h20000000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_30
-                bins hpmcounter30h_disabled  = {44'b110010011110_10111111111111111111111111111111};
+                bins hpmcounter30h_disabled  = {{12'b110010011110, `UDB_MCOUNTENABLE_EN_MASK & ~32'h40000000}};
               `endif
               `ifdef UDB_HPM_COUNTER_EN_31
-                bins hpmcounter31h_disabled  = {44'b110010011111_01111111111111111111111111111111};
+                bins hpmcounter31h_disabled  = {{12'b110010011111, `UDB_MCOUNTENABLE_EN_MASK & ~32'h80000000}};
               `endif
             `endif
         `endif
@@ -1349,7 +1373,548 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
     cp_mcounteren_access_s: cross csraccess, counters_mcounteren, priv_mode_s;
     cp_scounteren_access_s: cross csraccess, counters_scounteren, mcounteren_ones, priv_mode_s;
     cp_scounteren_access_u: cross csraccess, counters_scounteren, mcounteren_ones, priv_mode_u;
+    // This cross requires equal M/S counter enables. An S read-only-zero
+    // bit cannot match the corresponding M enabled bin.
+    `ifdef UDB_MCOUNTENABLE_EN_0
+    `ifndef UDB_SCOUNTENABLE_EN_0
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `ifdef UDB_MCOUNTENABLE_EN_1
+    `ifndef UDB_SCOUNTENABLE_EN_1
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `ifdef UDB_MCOUNTENABLE_EN_2
+    `ifndef UDB_SCOUNTENABLE_EN_2
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_3
+    `ifdef UDB_MCOUNTENABLE_EN_3
+    `ifndef UDB_SCOUNTENABLE_EN_3
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_4
+    `ifdef UDB_MCOUNTENABLE_EN_4
+    `ifndef UDB_SCOUNTENABLE_EN_4
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_5
+    `ifdef UDB_MCOUNTENABLE_EN_5
+    `ifndef UDB_SCOUNTENABLE_EN_5
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_6
+    `ifdef UDB_MCOUNTENABLE_EN_6
+    `ifndef UDB_SCOUNTENABLE_EN_6
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_7
+    `ifdef UDB_MCOUNTENABLE_EN_7
+    `ifndef UDB_SCOUNTENABLE_EN_7
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_8
+    `ifdef UDB_MCOUNTENABLE_EN_8
+    `ifndef UDB_SCOUNTENABLE_EN_8
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_9
+    `ifdef UDB_MCOUNTENABLE_EN_9
+    `ifndef UDB_SCOUNTENABLE_EN_9
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_10
+    `ifdef UDB_MCOUNTENABLE_EN_10
+    `ifndef UDB_SCOUNTENABLE_EN_10
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_11
+    `ifdef UDB_MCOUNTENABLE_EN_11
+    `ifndef UDB_SCOUNTENABLE_EN_11
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_12
+    `ifdef UDB_MCOUNTENABLE_EN_12
+    `ifndef UDB_SCOUNTENABLE_EN_12
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_13
+    `ifdef UDB_MCOUNTENABLE_EN_13
+    `ifndef UDB_SCOUNTENABLE_EN_13
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_14
+    `ifdef UDB_MCOUNTENABLE_EN_14
+    `ifndef UDB_SCOUNTENABLE_EN_14
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_15
+    `ifdef UDB_MCOUNTENABLE_EN_15
+    `ifndef UDB_SCOUNTENABLE_EN_15
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_16
+    `ifdef UDB_MCOUNTENABLE_EN_16
+    `ifndef UDB_SCOUNTENABLE_EN_16
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_17
+    `ifdef UDB_MCOUNTENABLE_EN_17
+    `ifndef UDB_SCOUNTENABLE_EN_17
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_18
+    `ifdef UDB_MCOUNTENABLE_EN_18
+    `ifndef UDB_SCOUNTENABLE_EN_18
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_19
+    `ifdef UDB_MCOUNTENABLE_EN_19
+    `ifndef UDB_SCOUNTENABLE_EN_19
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_20
+    `ifdef UDB_MCOUNTENABLE_EN_20
+    `ifndef UDB_SCOUNTENABLE_EN_20
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_21
+    `ifdef UDB_MCOUNTENABLE_EN_21
+    `ifndef UDB_SCOUNTENABLE_EN_21
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_22
+    `ifdef UDB_MCOUNTENABLE_EN_22
+    `ifndef UDB_SCOUNTENABLE_EN_22
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_23
+    `ifdef UDB_MCOUNTENABLE_EN_23
+    `ifndef UDB_SCOUNTENABLE_EN_23
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_24
+    `ifdef UDB_MCOUNTENABLE_EN_24
+    `ifndef UDB_SCOUNTENABLE_EN_24
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_25
+    `ifdef UDB_MCOUNTENABLE_EN_25
+    `ifndef UDB_SCOUNTENABLE_EN_25
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_26
+    `ifdef UDB_MCOUNTENABLE_EN_26
+    `ifndef UDB_SCOUNTENABLE_EN_26
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_27
+    `ifdef UDB_MCOUNTENABLE_EN_27
+    `ifndef UDB_SCOUNTENABLE_EN_27
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_28
+    `ifdef UDB_MCOUNTENABLE_EN_28
+    `ifndef UDB_SCOUNTENABLE_EN_28
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_29
+    `ifdef UDB_MCOUNTENABLE_EN_29
+    `ifndef UDB_SCOUNTENABLE_EN_29
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_30
+    `ifdef UDB_MCOUNTENABLE_EN_30
+    `ifndef UDB_SCOUNTENABLE_EN_30
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_31
+    `ifdef UDB_MCOUNTENABLE_EN_31
+    `ifndef UDB_SCOUNTENABLE_EN_31
+        `define S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `endif
+    `endif
+    `endif
+    `ifdef S_ZICNTR_NEEDS_MSC_EN_FILTER
+    cp_mscounteren_access_u: cross csraccess, counters_mcounteren, priv_mode_u iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN) == get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCOUNTEREN)) {
+    `ifdef UDB_MCOUNTENABLE_EN_0
+    `ifndef UDB_SCOUNTENABLE_EN_0
+        ignore_bins cycle_cannot_match_scounteren = binsof(counters_mcounteren.cycle_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins cycleh_cannot_match_scounteren = binsof(counters_mcounteren.cycleh_enabled);
+        `endif
+    `endif
+    `endif
+    `ifdef UDB_MCOUNTENABLE_EN_1
+    `ifndef UDB_SCOUNTENABLE_EN_1
+        ignore_bins time_cannot_match_scounteren = binsof(counters_mcounteren.time_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins timeh_cannot_match_scounteren = binsof(counters_mcounteren.timeh_enabled);
+        `endif
+    `endif
+    `endif
+    `ifdef UDB_MCOUNTENABLE_EN_2
+    `ifndef UDB_SCOUNTENABLE_EN_2
+        ignore_bins instret_cannot_match_scounteren = binsof(counters_mcounteren.instret_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins instreth_cannot_match_scounteren = binsof(counters_mcounteren.instreth_enabled);
+        `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_3
+    `ifdef UDB_MCOUNTENABLE_EN_3
+    `ifndef UDB_SCOUNTENABLE_EN_3
+        ignore_bins hpmcounter3_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter3_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter3h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter3h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_4
+    `ifdef UDB_MCOUNTENABLE_EN_4
+    `ifndef UDB_SCOUNTENABLE_EN_4
+        ignore_bins hpmcounter4_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter4_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter4h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter4h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_5
+    `ifdef UDB_MCOUNTENABLE_EN_5
+    `ifndef UDB_SCOUNTENABLE_EN_5
+        ignore_bins hpmcounter5_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter5_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter5h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter5h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_6
+    `ifdef UDB_MCOUNTENABLE_EN_6
+    `ifndef UDB_SCOUNTENABLE_EN_6
+        ignore_bins hpmcounter6_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter6_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter6h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter6h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_7
+    `ifdef UDB_MCOUNTENABLE_EN_7
+    `ifndef UDB_SCOUNTENABLE_EN_7
+        ignore_bins hpmcounter7_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter7_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter7h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter7h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_8
+    `ifdef UDB_MCOUNTENABLE_EN_8
+    `ifndef UDB_SCOUNTENABLE_EN_8
+        ignore_bins hpmcounter8_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter8_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter8h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter8h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_9
+    `ifdef UDB_MCOUNTENABLE_EN_9
+    `ifndef UDB_SCOUNTENABLE_EN_9
+        ignore_bins hpmcounter9_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter9_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter9h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter9h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_10
+    `ifdef UDB_MCOUNTENABLE_EN_10
+    `ifndef UDB_SCOUNTENABLE_EN_10
+        ignore_bins hpmcounter10_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter10_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter10h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter10h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_11
+    `ifdef UDB_MCOUNTENABLE_EN_11
+    `ifndef UDB_SCOUNTENABLE_EN_11
+        ignore_bins hpmcounter11_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter11_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter11h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter11h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_12
+    `ifdef UDB_MCOUNTENABLE_EN_12
+    `ifndef UDB_SCOUNTENABLE_EN_12
+        ignore_bins hpmcounter12_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter12_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter12h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter12h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_13
+    `ifdef UDB_MCOUNTENABLE_EN_13
+    `ifndef UDB_SCOUNTENABLE_EN_13
+        ignore_bins hpmcounter13_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter13_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter13h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter13h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_14
+    `ifdef UDB_MCOUNTENABLE_EN_14
+    `ifndef UDB_SCOUNTENABLE_EN_14
+        ignore_bins hpmcounter14_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter14_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter14h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter14h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_15
+    `ifdef UDB_MCOUNTENABLE_EN_15
+    `ifndef UDB_SCOUNTENABLE_EN_15
+        ignore_bins hpmcounter15_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter15_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter15h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter15h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_16
+    `ifdef UDB_MCOUNTENABLE_EN_16
+    `ifndef UDB_SCOUNTENABLE_EN_16
+        ignore_bins hpmcounter16_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter16_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter16h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter16h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_17
+    `ifdef UDB_MCOUNTENABLE_EN_17
+    `ifndef UDB_SCOUNTENABLE_EN_17
+        ignore_bins hpmcounter17_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter17_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter17h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter17h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_18
+    `ifdef UDB_MCOUNTENABLE_EN_18
+    `ifndef UDB_SCOUNTENABLE_EN_18
+        ignore_bins hpmcounter18_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter18_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter18h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter18h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_19
+    `ifdef UDB_MCOUNTENABLE_EN_19
+    `ifndef UDB_SCOUNTENABLE_EN_19
+        ignore_bins hpmcounter19_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter19_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter19h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter19h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_20
+    `ifdef UDB_MCOUNTENABLE_EN_20
+    `ifndef UDB_SCOUNTENABLE_EN_20
+        ignore_bins hpmcounter20_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter20_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter20h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter20h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_21
+    `ifdef UDB_MCOUNTENABLE_EN_21
+    `ifndef UDB_SCOUNTENABLE_EN_21
+        ignore_bins hpmcounter21_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter21_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter21h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter21h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_22
+    `ifdef UDB_MCOUNTENABLE_EN_22
+    `ifndef UDB_SCOUNTENABLE_EN_22
+        ignore_bins hpmcounter22_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter22_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter22h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter22h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_23
+    `ifdef UDB_MCOUNTENABLE_EN_23
+    `ifndef UDB_SCOUNTENABLE_EN_23
+        ignore_bins hpmcounter23_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter23_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter23h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter23h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_24
+    `ifdef UDB_MCOUNTENABLE_EN_24
+    `ifndef UDB_SCOUNTENABLE_EN_24
+        ignore_bins hpmcounter24_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter24_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter24h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter24h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_25
+    `ifdef UDB_MCOUNTENABLE_EN_25
+    `ifndef UDB_SCOUNTENABLE_EN_25
+        ignore_bins hpmcounter25_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter25_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter25h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter25h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_26
+    `ifdef UDB_MCOUNTENABLE_EN_26
+    `ifndef UDB_SCOUNTENABLE_EN_26
+        ignore_bins hpmcounter26_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter26_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter26h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter26h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_27
+    `ifdef UDB_MCOUNTENABLE_EN_27
+    `ifndef UDB_SCOUNTENABLE_EN_27
+        ignore_bins hpmcounter27_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter27_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter27h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter27h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_28
+    `ifdef UDB_MCOUNTENABLE_EN_28
+    `ifndef UDB_SCOUNTENABLE_EN_28
+        ignore_bins hpmcounter28_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter28_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter28h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter28h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_29
+    `ifdef UDB_MCOUNTENABLE_EN_29
+    `ifndef UDB_SCOUNTENABLE_EN_29
+        ignore_bins hpmcounter29_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter29_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter29h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter29h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_30
+    `ifdef UDB_MCOUNTENABLE_EN_30
+    `ifndef UDB_SCOUNTENABLE_EN_30
+        ignore_bins hpmcounter30_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter30_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter30h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter30h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    `ifdef UDB_HPM_COUNTER_EN_31
+    `ifdef UDB_MCOUNTENABLE_EN_31
+    `ifndef UDB_SCOUNTENABLE_EN_31
+        ignore_bins hpmcounter31_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter31_enabled);
+        `ifdef UDB_MXLEN_32
+        ignore_bins hpmcounter31h_cannot_match_scounteren = binsof(counters_mcounteren.hpmcounter31h_enabled);
+        `endif
+    `endif
+    `endif
+    `endif
+    }
+    `else
     cp_mscounteren_access_u: cross csraccess, counters_mcounteren, priv_mode_u iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCOUNTEREN) == get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCOUNTEREN));
+    `endif
+    `undef S_ZICNTR_NEEDS_MSC_EN_FILTER
+    `ifdef UDB_MCOUNTENABLE_EN_2
     cp_mcounter_inc_inaccessible: cross mcounteren_zeros, priv_mode_s;
 
     // ---- instret delta coverpoints ----
@@ -1371,15 +1936,19 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS_LOAD};
         }
     `endif
+    // Serves crosses that a config may compile out, so only the crosses count
     wfi: coverpoint ins.current.insn {
+        type_option.weight = 0;
         bins wfi = {WFI};
     }
     insn_add: coverpoint ins.current.insn {
         wildcard bins add = {ADD};
     }
+    `ifdef UDB_SCOUNTENABLE_EN_2
     insn_sret: coverpoint ins.current.insn {
         wildcard bins sret = {SRET};
     }
+    `endif
     `ifdef ZAWRS_SUPPORTED
         wrs_nto: coverpoint ins.current.insn {
             bins wrs_nto = {WRS_NTO};
@@ -1409,9 +1978,6 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
         }
     `endif
     `ifdef SSTC_SUPPORTED
-        mip_stip_zero: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIP, "stip")[0] {
-            bins zero = {0};
-        }
         mie_stie_one: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MIE, "stie")[0] {
             bins one = {1};
         }
@@ -1419,7 +1985,9 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
 
     // retiring instructions
     cp_instret_add:  cross priv_mode_s, insn_add, prev_instret_read;
+    `ifdef UDB_SCOUNTENABLE_EN_2
     cp_instret_sret: cross priv_mode_s, insn_sret, prev_instret_read;
+    `endif
 
     // instructions that trap before retiring
     cp_instret_ecall:  cross priv_mode_s, ecall, prev_ecall_li;
@@ -1437,11 +2005,14 @@ covergroup S_Zicntr_cg with function sample(ins_t ins);
         cp_instret_wfi_pending: cross priv_mode_s, wfi, mip_ssip_one, mie_ssie_one, mstatus_sie_zero, prev_instret_read;
     `endif
     `ifdef SSTC_SUPPORTED
-        cp_instret_wfi_wake: cross priv_mode_s, wfi, mip_stip_zero, mie_stie_one, mstatus_sie_zero;
+        // The test runs wfi only after reading sip.STIP = 0; a trace may attribute the timer's mip.STIP change
+        // to the instruction that retires with the woken wfi, so the cross does not check STIP
+        cp_instret_wfi_wake: cross priv_mode_s, wfi, mie_stie_one, mstatus_sie_zero;
     `endif
     `ifdef ZAWRS_SUPPORTED
         cp_instret_wrs_nto: cross priv_mode_s, wrs_nto, prev_instret_read;
         cp_instret_wrs_sto: cross priv_mode_s, wrs_sto, prev_instret_read;
+    `endif
     `endif
 endgroup
 `endif

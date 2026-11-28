@@ -336,6 +336,30 @@ covergroup Zfh_fcvt_h_s_cg with function sample(ins_t ins);
         // FS1 register assignment
     }
 
+    cp_fs1_cvt_edges_S_H : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
+        // FS1 values near the destination's rounding, overflow and underflow boundaries
+        bins posmax_half_ulp          = {32'h477ff000};
+        bins negmax_half_ulp          = {32'hc77ff000};
+        bins tiny_before_rounding     = {32'h387ff000};
+        bins posmin_subnorm_half      = {32'h33000000};
+        bins negmin_subnorm_half      = {32'hb3000000};
+        bins pos1_half_ulp            = {32'h3f801000};
+        bins neg1_half_ulp            = {32'hbf801000};
+        bins pos1_3half_ulp           = {32'h3f803000};
+    }
+
+    cp_fs1_cvt_exact_S_H : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
+        // FS1 destination max, minnorm and min subnormal, exactly representable
+        bins posmaxnorm               = {32'h477fe000};
+        bins posminnorm               = {32'h38800000};
+        bins posmin_subnorm           = {32'h33800000};
+    }
+
+    cr_fs1_cvt_edges_frm_S_H : cross cp_fs1_cvt_edges_S_H,cp_frm_2  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 conversion edges, static rounding modes
+        ignore_bins dyn = binsof(cp_frm_2) intersect {dyn};
+    }
+
     cp_fs1_edges : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
         // FS1 edges
         bins pos0             = {32'h00000000};
@@ -414,6 +438,24 @@ covergroup Zfh_fcvt_h_w_cg with function sample(ins_t ins);
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
+    }
+
+    cp_rs1_cvt_edges_W_H : coverpoint unsigned'(ins.current.rs1_val[31:0])  iff (ins.trap == 0 )  {
+        // RS1 integers whose conversion depends on the rounding mode
+        bins tie_even_down            = {32'h00000801};
+        bins tie_even_up              = {32'h00000803};
+        bins neg_tie                  = {32'hfffff7ff};
+        bins below_tie                = {32'h00001001};
+        bins sticky                   = {32'h00004009};
+        bins below_overflow           = {32'h0000ffef};
+        bins overflow_tie             = {32'h0000fff0};
+        bins neg_overflow_tie         = {32'hffff0010};
+        bins min                      = {32'h80000000};
+    }
+
+    cr_rs1_cvt_edges_frm_W_H : cross cp_rs1_cvt_edges_W_H,cp_frm_2  iff (ins.trap == 0 )  {
+        // Cross coverage RS1 conversion edges, static rounding modes
+        ignore_bins dyn = binsof(cp_frm_2) intersect {dyn};
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
@@ -496,6 +538,24 @@ covergroup Zfh_fcvt_h_wu_cg with function sample(ins_t ins);
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
+    }
+
+    cp_rs1_cvt_edges_W_H : coverpoint unsigned'(ins.current.rs1_val[31:0])  iff (ins.trap == 0 )  {
+        // RS1 integers whose conversion depends on the rounding mode
+        bins tie_even_down            = {32'h00000801};
+        bins tie_even_up              = {32'h00000803};
+        bins neg_tie                  = {32'hfffff7ff};
+        bins below_tie                = {32'h00001001};
+        bins sticky                   = {32'h00004009};
+        bins below_overflow           = {32'h0000ffef};
+        bins overflow_tie             = {32'h0000fff0};
+        bins neg_overflow_tie         = {32'hffff0010};
+        bins min                      = {32'h80000000};
+    }
+
+    cr_rs1_cvt_edges_frm_W_H : cross cp_rs1_cvt_edges_W_H,cp_frm_2  iff (ins.trap == 0 )  {
+        // Cross coverage RS1 conversion edges, static rounding modes
+        ignore_bins dyn = binsof(cp_frm_2) intersect {dyn};
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
@@ -689,6 +749,17 @@ covergroup Zfh_fcvt_w_h_cg with function sample(ins_t ins);
         ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
+    cp_fs1_cvt_edges_H_I : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
+        // FS1 fractional values (the integer result depends on the rounding mode)
+        bins pos1p75                  = {16'h3f00};
+        bins neg0p5                   = {16'hb800};
+    }
+
+    cr_fs1_cvt_edges_frm_H_I : cross cp_fs1_cvt_edges_H_I,cp_frm_2  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 conversion edges, static rounding modes
+        ignore_bins dyn = binsof(cp_frm_2) intersect {dyn};
+    }
+
     cp_fs1_edges_H : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
         // FS1 edges (Half Precision)
         bins pos0             = {16'h0000};
@@ -791,6 +862,17 @@ covergroup Zfh_fcvt_wu_h_cg with function sample(ins_t ins);
         };
         // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
         ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
+    }
+
+    cp_fs1_cvt_edges_H_I : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
+        // FS1 fractional values (the integer result depends on the rounding mode)
+        bins pos1p75                  = {16'h3f00};
+        bins neg0p5                   = {16'hb800};
+    }
+
+    cr_fs1_cvt_edges_frm_H_I : cross cp_fs1_cvt_edges_H_I,cp_frm_2  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 conversion edges, static rounding modes
+        ignore_bins dyn = binsof(cp_frm_2) intersect {dyn};
     }
 
     cp_fs1_edges_H : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
@@ -2637,6 +2719,36 @@ covergroup Zfh_fmv_h_x_cg with function sample(ins_t ins);
         `endif
     }
 
+    cp_rs1_fp_edges_H : coverpoint unsigned'(ins.current.rs1_val[15:0])  iff (ins.trap == 0 )  {
+        // Floating-point edge bit patterns in rs1 (Half Precision)
+        bins pos0             = {16'h0000};
+        bins neg0             = {16'h8000};
+        bins pos1             = {16'h3C00};
+        bins neg1             = {16'hBC00};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
+        bins posminnorm       = {16'h0400};
+        bins negminnorm       = {16'h8400};
+        bins posmaxnorm       = {16'h7BFF};
+        bins negmaxnorm       = {16'hFBFF};
+        bins posmax_subnorm   = {16'h03FF};
+        bins negmax_subnorm   = {16'h83FF};
+        bins posmid_subnorm   = {16'h0200};
+        bins negmid_subnorm   = {16'h8200};
+        bins posmin_subnorm   = {16'h0001};
+        bins negmin_subnorm   = {16'h8001};
+        bins posinfinity      = {16'h7C00};
+        bins neginfinity      = {16'hFC00};
+        bins posQNaN          = {[16'h7E00:16'h7FFF]};
+        bins posSNaN          = {[16'h7C01:16'h7DFF]};
+        bins negQNaN          = {[16'hFE00:16'hFFFF]};
+        bins negSNaN          = {[16'hFC01:16'hFDFF]};
+        bins posrandom        = {16'h58B4};
+        bins negrandom        = {16'hC93A};
+    }
+
 endgroup
 // ---------------------
 covergroup Zfh_fmv_x_h_cg with function sample(ins_t ins);
@@ -4129,6 +4241,24 @@ covergroup Zfh_fcvt_h_l_cg with function sample(ins_t ins);
         // RS1 register assignment
     }
 
+    cp_rs1_cvt_edges_L_H : coverpoint unsigned'(ins.current.rs1_val[63:0])  iff (ins.trap == 0 )  {
+        // RS1 integers whose conversion depends on the rounding mode
+        bins tie_even_down            = {64'h0000000000000801};
+        bins tie_even_up              = {64'h0000000000000803};
+        bins neg_tie                  = {64'hfffffffffffff7ff};
+        bins below_tie                = {64'h0000000000001001};
+        bins sticky                   = {64'h0000000000004009};
+        bins below_overflow           = {64'h000000000000ffef};
+        bins overflow_tie             = {64'h000000000000fff0};
+        bins neg_overflow_tie         = {64'hffffffffffff0010};
+        bins min                      = {64'h8000000000000000};
+    }
+
+    cr_rs1_cvt_edges_frm_L_H : cross cp_rs1_cvt_edges_L_H,cp_frm_2  iff (ins.trap == 0 )  {
+        // Cross coverage RS1 conversion edges, static rounding modes
+        ignore_bins dyn = binsof(cp_frm_2) intersect {dyn};
+    }
+
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
         `ifdef UDB_MXLEN_32
             bins zero     = {0};
@@ -4209,6 +4339,24 @@ covergroup Zfh_fcvt_h_lu_cg with function sample(ins_t ins);
 
     cp_rs1 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
+    }
+
+    cp_rs1_cvt_edges_L_H : coverpoint unsigned'(ins.current.rs1_val[63:0])  iff (ins.trap == 0 )  {
+        // RS1 integers whose conversion depends on the rounding mode
+        bins tie_even_down            = {64'h0000000000000801};
+        bins tie_even_up              = {64'h0000000000000803};
+        bins neg_tie                  = {64'hfffffffffffff7ff};
+        bins below_tie                = {64'h0000000000001001};
+        bins sticky                   = {64'h0000000000004009};
+        bins below_overflow           = {64'h000000000000ffef};
+        bins overflow_tie             = {64'h000000000000fff0};
+        bins neg_overflow_tie         = {64'hffffffffffff0010};
+        bins min                      = {64'h8000000000000000};
+    }
+
+    cr_rs1_cvt_edges_frm_L_H : cross cp_rs1_cvt_edges_L_H,cp_frm_2  iff (ins.trap == 0 )  {
+        // Cross coverage RS1 conversion edges, static rounding modes
+        ignore_bins dyn = binsof(cp_frm_2) intersect {dyn};
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
@@ -4313,6 +4461,17 @@ covergroup Zfh_fcvt_l_h_cg with function sample(ins_t ins);
         ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
+    cp_fs1_cvt_edges_H_I : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
+        // FS1 fractional values (the integer result depends on the rounding mode)
+        bins pos1p75                  = {16'h3f00};
+        bins neg0p5                   = {16'hb800};
+    }
+
+    cr_fs1_cvt_edges_frm_H_I : cross cp_fs1_cvt_edges_H_I,cp_frm_2  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 conversion edges, static rounding modes
+        ignore_bins dyn = binsof(cp_frm_2) intersect {dyn};
+    }
+
     cp_fs1_edges_H : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
         // FS1 edges (Half Precision)
         bins pos0             = {16'h0000};
@@ -4415,6 +4574,17 @@ covergroup Zfh_fcvt_lu_h_cg with function sample(ins_t ins);
         };
         // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
         ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
+    }
+
+    cp_fs1_cvt_edges_H_I : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
+        // FS1 fractional values (the integer result depends on the rounding mode)
+        bins pos1p75                  = {16'h3f00};
+        bins neg0p5                   = {16'hb800};
+    }
+
+    cr_fs1_cvt_edges_frm_H_I : cross cp_fs1_cvt_edges_H_I,cp_frm_2  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 conversion edges, static rounding modes
+        ignore_bins dyn = binsof(cp_frm_2) intersect {dyn};
     }
 
     cp_fs1_edges_H : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
@@ -4698,6 +4868,30 @@ covergroup ZfhD_fcvt_h_d_cg with function sample(ins_t ins);
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
         // FS1 register assignment
+    }
+
+    cp_fs1_cvt_edges_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 values near the destination's rounding, overflow and underflow boundaries
+        bins posmax_half_ulp          = {64'h40effe0000000000};
+        bins negmax_half_ulp          = {64'hc0effe0000000000};
+        bins tiny_before_rounding     = {64'h3f0ffe0000000000};
+        bins posmin_subnorm_half      = {64'h3e60000000000000};
+        bins negmin_subnorm_half      = {64'hbe60000000000000};
+        bins pos1_half_ulp            = {64'h3ff0020000000000};
+        bins neg1_half_ulp            = {64'hbff0020000000000};
+        bins pos1_3half_ulp           = {64'h3ff0060000000000};
+    }
+
+    cp_fs1_cvt_exact_D_H : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {
+        // FS1 destination max, minnorm and min subnormal, exactly representable
+        bins posmaxnorm               = {64'h40effc0000000000};
+        bins posminnorm               = {64'h3f10000000000000};
+        bins posmin_subnorm           = {64'h3e70000000000000};
+    }
+
+    cr_fs1_cvt_edges_frm_D_H : cross cp_fs1_cvt_edges_D_H,cp_frm_2  iff (ins.trap == 0 )  {
+        // Cross coverage FS1 conversion edges, static rounding modes
+        ignore_bins dyn = binsof(cp_frm_2) intersect {dyn};
     }
 
     cp_fs1_edges_D : coverpoint unsigned'(ins.current.fs1_val[63:0])  iff (ins.trap == 0 )  {

@@ -96,7 +96,9 @@ normative_rule_definitions:
   # single-precision floating-point number, to floating-point register rd
   - name: fround-s_op
     coverpoint:
-      ["Zfa_fround_s_cg/{cp_fs1_edges, cp_frm_2, cp_csr_frm, cp_csr_fflags_v}"]
+      [
+        "Zfa_fround_s_cg/{cp_fs1_edges, cr_fs1_cvt_edges_frm_S_R, cp_csr_frm, cp_csr_fflags_v}",
+      ]
   # Zero and infinite inputs are copied to rd unmodified
   - name: fround-s_zero_inf
     coverpoint: ["{Zfa_fround_s_cg, Zfa_froundnx_s_cg}/cp_fs1_edges"]
@@ -114,14 +116,16 @@ normative_rule_definitions:
   - name: froundnx-s_op
     coverpoint:
       [
-        "Zfa_froundnx_s_cg/{cp_fs1_edges, cp_frm_2, cp_csr_frm, cp_csr_fflags_vn}",
+        "Zfa_froundnx_s_cg/{cp_fs1_edges, cr_fs1_cvt_edges_frm_S_R, cp_csr_frm, cp_csr_fflags_vn}",
       ]
   # If the ext:d[] extension is implemented, insn:fround.d[] and insn:froundnx.d[]
   # instructions are analogously defined to operate on double-precision numbers. They
   # are encoded like insn:fcvt.d.s[], but with rs2=4 and 5, respectively,
   - name: fround-d_froundnx-d_op
     coverpoint:
-      ["{ZfaD_fround_d_cg, ZfaD_froundnx_d_cg}/{cp_fs1_edges_D, cp_frm_2}"]
+      [
+        "{ZfaD_fround_d_cg, ZfaD_froundnx_d_cg}/{cp_fs1_edges_D, cr_fs1_cvt_edges_frm_D_R}",
+      ]
   # If the ext:q[] extension is implemented, insn:fround.q[] and insn:froundnx.q[]
   # instructions are analogously defined to operate on quad-precision numbers. They are
   # encoded like insn:fcvt.q.s[], but with rs2=4 and 5, respectively,
@@ -134,7 +138,7 @@ normative_rule_definitions:
   - name: fround-h_froundnx-h_op
     coverpoint:
       [
-        "{ZfaZfh_fround_h_cg, ZfaZfh_froundnx_h_cg}/{cp_fs1_edges_H, cp_frm_2}",
+        "{ZfaZfh_fround_h_cg, ZfaZfh_froundnx_h_cg}/{cp_fs1_edges_H, cr_fs1_cvt_edges_frm_H_R}",
         "{ZfaZfhD_fround_h_cg, ZfaZfhD_froundnx_h_cg}/{cp_NaNBox_D_H, cp_fs1_badNB_D_H}",
       ]
   # The insn:fcvtmod.w.d[] instruction is defined similarly to the insn:fcvt.w.d[]
@@ -144,7 +148,9 @@ normative_rule_definitions:
   # NaN are converted to zero.
   - name: fcvtmod-w-d_op
     coverpoint:
-      ["ZfaD_fcvtmod_w_d_cg/{cp_rd, cp_fs1, cp_fs1_edges_D, cp_csr_fflags_vn}"]
+      [
+        "ZfaD_fcvtmod_w_d_cg/{cp_rd, cp_fs1_edges_D, cp_fs1_cvt_edges_D_I, cp_fs1_cvt_exact_D_I}",
+      ]
   # Floating-point exception flags are raised the same as they would be for
   # insn:fcvt.w.d[] with the same input operand.
   - name: fcvtmod-w-d_flags

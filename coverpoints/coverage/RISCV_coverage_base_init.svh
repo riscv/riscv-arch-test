@@ -230,6 +230,10 @@
         `cover_info("//      Svpbmt - Enabled");
         `include "Svpbmt_coverage_init.svh"
     `endif
+    `ifdef COVER_SVRSW60T59B
+        `cover_info("//      Svrsw60t59b - Enabled");
+        `include "Svrsw60t59b_coverage_init.svh"
+    `endif
     `ifdef COVER_SVVPTC
         `cover_info("//      Svvptc - Enabled");
         `include "Svvptc_coverage_init.svh"

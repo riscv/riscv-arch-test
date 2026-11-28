@@ -79,7 +79,7 @@ coverpoints:
     expectation: virtual instruction exception; rd keeps its value and hsv.w does not write memory
     bins: 13, + 1 on RV32
     notes: |-
-      wfi with hstatus.VTW = 1 is in InterruptsH cp_wfi_vs.  Some of these cases are also sampled by H, HSm and H_Zicntr.
+      wfi with hstatus.VTW = 1 is in Interrupts cp_wfi_vs.  Some of these cases are also sampled by H, HSm and H_Zicntr.
   - name: |-
       cp_virtual_instr_vu_execute_h
       cp_virtual_instr_vu_read_vstval_htval

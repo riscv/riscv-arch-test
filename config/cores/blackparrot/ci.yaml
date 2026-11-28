@@ -25,6 +25,10 @@ exclude_extensions:
   - Sv_ExceptionsZalrscSm_sv39_exceptions
   - Sv_ExceptionsZalrsc_sv39_exceptions
   - Sv_Exceptions_sv39_exceptions
+  # csrrs and csrrc of mip write back the read value, which ORs in the external SEI, so they set the
+  # software SEIP bit. Only the software bit may participate in the read-modify-write:
+  # bp_be/src/v/bp_be_calculator/bp_be_csr.sv#L846 and bp_be_pipe_sys.sv#L160-L165
+  - Interrupts_Sm_mip_seip
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-blackparrot.sh"

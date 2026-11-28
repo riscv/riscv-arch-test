@@ -87,4 +87,13 @@ SKIP_COVERPOINTS = frozenset(
 # =============================================================================
 MIN_SEW_MIN = 8
 ELEN_MAX = 64
-VLEN_MAX = 1024
+VLEN_MAX = 4096
+
+# Bytes of vector test data emitted per data directive line
+VECTOR_DATA_BYTES_PER_LINE = 32
+
+# Length-suite operands share a pool of random data. Each operand of a testcase gets its own slot, which holds an
+# EMUL=8 register group at VLEN_MAX.
+VECTOR_LENGTH_DATA_POOL_SLOTS = 4
+VECTOR_LENGTH_DATA_SLOT_BYTES = 8 * VLEN_MAX // 8
+VECTOR_LENGTH_DATA_POOL_BYTES = VECTOR_LENGTH_DATA_POOL_SLOTS * VECTOR_LENGTH_DATA_SLOT_BYTES

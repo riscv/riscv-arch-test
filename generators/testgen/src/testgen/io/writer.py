@@ -11,7 +11,7 @@
 from pathlib import Path
 
 from testgen.asm.sections import generate_test_data_section, generate_test_string_section, generate_vector_data_section
-from testgen.constants import INDENT, indent_asm
+from testgen.constants import INDENT, VLEN_MAX, indent_asm
 from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.test_chunk import TestChunk
@@ -79,7 +79,10 @@ def write_test_file(
     raw_data = [line for tc in test_chunks for line in tc.raw_data]
     vector_data_labels = [label for tc in test_chunks for label in tc.vector_labels]
     data_strings = [s for tc in test_chunks for s in tc.data_strings]
-    sigupd_count = SIGUPD_MARGIN + sum(tc.sigupd_count for tc in test_chunks)
+    sigupd_count: int | str = SIGUPD_MARGIN + sum(tc.sigupd_count for tc in test_chunks)
+    vlen_sigupd_count = sum(tc.vlen_sigupd_count for tc in test_chunks)
+    if vlen_sigupd_count:
+        sigupd_count = f"({sigupd_count} + ({vlen_sigupd_count} * UDB_VLEN + {VLEN_MAX - 1}) / {VLEN_MAX})"
     trap_sigupd_count = sum(tc.trap_sigupd_count for tc in test_chunks)
     extra_defines = list(extra_defines or [])
     if trap_sigupd_count:

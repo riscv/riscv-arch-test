@@ -122,10 +122,10 @@ def format_vssseg_like_type(
     equivalent_load = "vl" + instr_str[2:]
     if params.maskval:
         test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), x{params.rs2}, v0.t"]
-        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), x{params.rs2}, v0.t"
+        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), x{params.rs2}, v0.t  # reload the stored data"
     else:
         test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), x{params.rs2}"]
-        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), x{params.rs2}"
+        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), x{params.rs2}  # reload the stored data"
 
     if params.vector_suite == "length":
         check = [

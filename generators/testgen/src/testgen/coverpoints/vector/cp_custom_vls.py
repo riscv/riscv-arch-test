@@ -108,6 +108,7 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
     needs_endif = "#endif" in check
 
     tc.sigupd_count = 1
+    tc.vlen_sigupd_count = 0
     check_reg = test_data.int_regs.get_register(exclude_regs=[0])
     check = "\n".join([f"csrr x{check_reg}, vl", write_sigupd(check_reg, test_data, "int")])
     if needs_endif:

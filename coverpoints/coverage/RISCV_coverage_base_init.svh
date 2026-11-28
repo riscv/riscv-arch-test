@@ -170,6 +170,10 @@
         `cover_info("//      Sscounterenw - Enabled");
         `include "Sscounterenw_coverage_init.svh"
     `endif
+    `ifdef COVER_SSCOUNTERENWSM
+        `cover_info("//      SscounterenwSm - Enabled");
+        `include "SscounterenwSm_coverage_init.svh"
+    `endif
     `ifdef COVER_SSNPM
         `cover_info("//      Ssnpm - Enabled");
         `include "Ssnpm_coverage_init.svh"

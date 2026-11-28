@@ -1,0 +1,9 @@
+///////////////////////////////////////////
+//
+// RISC-V Architectural Functional Coverage Covergroups Initialization File
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+    SscounterenwSm_cg = new();      SscounterenwSm_cg.set_inst_name("obj_SscounterenwSm");

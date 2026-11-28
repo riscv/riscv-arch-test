@@ -191,6 +191,8 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
     for mpp, guard in mpp_guard.items():
         if guard:
             lines.append(f"#ifdef {guard}")
+        # mret to M-mode reads mstatus directly.  S and U get back to M with an ecall, which overwrites MPIE and MPP.
+        goto_m = [] if mpp == 3 else ["RVTEST_TSBI_GOTO_MMODE       # back to M for the readback"]
         for mprv in (0, 1):
             for mpie in (0, 1):
                 for mie in (0, 1):
@@ -212,7 +214,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
                             f"addi x{check_reg}, zero, -1       # should not be executed",
                             "1:                         # mret should return to here",
                             write_sigupd(check_reg, test_data),
-                            "RVTEST_TSBI_GOTO_MMODE       # mret may have returned to S or U mode; get back to M for the readback",
+                            *goto_m,
                             # Test the read value
                             test_data.add_testcase(f"{binname}_rval", coverpoint, covergroup),
                             gen_csr_read_sigupd(check_reg, ("mstatus", None), test_data),
@@ -584,6 +586,12 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ("mhpmevent30", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent31", 0),  # mask all bits because they are WARL and can all be ROZ
     ]
+    # These CSRs do not exist without S-mode or U-mode
+    csrm_gate = {
+        "medeleg": "defined(S_SUPPORTED)",
+        "mideleg": "defined(S_SUPPORTED)",
+        "mcounteren": "defined(U_SUPPORTED)",
+    }
     # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED
     # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
     csr_mcountinhibit = ("mcountinhibit", 0b111)
@@ -618,7 +626,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     for csr in csrm:
         tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+        tc.code.extend(gated(csr_access_test(test_data, csr, covergroup, coverpoint), csrm_gate.get(csr[0])))
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
@@ -626,7 +634,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     tc = test_data.new_test_chunk(test_chunks)
-    tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.append("\n#if defined(SM1P12P0_OR_LATER_SUPPORTED) && defined(U_SUPPORTED)")
     tc.code.extend(csr_access_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif")
 
@@ -651,16 +659,18 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_access_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.append("#ifdef U_SUPPORTED")
     tc.code.extend(csr_access_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.append("#endif // U_SUPPORTED")
     tc.code.append("#endif //  SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
     tc.code.extend(csr_access_test(test_data, csr_mseccfgh, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif // MSECCFG")
-    tc.code.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
+    tc.code.append("\n#if defined(SM1P13P0_OR_LATER_SUPPORTED) && defined(S_SUPPORTED)")
     tc.code.extend(csr_access_test(test_data, csr_medelegh, covergroup, coverpoint))
     tc.code.extend(
         [
-            "#endif // SM1P13P0_OR_LATER_SUPPORTED",
+            "#endif // SM1P13P0_OR_LATER_SUPPORTED && S_SUPPORTED",
             "#endif // xlen = 32",
         ]
     )
@@ -732,14 +742,14 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         if csr[0] in SM_VADDR_CSRS:
             continue  # skip the virtual-address CSRs; they are walked in addr_csr_tests
         tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+        tc.code.extend(gated(csr_walk_test(test_data, csr, covergroup, coverpoint), csrm_gate.get(csr[0])))
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
     tc.code.extend(csr_walk_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
     tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
-    tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.append("\n#if defined(SM1P12P0_OR_LATER_SUPPORTED) && defined(U_SUPPORTED)")
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     tc.code.extend(
         csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, warl_fields=warl_fields, maskedwrites=True)
@@ -763,12 +773,14 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.append("#ifdef U_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.append("#endif // U_SUPPORTED")
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_mseccfgh, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif // MSECCFG")
-    tc.code.append("\n#ifdef SM1P13P0_OR_LATER_SUPPORTED")
+    tc.code.append("\n#if defined(SM1P13P0_OR_LATER_SUPPORTED) && defined(S_SUPPORTED)")
     tc.code.extend(csr_walk_test(test_data, csr_medelegh, covergroup, coverpoint))
     tc.code.append("#endif // MEDELEGH")
     tc.code.append("#endif // __riscv_xlen == 32")
@@ -1000,15 +1012,18 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
                 covergroup,
                 test_data,
             ),
+            # A misa that is all read-only zero reads I = E = 0
+            "#ifdef UDB_MISA_CSR_IMPLEMENTED",
             _gen_misa_dependencies(
                 "0b00000000000000000000000000",
-                "0b00000000000000000000000000",
+                "0b00000000000000000100010000",
                 "i0e0",
                 "I = 0, E = 0",
                 coverpoint,
                 covergroup,
                 test_data,
             ),
+            "#endif // UDB_MISA_CSR_IMPLEMENTED",
             _gen_misa_dependencies(
                 "0b00000000000000000000001000",
                 "0b00000000000000000000101000",

@@ -41,6 +41,10 @@ exclude_extensions:
   # is writable, which norm:hie_acc allows but Sail 0.16 makes read-only zero when GEILEN = 0.
   - Sm_mcsr_access-
   - Sm_shadow-
+  # misa.V is set (RVV = 1 in includes/def_pkg.sv) although the vector unit is nonconforming: it does not support
+  # LMUL > 1, because core:datapath/rtl/id_stage/rtl/vset_module.sv#L90-L91 sets vill for LMUL 2/4/8. So the
+  # configuration cannot declare V.
+  - Sm_reset
   # senvcfg.CBIE keeps the reserved 0b10: csr:csr_bsc.sv#L1344-L1345 (https://github.com/bsc-loca/sargantana/issues/113 item 8)
   - S_scsr-
   # mideleg is applied after the interrupt is picked by cause, so a delegated SEI hides an M-level STI:

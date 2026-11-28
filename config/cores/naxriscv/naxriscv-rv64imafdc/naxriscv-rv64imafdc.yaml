@@ -1,0 +1,418 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+
+# UDB Architecture Configuration for NaxRiscv's standard RV64 configuration, the default target
+# (rv64imafdcsu) of NaxRiscv's Makefile:
+#   sbt "runMain naxriscv.Gen64 --withRvc --withFloat --withDouble"
+# Written against SpinalHDL/NaxRiscv commit 9f452d50560d02fb391bc8039f5453c54e0911af. Below,
+# SRC = https://github.com/SpinalHDL/NaxRiscv/blob/9f452d50560d02fb391bc8039f5453c54e0911af/src/main/scala/naxriscv/
+# The values were measured on the generated RTL with the UDB feature extractor and checked
+# against the source; every value that is not the ordinary one says why.
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: naxriscv-rv64imafdc
+description: NaxRiscv out-of-order superscalar core, naxriscv.Gen64 --withRvc --withFloat --withDouble - RV64IMAFDC, M + S + U, Sv39
+
+# Gen64 builds Config.plugins with xlen = 64, the RVC, float and double options, supervisor and
+# user modes and the MMU (SRC Gen.scala#L570-L620, #L44-L79). misa reads 0x8000_0000_0014_112D
+# (I, M, A, F, D, C, S, U).
+# Zicntr: cycle and instret are implemented (SRC misc/PerformanceCounterPlugin.scala#L49-L53),
+# time is not (Gen64 passes withRdTime = false, SRC Gen.scala#L600), so it is emulated from the
+# simulator's mtime (TIME_CSR_IMPLEMENTED below). Zihpm: mhpmcounter3-6 count events
+# (additionalCounterCount = 4, SRC Gen.scala#L325).
+# There are no triggers: Gen64 asks for 4 (debugTriggers = 4, SRC Gen.scala#L606) but they are
+# part of the debug support that withDebug = false leaves out, and tselect raises an
+# illegal-instruction exception.
+implemented_extensions:
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  - { name: A, version: "= 2.1.0" }
+  - { name: Zaamo, version: "= 1.0.0" }
+  - { name: Zalrsc, version: "= 1.0.0" }
+  - { name: F, version: "= 2.2.0" }
+  - { name: D, version: "= 2.2.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcd, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zicntr, version: "= 2.0.0" }
+  - { name: Zihpm, version: "= 2.0.0" }
+  - { name: Zifencei, version: "= 2.0.0" }
+  # Privileged 1.11: there is no menvcfg, senvcfg, mconfigptr or mcountinhibit (an access raises
+  # an illegal-instruction exception).
+  - { name: Sm, version: "= 1.11.0" }
+  - { name: S, version: "= 1.11.0" }
+  - { name: U, version: "= 1.0.0" }
+  - { name: Ssu64xl, version: "= 1.0.0" }
+  - { name: Sstvecd, version: "= 1.0.0" }
+  - { name: Sv39, version: "= 1.0.0" }
+  - { name: Svbare, version: "= 1.0.0" }
+  # Svade is not claimed because UDB defines it only from Sm 1.12, but the MMU behaves that way:
+  # a page-table walk that finds A = 0 raises a page fault, and a store to a page with D = 0 is
+  # not allowed (SRC misc/MmuPlugin.scala#L446, #L451).
+
+params:
+  MXLEN: 64
+  SXLEN: [64]
+  UXLEN: [64]
+  # The MMU's physicalWidth is 32 (SRC Gen.scala#L92-L99).
+  PHYS_ADDR_WIDTH: 32
+  # mvendorid = 0, marchid = 5 ("As spike"), mimpid = 0 (PrivilegedConfig.full, SRC misc/PrivilegedPlugin.scala#L35-L37).
+  VENDOR_ID_BANK: 0
+  VENDOR_ID_OFFSET: 0
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 5
+  MIMPID_IMPLEMENTED: false
+  MISA_CSR_IMPLEMENTED: true
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
+  MUTABLE_MISA_A: false
+  MUTABLE_MISA_C: false
+  MUTABLE_MISA_D: false
+  MUTABLE_MISA_F: false
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_S: false
+  MUTABLE_MISA_U: false
+  M_MODE_ENDIANNESS: little
+  S_MODE_ENDIANNESS: little
+  U_MODE_ENDIANNESS: little
+
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
+  MSTATUS_VS_LEGAL_VALUES: [0]
+  HW_MSTATUS_FS_DIRTY_UPDATE: precise
+
+  MTVEC_ACCESS: rw
+  MTVEC_MODES: [0]
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  # A write sets BASE and forces MODE to 0 (misc/PrivilegedPlugin.scala#L416, #L421), so a write
+  # with an unsupported MODE does not retain the old value.
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  STVEC_MODES: [0]
+  MTVAL_WIDTH: 64
+  STVAL_WIDTH: 64
+
+  # All six standard interrupts. The simulator drives the machine and supervisor external
+  # interrupts, the CLINT timer and the CLINT software interrupt.
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
+  # medeleg has writable bits only for exceptions 0, 3, 8, 9, 12, 13 and 15 (SRC
+  # misc/PrivilegedPlugin.scala#L407-L410); illegal-instruction, access-fault and misaligned
+  # load/store exceptions always go to M-mode.
+  MEDELEG_DELEGATABLE:
+    [
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MIDELEG_DELEGATABLE:
+    [
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+
+  # mcounteren and scounteren read 0 and ignore writes: PerformanceCounterPlugin only allows the
+  # CSR addresses (SRC misc/PerformanceCounterPlugin.scala#L56-L57).
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  HPM_EVENTS: [0, 1, 2, 3, 4, 5, 6, 7]
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
+  MCOUNTINHIBIT_IMPLEMENTED: false
+  MCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  SCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  TIME_CSR_IMPLEMENTED: false
+
+  # No PMP (Config.plugins has no PMP plugin); pmpcfg0 raises an illegal-instruction exception.
+  NUM_PMP_ENTRIES: 0
+
+  # Misaligned loads, stores and AMOs raise address-misaligned exceptions, before any page fault.
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
+  MISALIGNED_AMO: false
+  LRSC_MISALIGNED_BEHAVIOR: always raise misaligned exception
+  # lr records its full physical address, and sc succeeds only if its own physical address equals
+  # it; the size is not compared, so an sc.w after an lr.d to the same address succeeds
+  # (lsu2/Lsu2Plugin.scala#L467-L481, #L1340, #L1716). The address must match exactly, as
+  # sail.json's require_exact_reservation_addr says, but a size mismatch does not make the sc fail,
+  # so LRSC_FAIL_ON_NON_EXACT_LRSC (address and size) is false.
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  LRSC_FAIL_ON_VA_SYNONYM: false
+  LRSC_RESERVATION_STRATEGY: reserve exactly enough to cover the access
+
+  TRAP_ON_EBREAK: true
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_ECALL_FROM_S: true
+  TRAP_ON_ECALL_FROM_U: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_ILLEGAL_WLRL: false
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  # stval is written from the same value as mtval. Only exceptions 0, 3, 8, 9, 12, 13 and 15
+  # can be delegated, so the illegal-instruction, misaligned and access-fault cases never reach
+  # S-mode; they are set like mtval.
+  REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
+  REPORT_VA_IN_STVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  # The reorder buffer commits in order and traps at commit.
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  WFI_FINITE: true
+  WFI_U_MODE: false
+
+  SATP_MODE_BARE: true
+  ASID_WIDTH: 0
+  # I/O and memory are told apart by address bits 31:28 (ioRange, memRange, fetchRange; SRC
+  # Gen.scala#L46-L48), so attributes change at 256 MiB boundaries.
+  PMA_GRANULARITY: 28

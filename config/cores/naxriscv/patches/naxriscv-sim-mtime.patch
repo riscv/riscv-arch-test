@@ -1,0 +1,42 @@
+diff --git a/src/test/cpp/naxriscv/src/main.cpp b/src/test/cpp/naxriscv/src/main.cpp
+index 01f21a0..1dc6763 100644
+--- a/src/test/cpp/naxriscv/src/main.cpp
++++ b/src/test/cpp/naxriscv/src/main.cpp
+@@ -307,4 +307,8 @@ public:
+     VNaxRiscv* nax;
+     u64 clintCmp = 0;
++    // ACT: mtime advances once every 10 cycles (main_time counts two steps per cycle) and is
++    // writable: mtime = main_time/20 + clintTimeOffset.
++    u64 clintTimeOffset = 0;
++    u64 clintTime() { return main_time/20 + clintTimeOffset; }
+     queue <char> customCin;
+     string putcHistory = "";
+@@ -371,4 +375,9 @@ public:
+         #endif
+         case CLINT_BASE: nax->PrivilegedPlugin_io_int_machine_software = *data & 1;  break;
++        case CLINT_TIME: case CLINT_TIME+4: {
++            u64 time = clintTime();
++            memcpy(((char*)&time) + (address - CLINT_TIME), data, length);
++            clintTimeOffset = time - main_time/20;
++        } break;
+         case CLINT_CMP_ADDR: memcpy(&clintCmp, data, length); /*printf("CMPA=%lx\n", clintCmp);*/ break;
+         case CLINT_CMP_ADDR+4: memcpy(((char*)&clintCmp)+4, data, length); /*printf("CMPB=%lx\n", clintCmp);*/  break;
+@@ -409,9 +418,9 @@ public:
+         } break;
+         case CLINT_TIME:{
+-            u64 time = main_time/2;
++            u64 time = clintTime();
+             memcpy(data, &time, length);
+         } break;
+         case CLINT_TIME+4:{
+-            u64 time = (main_time/2) >> 32;
++            u64 time = clintTime() >> 32;
+             memcpy(data, &time, length);
+         } break;
+@@ -448,5 +457,5 @@ public:
+     }
+     virtual void postCycle(){
+-        nax->PrivilegedPlugin_io_int_machine_timer = clintCmp < (main_time/2);
++        nax->PrivilegedPlugin_io_int_machine_timer = clintCmp <= clintTime();
+     }
+ };

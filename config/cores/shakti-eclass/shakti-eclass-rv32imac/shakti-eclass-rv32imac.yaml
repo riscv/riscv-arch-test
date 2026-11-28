@@ -1,0 +1,218 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+
+# UDB architecture configuration for the Shakti E-class core at shaktiproject/cores/e-class
+# commit e8a0dfd2d1c4907c74fb58432e379016871fdd3a (release 1.10.2), built from
+# base-sim/templates/rv32imac.inc with the changes install-shakti.sh lists. E-class has no
+# CSR documentation beyond the source, so every parameter cites src/core (paths below are
+# under https://gitlab.com/shaktiproject/cores/e-class/-/blob/e8a0dfd2d1c4907c74fb58432e379016871fdd3a/).
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: shakti-eclass-rv32imac
+description: Shakti E-class - RV32IMAC_Zicsr_Zifencei_Zicntr with U-mode and 16 PMP entries
+
+# README.md: "Supports ISA=RV64[32]IMAC based on riscv-spec-2.2 and privilege-spec-1.10."
+# templates/rv32imac.inc sets ISA=RV32IMAC and USER=enable.
+implemented_extensions:
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  - { name: A, version: "= 2.1.0" }
+  - { name: Zaamo, version: "= 1.0.0" }
+  - { name: Zalrsc, version: "= 1.0.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  # FENCE and FENCE.I decode as memory operations (src/core/decode.bsv#L434). There is no
+  # instruction cache, and fetch and data share the one bus to memory.
+  - { name: Zifencei, version: "= 2.0" }
+  # cycle, time and instret read mcycle, the CLINT's mtime and minstret
+  # (src/core/csrfile.bsv#L668-L672).
+  - { name: Zicntr, version: "= 2.0" }
+  # hpmcounter3..31 (and on RV32 hpmcounter3h..31h) are legal CSR addresses that read 0
+  # (src/core/decode.bsv#L54-L61, src/core/csrfile.bsv#L668-L674).
+  - { name: Zihpm, version: "= 2.0" }
+  # The decoder accepts every FENCE encoding, so pause runs as a FENCE, and ntl.* and c.ntl.* are
+  # adds to x0 (src/core/decode.bsv#L434).
+  - { name: Zihintntl, version: "= 1.0.0" }
+  - { name: Zihintpause, version: "= 2.0.0" }
+  - { name: U, version: "= 1.0.0" }
+  # Sm 1.11: E-class implements privileged specification 1.10 (README.md), which has no
+  # separate version in UDB. It has no mstatush, menvcfg or mconfigptr (src/core/csr.defines).
+  - { name: Sm, version: "= 1.11.0" }
+
+params:
+  MXLEN: 32
+  # PADDR=32 in templates/rv32imac.inc; pmpaddr holds paddr-2 = 30 bits
+  # (src/core/csrfile.bsv#L379).
+  PHYS_ADDR_WIDTH: 32
+
+  # misa.A, C, I, M and U are registers that misa writes update
+  # (src/core/csrfile.bsv#L224-L246, #L790-L798). misa.X reads 0.
+  MISA_CSR_IMPLEMENTED: true
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
+  MUTABLE_MISA_A: true
+  MUTABLE_MISA_C: true
+  MUTABLE_MISA_M: true
+  MUTABLE_MISA_U: true
+
+  M_MODE_ENDIANNESS: little
+  U_MODE_ENDIANNESS: little
+  UXLEN: [32]
+
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_ECALL_FROM_U: true
+  TRAP_ON_EBREAK: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  # A CSR instruction is legal only for an address that address_valid() accepts
+  # (src/core/decode.bsv#L41-L115).
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_ILLEGAL_WLRL: false
+
+  # Every exception writes the badaddr that stage 2 computes, rs1 + immediate, to mtval
+  # (src/core/stage2.bsv#L271-L272, src/core/csrfile.bsv#L1199). For misaligned and fetch
+  # access faults that is the faulting address. Load and store access faults write 0 (the bus
+  # response data, src/core/stage3.bsv#L267-L268). For ebreak it is PC + 1, which is neither the
+  # PC nor 0; the config expects the PC, and the tests report the difference.
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
+  MTVAL_WIDTH: 32
+
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+
+  # mie.MEIE is writable. The ACT testbench connects a byte register at 0x20004 to
+  # the external interrupt input; CLINT supplies software and timer interrupts.
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+
+  # WFI is legal only in M-mode (src/core/decode.bsv#L477-L479).
+  WFI_U_MODE: false
+  WFI_FINITE: false
+
+  # Misaligned loads and stores raise address-misaligned exceptions (src/core/alu.bsv#L210-L216).
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
+  MISALIGNED_AMO: false
+  LRSC_MISALIGNED_BEHAVIOR: "always raise misaligned exception"
+  # The reservation is the exact address of the lr.w (src/core/stage2.bsv#L225-L250).
+  LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
+  LRSC_FAIL_ON_NON_EXACT_LRSC: true
+  LRSC_FAIL_ON_VA_SYNONYM: false
+
+  # mvendorid, marchid and mimpid read 0 (src/core/csrfile.bsv#L218-L220).
+  VENDOR_ID_BANK: 0x0
+  VENDOR_ID_OFFSET: 0x0
+  MARCHID_IMPLEMENTED: false
+  MIMPID_IMPLEMENTED: false
+
+  # A write keeps BASE[31:2], and MODE only when it is 0 or 1 (src/core/csrfile.bsv#L800-L804).
+  # Vectored interrupts go to BASE + 4 * cause (src/core/csrfile.bsv#L1207-L1208).
+  MTVEC_MODES: [0, 1]
+  MTVEC_ACCESS: rw
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 4
+
+  PMA_GRANULARITY: 2
+
+  # PMP=enable in templates/rv32imac.inc, and install-shakti.sh sets PMPSIZE=16. pmpaddr holds
+  # address bits 31:2, so the grain is 4 bytes, and OFF, TOR, NA4 and NAPOT all match
+  # (src/core/pmp_func.bsv#L80-L87).
+  NUM_PMP_ENTRIES: 16
+  NUM_USABLE_PMP_ENTRIES: 16
+  PMP_GRANULARITY: 2
+  PMP_NA4_SUPPORTED: true
+  PMP_NAPOT_SUPPORTED: true
+  PMP_TOR_SUPPORTED: true
+
+  # COUNTERS=0, so mhpmcounter3..31 and mhpmevent3..31 read 0 and ignore writes.
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+
+  # There is no mcountinhibit: decode.bsv#L83 accepts only 0x323..0x32F of 0x320..0x32F.
+  MCOUNTINHIBIT_IMPLEMENTED: false
+
+  # mcounteren holds CY, TM and IR (src/core/csrfile.bsv#L358, #L860).
+  MCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+
+  # time reads the CLINT's mtime (src/core/csrfile.bsv#L672).
+  TIME_CSR_IMPLEMENTED: true

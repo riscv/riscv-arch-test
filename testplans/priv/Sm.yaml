@@ -68,9 +68,14 @@ coverpoints:
   - name: cp_mtime_write
     goal: Writing memory-mapped MTIME shows up in time CSR
     description: If Zicntr is supported, Write walking 1s and 0s to memory-mapped mtime, read back from time CSR
-    expectation: Time reflects memory-mapped mtime. Difference should be small.
+    expectation: Time reflects the written mtime seed eventually, not necessarily immediately. After the store, poll the time CSR only (do not load mtime).
     rules:
       - Presently just writing one value
+      - Requires Zicntr; csrr time is illegal without it
+      - Fence after the store orders the MMIO write; it does not wait for the hart time copy (Priv §3.2.1)
+      - Poll csrr time until (time - seed) mod 2^XLEN < 2^30; do not MMIO-load mtime in that wait, because a timer-device load can hide copy latency
+      - Seed is a prior time read plus 2^24 so a stale shadow cannot pass; the 2^30 window covers ticks during the copy delay
+      - On RV32, store 0 to the low word and wait until time is far from 2^32 before writing mtimeh
   - name: cp_inhibit
     goal: mcountinhibit prevents counting
     description: With mcountinhibit[2/0] = {0, 1}, read mcycle and minstret multiple times and check whether they increment.

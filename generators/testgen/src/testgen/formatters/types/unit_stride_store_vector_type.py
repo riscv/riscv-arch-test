@@ -15,6 +15,7 @@ from testgen.asm.vector_helpers import (
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
+    store_target_checks,
     write_sigupd_v,
     write_sigupd_v_len,
     write_sigupd_v_mask_prod,
@@ -120,27 +121,29 @@ def format_vsseg_like_type(
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)
     setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
+    operands = f"(x{params.rs1})"
+    before_vtype, after_vtype, read_back, check_params = store_target_checks(
+        params, instr_str, operands, eew, segments, int(max(emul, 1))
+    )
+    setup.extend(before_vtype)
     setup.append(load_test_vtype(params, random_vl_reg))
+    setup.extend(after_vtype)
 
     # We don't need random_vl_reg anymore
     if random_vl_reg.startswith("x"):
         test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
-    # Reload after storing to arbitrary memory
-    equivalent_load = "vl" + instr_str[2:]
     if params.maskval:
         test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), v0.t"]
-        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), v0.t"
     else:
         test = [f"{instr_str} v{params.vs3}, (x{params.rs1})"]
-        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1})"
 
     if params.vector_suite == "length":
         check = [
-            read_back,
+            *read_back,
             *write_sigupd_v_len(
                 test_data,
-                params,
+                check_params,
                 emul,
                 segments=segments,
                 sew_override=info.load_store_eew,
@@ -159,7 +162,7 @@ def format_vsseg_like_type(
             )
     else:
         check = [
-            read_back,
+            *read_back,
             *write_sigupd_v(
                 test_data, params, sew_override=info.load_store_eew, mask_producing=vs3_mask, check_reg=reload_register
             ),

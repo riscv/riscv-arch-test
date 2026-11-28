@@ -129,7 +129,8 @@ def format_vlxseg_like_type(
     if not params.ignore_vector_safety:
         setup.extend(index_register_safety(params.vs2, index_eew, segments, random_vl_reg, test_data, params))
 
-    setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
+    offset = f"{params.rs1val_pointer_offset:+d}" if params.rs1val_pointer_offset else ""
+    setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer}{offset})")
     setup.append(load_test_vtype(params, random_vl_reg))
 
     # We don't need random_vl_reg anymore

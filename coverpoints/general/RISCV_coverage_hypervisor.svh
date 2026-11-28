@@ -38,4 +38,20 @@
     `define H_VADDR_WALK_MSB 31
 `endif
 
+`ifdef S_SUPPORTED
+// 1 when this record takes an exception into M-mode that would go to S-mode (HS-mode with H), but medeleg cannot
+// delegate it: its MEDELEG_DELEGATABLE bit is false, so that bit of medeleg is read-only 0
+function automatic logic medeleg_blocked_trap(ins_t ins);
+    logic [31:0] delegatable = `UDB_MEDELEG_DELEGATABLE_MASK;
+    `XLEN_BITS mcause = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE);
+    return ins.current.csr_wb[CSR_MCAUSE] && mcause < 32 && !delegatable[mcause[4:0]];
+endfunction
+// {trap, cause[4:0]} of the trap into S-mode (HS-mode with H) that this record takes, if any; a medeleg_blocked_trap
+// counts as one
+function automatic logic [5:0] s_trap(ins_t ins);
+    if (medeleg_blocked_trap(ins)) return {1'b1, get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE)[4:0]};
+    return {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE)[4:0]};
+endfunction
+`endif
+
 `endif // RISCV_COVERAGE_HYPERVISOR_SVH

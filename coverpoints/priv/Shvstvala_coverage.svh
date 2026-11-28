@@ -90,46 +90,41 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
         type_option.weight = 0;
         bins match = {1};
     }
-    vstval_insn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSTVAL) == `UDB_MXLEN'(ins.current.insn) {
-        bins match = {1};
-    }
 
+    // An exception whose medeleg bit is read-only 0 (MEDELEG_DELEGATABLE false) is taken in M-mode and never
+    // reaches VS-mode, so each exception's coverpoints need that bit
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
-        instr_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_VSCAUSE]) {
-            bins vscause = {1};
-        }
-        cp_instr_access_fault: cross priv_mode_vs_vu, jalr,     instr_access_fault, vstval_target;
+        `ifdef UDB_MEDELEG_DELEGATABLE_1
+            instr_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
+                bins vscause = {1};
+            }
+            cp_instr_access_fault: cross priv_mode_vs_vu, jalr,     instr_access_fault, vstval_target;
+        `endif
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_LOAD
-        load_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_VSCAUSE]) {
-            bins vscause = {5};
-        }
-        cp_load_access_fault:  cross priv_mode_vs_vu, loadops,  load_access_fault,  vstval_address;
+        `ifdef UDB_MEDELEG_DELEGATABLE_5
+            load_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
+                bins vscause = {5};
+            }
+            cp_load_access_fault:  cross priv_mode_vs_vu, loadops,  load_access_fault,  vstval_address;
+        `endif
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_STORE
-        store_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_VSCAUSE]) {
-            bins vscause = {7};
-        }
-        cp_store_access_fault: cross priv_mode_vs_vu, storeops, store_access_fault, vstval_address;
+        `ifdef UDB_MEDELEG_DELEGATABLE_7
+            store_access_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
+                bins vscause = {7};
+            }
+            cp_store_access_fault: cross priv_mode_vs_vu, storeops, store_access_fault, vstval_address;
+        `endif
     `endif
 
     // Misaligned loads and stores trap only when the implementation does not perform them
     `ifndef UDB_MISALIGNED_LDST
-        load_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_VSCAUSE]) {
-            bins vscause = {4};
-        }
-        store_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_VSCAUSE]) {
-            bins vscause = {6};
-        }
-        cp_load_address_misaligned:  cross priv_mode_vs_vu, wide_loadops,  load_misaligned,  vstval_address;
-        cp_store_address_misaligned: cross priv_mode_vs_vu, wide_storeops, store_misaligned, vstval_address;
         // Each misalignment of words, and of doublewords on RV64: the address offset within the access's natural
-        // alignment.  A halfword can only be misaligned by 1, which the crosses above cover.
+        // alignment.  A halfword can only be misaligned by 1, which cp_load/store_address_misaligned cover.
         word_loadops : coverpoint ins.current.insn {
             type_option.weight = 0;
             wildcard bins lw  = {LW};
@@ -145,8 +140,6 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
             type_option.weight = 0;
             bins offset[] = {[1:3]};
         }
-        cp_load_misaligned_word:  cross priv_mode_vs_vu, word_loadops,  load_misaligned,  word_misalignment, vstval_address;
-        cp_store_misaligned_word: cross priv_mode_vs_vu, word_storeops, store_misaligned, word_misalignment, vstval_address;
         `ifdef UDB_MXLEN_64
             ld : coverpoint ins.current.insn {
                 type_option.weight = 0;
@@ -160,43 +153,76 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
                 type_option.weight = 0;
                 bins offset[] = {[1:7]};
             }
-            cp_load_misaligned_doubleword:  cross priv_mode_vs_vu, ld, load_misaligned,  doubleword_misalignment, vstval_address;
-            cp_store_misaligned_doubleword: cross priv_mode_vs_vu, sd, store_misaligned, doubleword_misalignment, vstval_address;
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_4
+            load_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
+                bins vscause = {4};
+            }
+            cp_load_address_misaligned:  cross priv_mode_vs_vu, wide_loadops,  load_misaligned,  vstval_address;
+            cp_load_misaligned_word:  cross priv_mode_vs_vu, word_loadops,  load_misaligned,  word_misalignment, vstval_address;
+            `ifdef UDB_MXLEN_64
+                cp_load_misaligned_doubleword:  cross priv_mode_vs_vu, ld, load_misaligned,  doubleword_misalignment, vstval_address;
+            `endif
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_6
+            store_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
+                bins vscause = {6};
+            }
+            cp_store_address_misaligned: cross priv_mode_vs_vu, wide_storeops, store_misaligned, vstval_address;
+            cp_store_misaligned_word: cross priv_mode_vs_vu, word_storeops, store_misaligned, word_misalignment, vstval_address;
+            `ifdef UDB_MXLEN_64
+                cp_store_misaligned_doubleword: cross priv_mode_vs_vu, sd, store_misaligned, doubleword_misalignment, vstval_address;
+            `endif
         `endif
     `endif
 
     // Misaligned fetches trap only when IALIGN = 32
     `ifndef ZCA_SUPPORTED
-        instr_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_VSCAUSE]) {
-            bins vscause = {0};
-        }
-        cp_instr_adr_misaligned_jalr: cross priv_mode_vs_vu, jalr, instr_misaligned, vstval_target;
+        `ifdef UDB_MEDELEG_DELEGATABLE_0
+            instr_misaligned : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
+                bins vscause = {0};
+            }
+            cp_instr_adr_misaligned_jalr: cross priv_mode_vs_vu, jalr, instr_misaligned, vstval_target;
+        `endif
     `endif
 
-    illegal_instruction : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_VSCAUSE]) {
-        bins vscause = {2};
-    }
-    cp_illegal_instruction: cross priv_mode_vs_vu, illegal, illegal_instruction, vstval_insn;
+    `ifdef UDB_MEDELEG_DELEGATABLE_2
+        vstval_insn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSTVAL) == `UDB_MXLEN'(ins.current.insn) {
+            bins match = {1};
+        }
+        illegal_instruction : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
+            bins vscause = {2};
+        }
+        cp_illegal_instruction: cross priv_mode_vs_vu, illegal, illegal_instruction, vstval_insn;
+    `endif
 
     // VS-stage leaves without R, W or X under two-stage translation
     `ifdef H_TWO_STAGE
-        instr_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_VSCAUSE]) {
-            bins vscause = {12};
-        }
-        load_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_VSCAUSE]) {
-            bins vscause = {13};
-        }
-        store_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
-            iff (ins.current.csr_wb[CSR_VSCAUSE]) {
-            bins vscause = {15};
-        }
-        cp_load_page_fault:  cross priv_mode_vs_vu, lw,   load_page_fault,  vstval_address;
-        cp_store_page_fault: cross priv_mode_vs_vu, sw,   store_page_fault, vstval_address;
-        cp_instr_page_fault: cross priv_mode_vs_vu, jalr, instr_page_fault, vstval_target;
+        `ifdef UDB_MEDELEG_DELEGATABLE_12
+            instr_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
+                bins vscause = {12};
+            }
+            cp_instr_page_fault: cross priv_mode_vs_vu, jalr, instr_page_fault, vstval_target;
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_13
+            load_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
+                bins vscause = {13};
+            }
+            cp_load_page_fault:  cross priv_mode_vs_vu, lw,   load_page_fault,  vstval_address;
+        `endif
+        `ifdef UDB_MEDELEG_DELEGATABLE_15
+            store_page_fault : coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_VSCAUSE, "code")
+                iff (ins.current.csr_wb[CSR_VSCAUSE]) {
+                bins vscause = {15};
+            }
+            cp_store_page_fault: cross priv_mode_vs_vu, sw,   store_page_fault, vstval_address;
+        `endif
     `endif
 endgroup
 

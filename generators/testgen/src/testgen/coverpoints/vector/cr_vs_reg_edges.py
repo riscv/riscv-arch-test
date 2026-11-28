@@ -107,6 +107,11 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
         case _:
             raise ValueError(f"Unknown coverpoint variant: {coverpoint}")
 
+    # Any gather index in vs1 is legal, so keep its edge values instead of reducing them to [0, 2*VLMAX)
+    vector_data = get_instruction_type_config(instr_type).vector_data
+    if "vs1" in (r1_name, r2_name) and vector_data is not None and vector_data.index_register == "vs1":
+        ignore_vector_safety = True
+
     test_chunks = []
     for r1_edge in edges1:
         r1_label = make_and_register_edge_label(r1_name, r1_edge, suffix1, test_data)
@@ -156,7 +161,13 @@ def make_vs2_rs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_d
 
         for rs1_edge in rs1_edges:
             params = generate_random_vector_params(
-                test_data, instr_name, instr_type, lmul=1, rs1val=rs1_edge, vs2_val_pointer=vs2_label
+                test_data,
+                instr_name,
+                instr_type,
+                lmul=1,
+                rs1val=rs1_edge,
+                vs2_val_pointer=vs2_label,
+                ignore_vector_safety=True,  # keep the edge value exact even where rs1 is an index or offset
             )
             desc = f"{coverpoint} (vs2={vs2_edge}, rs1={rs1_edge})"
             bin_name = f"cp_vs2_rs1_edges_b{vs2_edge}_{rs1_edge}"

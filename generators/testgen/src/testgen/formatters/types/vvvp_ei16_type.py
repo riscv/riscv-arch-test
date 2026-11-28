@@ -21,7 +21,9 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 
 vvvp_ei16_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
-    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs1"), ("vd", "vs2")}, index_register="vs1"),
+    vector_data=VectorTypeConfig(
+        overlap_constraints={("vd", "vs1"), ("vd", "vs2")}, index_register="vs1", vlmax_regs={"vs2"}
+    ),
 )
 
 

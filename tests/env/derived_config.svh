@@ -154,4 +154,40 @@
   `endif
 `endif
 
+// PMP_ENTRY<n>_BELOW_BACKGROUND: PMP entry n lies below the background entry
+// (NUM_USABLE_PMP_ENTRIES - 1), so PMP tests can configure and probe it. Most uses guard
+// individual bins, which only the preprocessor can remove, and `ifdef cannot compare
+// UDB_NUM_USABLE_PMP_ENTRIES with n, so the range is spelled out over the one-hot
+// UDB_NUM_USABLE_PMP_ENTRIES_<n> macros.
+// check_defines.h requires at least 8 usable entries, so entries 0-6 always qualify; coverage of
+// entries above 15 uses numeric bins on UDB_NUM_USABLE_PMP_ENTRIES instead.
+// Each level holds when NUM_USABLE_PMP_ENTRIES > n + 1, so the checks nest.
+`ifndef UDB_NUM_USABLE_PMP_ENTRIES_8
+  `define PMP_ENTRY7_BELOW_BACKGROUND
+`ifndef UDB_NUM_USABLE_PMP_ENTRIES_9
+  `define PMP_ENTRY8_BELOW_BACKGROUND
+`ifndef UDB_NUM_USABLE_PMP_ENTRIES_10
+  `define PMP_ENTRY9_BELOW_BACKGROUND
+`ifndef UDB_NUM_USABLE_PMP_ENTRIES_11
+  `define PMP_ENTRY10_BELOW_BACKGROUND
+`ifndef UDB_NUM_USABLE_PMP_ENTRIES_12
+  `define PMP_ENTRY11_BELOW_BACKGROUND
+`ifndef UDB_NUM_USABLE_PMP_ENTRIES_13
+  `define PMP_ENTRY12_BELOW_BACKGROUND
+`ifndef UDB_NUM_USABLE_PMP_ENTRIES_14
+  `define PMP_ENTRY13_BELOW_BACKGROUND
+`ifndef UDB_NUM_USABLE_PMP_ENTRIES_15
+  `define PMP_ENTRY14_BELOW_BACKGROUND
+`ifndef UDB_NUM_USABLE_PMP_ENTRIES_16
+  `define PMP_ENTRY15_BELOW_BACKGROUND
+`endif
+`endif
+`endif
+`endif
+`endif
+`endif
+`endif
+`endif
+`endif
+
 `endif // DERIVED_CONFIG_SVH

@@ -218,22 +218,40 @@
         bins matched    = {1'b0};
         bins mismatched = {1'b1};
     }
-    // On a software-check exception stval reports shadow stack fault (code 3), or 0 if the
-    // implementation provides no information.
-    // Guarded on the trap being taken by this instruction, since the CSR array is persistent.
-    stval_ss_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL)
-                    iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SEPC) == ins.current.pc_rdata)) {
-        type_option.weight = 0;
-        `ifdef UDB_REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
-            bins ss_fault = {3};
-        `else
-            bins no_info = {0};
-        `endif
-    }
-    // The trap this instruction took is a software-check exception, so an unrelated memory fault
-    // on a pop cannot fill the mismatch bins.
-    scause_sw_check: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
-                     iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SEPC) == ins.current.pc_rdata)) {
-        type_option.weight = 0;
-        bins sw_check = {SOFTWARE_CHECK};
-    }
+    `ifdef UDB_MEDELEG_DELEGATABLE_18
+        // On a software-check exception stval reports shadow stack fault (code 3), or 0 if the
+        // implementation provides no information.
+        // Guarded on the trap being taken by this instruction, since the CSR array is persistent.
+        stval_ss_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVAL)
+                        iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SEPC) == ins.current.pc_rdata)) {
+            type_option.weight = 0;
+            `ifdef UDB_REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+                bins ss_fault = {3};
+            `else
+                bins no_info = {0};
+            `endif
+        }
+        // The trap this instruction took is a software-check exception, so an unrelated memory fault
+        // on a pop cannot fill the mismatch bins.
+        scause_sw_check: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SCAUSE, "code")
+                         iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_SEPC) == ins.current.pc_rdata)) {
+            type_option.weight = 0;
+            bins sw_check = {SOFTWARE_CHECK};
+        }
+    `else
+        // medeleg[18] is read-only 0 (or there is no S-mode), so software-check exceptions are taken in M-mode
+        stval_ss_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVAL)
+                        iff (ins.current.csr_wb[CSR_MEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEPC) == ins.current.pc_rdata)) {
+            type_option.weight = 0;
+            `ifdef UDB_REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+                bins ss_fault = {3};
+            `else
+                bins no_info = {0};
+            `endif
+        }
+        scause_sw_check: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE, "code")
+                         iff (ins.current.csr_wb[CSR_MEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEPC) == ins.current.pc_rdata)) {
+            type_option.weight = 0;
+            bins sw_check = {SOFTWARE_CHECK};
+        }
+    `endif

@@ -15,7 +15,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 112
+#define SIGUPD_COUNT 118
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
@@ -640,7 +640,7 @@ Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test8_exec:
 
 #endif
 
-  LI(x6, 0x1)
+  LI(x6, 0x0)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -738,7 +738,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test10_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test10_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test10_exec_str)
 
-  LI(x6, 0x2)
+  LI(x6, 0x1)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -836,7 +836,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test12_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test12_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test12_exec_str)
 
-  LI(x6, 0x4)
+  LI(x6, 0x2)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -934,7 +934,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test14_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test14_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test14_exec_str)
 
-  LI(x6, 0x8)
+  LI(x6, 0x4)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -1032,7 +1032,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test16_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test16_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test16_exec_str)
 
-  LI(x6, 0x10)
+  LI(x6, 0x8)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -1130,7 +1130,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test18_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test18_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test18_exec_str)
 
-  LI(x6, 0x20)
+  LI(x6, 0x10)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -1228,7 +1228,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test20_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test20_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test20_exec_str)
 
-  LI(x6, 0x40)
+  LI(x6, 0x20)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -1326,7 +1326,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test22_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test22_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test22_exec_str)
 
-  LI(x6, 0x80)
+  LI(x6, 0x40)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -1424,7 +1424,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test24_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test24_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test24_exec_str)
 
-  LI(x6, 0x100)
+  LI(x6, 0x80)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -1522,7 +1522,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test26_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test26_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test26_exec_str)
 
-  LI(x6, 0x1000)
+  LI(x6, 0x100)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -1620,7 +1620,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test28_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test28_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test28_exec_str)
 
-  LI(x6, 0x2000)
+  LI(x6, 0x1000)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -1718,7 +1718,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test30_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test30_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test30_exec_str)
 
-  LI(x6, 0x8000)
+  LI(x6, 0x2000)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -1816,7 +1816,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test32_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test32_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test32_exec_str)
 
-  LI(x6, 0xb1ff)
+  LI(x6, 0x8000)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -1914,6 +1914,104 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test34_exec:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test34_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test34_exec_str)
 
+  LI(x6, 0xb1ff)
+  csrw medeleg, x6
+  SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  addi x9, x9, 16
+
+// Store
+Sv_ExceptionsSm_cg_cp_medeleg_m_test35_store:
+  sw x9, 20(x14)
+  nop
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+
+// Load
+Sv_ExceptionsSm_cg_cp_medeleg_m_test35_load:
+  lw x8, 20(x14)
+  nop
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LA(x14, rvtest_data_1)
+
+// Execute
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test35_exec:
+  jalr ra, x14, 0
+  nop
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test35_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test35_store_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsSm_cg_cp_medeleg_m_test35_load, Sv_ExceptionsSm_cg_cp_medeleg_m_test35_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test35_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test35_exec_str)
+
+  SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
+  sfence.vma
+
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  addi x9, x9, 16
+
+// Store
+Sv_ExceptionsSm_cg_cp_medeleg_m_test36_store:
+  sw x9, 20(x14)
+  nop
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+
+// Load
+Sv_ExceptionsSm_cg_cp_medeleg_m_test36_load:
+  lw x8, 20(x14)
+  nop
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LA(x14, rvtest_data_1)
+
+// Execute
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test36_exec:
+  jalr ra, x14, 0
+  nop
+
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
+
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_m_test36_store, Sv_ExceptionsSm_cg_cp_medeleg_m_test36_store_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_ExceptionsSm_cg_cp_medeleg_m_test36_load, Sv_ExceptionsSm_cg_cp_medeleg_m_test36_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test36_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test36_exec_str)
+
   csrw medeleg, x13
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -1943,108 +2041,114 @@ rvtest_slvl0_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_ExceptionsSm_cg_cp_store_page_fault_m_test1_store_str: .string "\"test: 259; cg: Sv_ExceptionsSm_cg; cp: cp_store_page_fault_m; bin: test1_store\""
-Sv_ExceptionsSm_cg_cp_load_page_fault_m_test1_load_str: .string "\"test: 260; cg: Sv_ExceptionsSm_cg; cp: cp_load_page_fault_m; bin: test1_load\""
-Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test1_exec_str: .string "\"test: 261; cg: Sv_ExceptionsSm_cg; cp: cp_instr_page_fault_m; bin: test1_exec\""
-Sv_ExceptionsSm_cg_cp_misaligned_priority_store_m_test2_store_str: .string "\"test: 262; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_store_m; bin: test2_store\""
-Sv_ExceptionsSm_cg_cp_misaligned_priority_load_m_test2_load_str: .string "\"test: 263; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_load_m; bin: test2_load\""
-Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test2_exec_str: .string "\"test: 264; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_fetch_m; bin: test2_exec\""
-Sv_ExceptionsSm_cg_cp_store_page_fault_m_test3_store_str: .string "\"test: 265; cg: Sv_ExceptionsSm_cg; cp: cp_store_page_fault_m; bin: test3_store\""
-Sv_ExceptionsSm_cg_cp_load_page_fault_m_test3_load_str: .string "\"test: 266; cg: Sv_ExceptionsSm_cg; cp: cp_load_page_fault_m; bin: test3_load\""
-Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test3_exec_str: .string "\"test: 267; cg: Sv_ExceptionsSm_cg; cp: cp_instr_page_fault_m; bin: test3_exec\""
-Sv_ExceptionsSm_cg_cp_misaligned_priority_store_m_test4_store_str: .string "\"test: 268; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_store_m; bin: test4_store\""
-Sv_ExceptionsSm_cg_cp_misaligned_priority_load_m_test4_load_str: .string "\"test: 269; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_load_m; bin: test4_load\""
-Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test4_exec_str: .string "\"test: 270; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_fetch_m; bin: test4_exec\""
-Sv_ExceptionsSm_cg_cp_store_page_fault_m_test5_store_str: .string "\"test: 271; cg: Sv_ExceptionsSm_cg; cp: cp_store_page_fault_m; bin: test5_store\""
-Sv_ExceptionsSm_cg_cp_load_page_fault_m_test5_load_str: .string "\"test: 272; cg: Sv_ExceptionsSm_cg; cp: cp_load_page_fault_m; bin: test5_load\""
-Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test5_exec_str: .string "\"test: 273; cg: Sv_ExceptionsSm_cg; cp: cp_instr_page_fault_m; bin: test5_exec\""
-Sv_ExceptionsSm_cg_cp_misaligned_priority_store_m_test6_store_str: .string "\"test: 274; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_store_m; bin: test6_store\""
-Sv_ExceptionsSm_cg_cp_misaligned_priority_load_m_test6_load_str: .string "\"test: 275; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_load_m; bin: test6_load\""
-Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test6_exec_str: .string "\"test: 276; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_fetch_m; bin: test6_exec\""
-Sv_ExceptionsSm_cg_cp_store_page_fault_m_test7_store_str: .string "\"test: 277; cg: Sv_ExceptionsSm_cg; cp: cp_store_page_fault_m; bin: test7_store\""
-Sv_ExceptionsSm_cg_cp_load_page_fault_m_test7_load_str: .string "\"test: 278; cg: Sv_ExceptionsSm_cg; cp: cp_load_page_fault_m; bin: test7_load\""
-Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test7_exec_str: .string "\"test: 279; cg: Sv_ExceptionsSm_cg; cp: cp_instr_page_fault_m; bin: test7_exec\""
-Sv_ExceptionsSm_cg_cp_misaligned_priority_store_m_test8_store_str: .string "\"test: 280; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_store_m; bin: test8_store\""
-Sv_ExceptionsSm_cg_cp_misaligned_priority_load_m_test8_load_str: .string "\"test: 281; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_load_m; bin: test8_load\""
-Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test8_exec_str: .string "\"test: 282; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_fetch_m; bin: test8_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test9_store_str: .string "\"test: 283; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test9_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test9_load_str: .string "\"test: 284; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test9_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test9_exec_str: .string "\"test: 285; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test9_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test10_store_str: .string "\"test: 286; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test10_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test10_load_str: .string "\"test: 287; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test10_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test10_exec_str: .string "\"test: 288; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test10_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test11_store_str: .string "\"test: 289; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test11_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test11_load_str: .string "\"test: 290; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test11_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test11_exec_str: .string "\"test: 291; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test11_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test12_store_str: .string "\"test: 292; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test12_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test12_load_str: .string "\"test: 293; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test12_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test12_exec_str: .string "\"test: 294; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test12_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test13_store_str: .string "\"test: 295; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test13_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test13_load_str: .string "\"test: 296; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test13_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test13_exec_str: .string "\"test: 297; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test13_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test14_store_str: .string "\"test: 298; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test14_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test14_load_str: .string "\"test: 299; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test14_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test14_exec_str: .string "\"test: 300; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test14_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test15_store_str: .string "\"test: 301; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test15_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test15_load_str: .string "\"test: 302; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test15_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test15_exec_str: .string "\"test: 303; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test15_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test16_store_str: .string "\"test: 304; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test16_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test16_load_str: .string "\"test: 305; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test16_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test16_exec_str: .string "\"test: 306; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test16_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test17_store_str: .string "\"test: 307; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test17_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test17_load_str: .string "\"test: 308; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test17_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test17_exec_str: .string "\"test: 309; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test17_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test18_store_str: .string "\"test: 310; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test18_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test18_load_str: .string "\"test: 311; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test18_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test18_exec_str: .string "\"test: 312; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test18_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test19_store_str: .string "\"test: 313; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test19_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test19_load_str: .string "\"test: 314; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test19_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test19_exec_str: .string "\"test: 315; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test19_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test20_store_str: .string "\"test: 316; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test20_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test20_load_str: .string "\"test: 317; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test20_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test20_exec_str: .string "\"test: 318; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test20_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test21_store_str: .string "\"test: 319; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test21_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test21_load_str: .string "\"test: 320; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test21_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test21_exec_str: .string "\"test: 321; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test21_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test22_store_str: .string "\"test: 322; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test22_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test22_load_str: .string "\"test: 323; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test22_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test22_exec_str: .string "\"test: 324; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test22_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test23_store_str: .string "\"test: 325; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test23_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test23_load_str: .string "\"test: 326; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test23_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test23_exec_str: .string "\"test: 327; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test23_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test24_store_str: .string "\"test: 328; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test24_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test24_load_str: .string "\"test: 329; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test24_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test24_exec_str: .string "\"test: 330; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test24_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test25_store_str: .string "\"test: 331; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test25_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test25_load_str: .string "\"test: 332; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test25_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test25_exec_str: .string "\"test: 333; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test25_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test26_store_str: .string "\"test: 334; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test26_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test26_load_str: .string "\"test: 335; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test26_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test26_exec_str: .string "\"test: 336; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test26_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test27_store_str: .string "\"test: 337; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test27_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test27_load_str: .string "\"test: 338; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test27_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test27_exec_str: .string "\"test: 339; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test27_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test28_store_str: .string "\"test: 340; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test28_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test28_load_str: .string "\"test: 341; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test28_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test28_exec_str: .string "\"test: 342; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test28_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test29_store_str: .string "\"test: 343; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test29_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test29_load_str: .string "\"test: 344; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test29_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test29_exec_str: .string "\"test: 345; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test29_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test30_store_str: .string "\"test: 346; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test30_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test30_load_str: .string "\"test: 347; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test30_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test30_exec_str: .string "\"test: 348; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test30_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test31_store_str: .string "\"test: 349; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test31_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test31_load_str: .string "\"test: 350; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test31_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test31_exec_str: .string "\"test: 351; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test31_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test32_store_str: .string "\"test: 352; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test32_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test32_load_str: .string "\"test: 353; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test32_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test32_exec_str: .string "\"test: 354; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test32_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test33_store_str: .string "\"test: 355; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test33_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test33_load_str: .string "\"test: 356; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test33_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test33_exec_str: .string "\"test: 357; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test33_exec\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test34_store_str: .string "\"test: 358; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test34_store\""
-Sv_ExceptionsSm_cg_cp_medeleg_m_test34_load_str: .string "\"test: 359; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test34_load\""
-Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test34_exec_str: .string "\"test: 360; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test34_exec\""
+Sv_ExceptionsSm_cg_cp_store_page_fault_m_test1_store_str: .string "\"test: 277; cg: Sv_ExceptionsSm_cg; cp: cp_store_page_fault_m; bin: test1_store\""
+Sv_ExceptionsSm_cg_cp_load_page_fault_m_test1_load_str: .string "\"test: 278; cg: Sv_ExceptionsSm_cg; cp: cp_load_page_fault_m; bin: test1_load\""
+Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test1_exec_str: .string "\"test: 279; cg: Sv_ExceptionsSm_cg; cp: cp_instr_page_fault_m; bin: test1_exec\""
+Sv_ExceptionsSm_cg_cp_misaligned_priority_store_m_test2_store_str: .string "\"test: 280; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_store_m; bin: test2_store\""
+Sv_ExceptionsSm_cg_cp_misaligned_priority_load_m_test2_load_str: .string "\"test: 281; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_load_m; bin: test2_load\""
+Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test2_exec_str: .string "\"test: 282; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_fetch_m; bin: test2_exec\""
+Sv_ExceptionsSm_cg_cp_store_page_fault_m_test3_store_str: .string "\"test: 283; cg: Sv_ExceptionsSm_cg; cp: cp_store_page_fault_m; bin: test3_store\""
+Sv_ExceptionsSm_cg_cp_load_page_fault_m_test3_load_str: .string "\"test: 284; cg: Sv_ExceptionsSm_cg; cp: cp_load_page_fault_m; bin: test3_load\""
+Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test3_exec_str: .string "\"test: 285; cg: Sv_ExceptionsSm_cg; cp: cp_instr_page_fault_m; bin: test3_exec\""
+Sv_ExceptionsSm_cg_cp_misaligned_priority_store_m_test4_store_str: .string "\"test: 286; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_store_m; bin: test4_store\""
+Sv_ExceptionsSm_cg_cp_misaligned_priority_load_m_test4_load_str: .string "\"test: 287; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_load_m; bin: test4_load\""
+Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test4_exec_str: .string "\"test: 288; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_fetch_m; bin: test4_exec\""
+Sv_ExceptionsSm_cg_cp_store_page_fault_m_test5_store_str: .string "\"test: 289; cg: Sv_ExceptionsSm_cg; cp: cp_store_page_fault_m; bin: test5_store\""
+Sv_ExceptionsSm_cg_cp_load_page_fault_m_test5_load_str: .string "\"test: 290; cg: Sv_ExceptionsSm_cg; cp: cp_load_page_fault_m; bin: test5_load\""
+Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test5_exec_str: .string "\"test: 291; cg: Sv_ExceptionsSm_cg; cp: cp_instr_page_fault_m; bin: test5_exec\""
+Sv_ExceptionsSm_cg_cp_misaligned_priority_store_m_test6_store_str: .string "\"test: 292; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_store_m; bin: test6_store\""
+Sv_ExceptionsSm_cg_cp_misaligned_priority_load_m_test6_load_str: .string "\"test: 293; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_load_m; bin: test6_load\""
+Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test6_exec_str: .string "\"test: 294; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_fetch_m; bin: test6_exec\""
+Sv_ExceptionsSm_cg_cp_store_page_fault_m_test7_store_str: .string "\"test: 295; cg: Sv_ExceptionsSm_cg; cp: cp_store_page_fault_m; bin: test7_store\""
+Sv_ExceptionsSm_cg_cp_load_page_fault_m_test7_load_str: .string "\"test: 296; cg: Sv_ExceptionsSm_cg; cp: cp_load_page_fault_m; bin: test7_load\""
+Sv_ExceptionsSm_cg_cp_instr_page_fault_m_test7_exec_str: .string "\"test: 297; cg: Sv_ExceptionsSm_cg; cp: cp_instr_page_fault_m; bin: test7_exec\""
+Sv_ExceptionsSm_cg_cp_misaligned_priority_store_m_test8_store_str: .string "\"test: 298; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_store_m; bin: test8_store\""
+Sv_ExceptionsSm_cg_cp_misaligned_priority_load_m_test8_load_str: .string "\"test: 299; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_load_m; bin: test8_load\""
+Sv_ExceptionsSm_cg_cp_misaligned_priority_fetch_m_test8_exec_str: .string "\"test: 300; cg: Sv_ExceptionsSm_cg; cp: cp_misaligned_priority_fetch_m; bin: test8_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test9_store_str: .string "\"test: 301; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test9_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test9_load_str: .string "\"test: 302; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test9_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test9_exec_str: .string "\"test: 303; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test9_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test10_store_str: .string "\"test: 304; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test10_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test10_load_str: .string "\"test: 305; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test10_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test10_exec_str: .string "\"test: 306; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test10_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test11_store_str: .string "\"test: 307; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test11_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test11_load_str: .string "\"test: 308; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test11_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test11_exec_str: .string "\"test: 309; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test11_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test12_store_str: .string "\"test: 310; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test12_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test12_load_str: .string "\"test: 311; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test12_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test12_exec_str: .string "\"test: 312; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test12_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test13_store_str: .string "\"test: 313; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test13_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test13_load_str: .string "\"test: 314; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test13_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test13_exec_str: .string "\"test: 315; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test13_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test14_store_str: .string "\"test: 316; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test14_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test14_load_str: .string "\"test: 317; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test14_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test14_exec_str: .string "\"test: 318; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test14_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test15_store_str: .string "\"test: 319; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test15_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test15_load_str: .string "\"test: 320; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test15_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test15_exec_str: .string "\"test: 321; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test15_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test16_store_str: .string "\"test: 322; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test16_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test16_load_str: .string "\"test: 323; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test16_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test16_exec_str: .string "\"test: 324; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test16_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test17_store_str: .string "\"test: 325; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test17_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test17_load_str: .string "\"test: 326; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test17_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test17_exec_str: .string "\"test: 327; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test17_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test18_store_str: .string "\"test: 328; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test18_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test18_load_str: .string "\"test: 329; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test18_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test18_exec_str: .string "\"test: 330; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test18_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test19_store_str: .string "\"test: 331; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test19_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test19_load_str: .string "\"test: 332; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test19_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test19_exec_str: .string "\"test: 333; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test19_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test20_store_str: .string "\"test: 334; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test20_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test20_load_str: .string "\"test: 335; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test20_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test20_exec_str: .string "\"test: 336; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test20_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test21_store_str: .string "\"test: 337; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test21_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test21_load_str: .string "\"test: 338; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test21_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test21_exec_str: .string "\"test: 339; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test21_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test22_store_str: .string "\"test: 340; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test22_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test22_load_str: .string "\"test: 341; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test22_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test22_exec_str: .string "\"test: 342; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test22_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test23_store_str: .string "\"test: 343; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test23_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test23_load_str: .string "\"test: 344; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test23_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test23_exec_str: .string "\"test: 345; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test23_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test24_store_str: .string "\"test: 346; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test24_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test24_load_str: .string "\"test: 347; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test24_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test24_exec_str: .string "\"test: 348; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test24_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test25_store_str: .string "\"test: 349; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test25_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test25_load_str: .string "\"test: 350; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test25_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test25_exec_str: .string "\"test: 351; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test25_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test26_store_str: .string "\"test: 352; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test26_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test26_load_str: .string "\"test: 353; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test26_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test26_exec_str: .string "\"test: 354; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test26_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test27_store_str: .string "\"test: 355; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test27_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test27_load_str: .string "\"test: 356; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test27_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test27_exec_str: .string "\"test: 357; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test27_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test28_store_str: .string "\"test: 358; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test28_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test28_load_str: .string "\"test: 359; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test28_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test28_exec_str: .string "\"test: 360; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test28_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test29_store_str: .string "\"test: 361; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test29_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test29_load_str: .string "\"test: 362; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test29_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test29_exec_str: .string "\"test: 363; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test29_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test30_store_str: .string "\"test: 364; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test30_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test30_load_str: .string "\"test: 365; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test30_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test30_exec_str: .string "\"test: 366; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test30_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test31_store_str: .string "\"test: 367; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test31_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test31_load_str: .string "\"test: 368; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test31_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test31_exec_str: .string "\"test: 369; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test31_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test32_store_str: .string "\"test: 370; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test32_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test32_load_str: .string "\"test: 371; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test32_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test32_exec_str: .string "\"test: 372; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test32_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test33_store_str: .string "\"test: 373; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test33_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test33_load_str: .string "\"test: 374; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test33_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test33_exec_str: .string "\"test: 375; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test33_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test34_store_str: .string "\"test: 376; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test34_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test34_load_str: .string "\"test: 377; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test34_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test34_exec_str: .string "\"test: 378; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test34_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test35_store_str: .string "\"test: 379; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test35_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test35_load_str: .string "\"test: 380; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test35_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test35_exec_str: .string "\"test: 381; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test35_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test36_store_str: .string "\"test: 382; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test36_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_m_test36_load_str: .string "\"test: 383; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_m; bin: test36_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_m_test36_exec_str: .string "\"test: 384; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_m; bin: test36_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

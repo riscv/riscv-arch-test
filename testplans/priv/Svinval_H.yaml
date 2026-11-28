@@ -25,3 +25,8 @@ coverpoints:
       cp_hinval_vvma: HS x hinval.vvma x vsatp paged x hgatp paged x rs1 {x0, register} x rs2 {x0, register}
       cp_hinval_gvma: HS x hinval.gvma x vsatp paged x hgatp paged x rs1 {x0, register} x rs2 {x0, register}
       cp_sinval_vma_vs: VS x sinval.vma x vsatp paged x hgatp paged x rs1 {x0, register} x rs2 {x0, register}
+  - name: cp_hinval_gvma_x4
+    goal: hinval.gvma removes a stale translation of a guest physical address that uses the x4 mode's two extra bits
+    description: Sv32/Sv32x4 and Sv39/Sv39x4.  As cp_hinval_gvma, with guest physical page A at an address whose top two bits (33:32 or 40:39) are 01, 10 and 11, with random bits between them and bit 13.  HS-mode points the G-stage leaf of page A at physical page B and runs sfence.w.inval, hinval.gvma with page A >> 2 in rs1 and x0 or the current VMID in rs2, and sfence.inval.ir.
+    expectation: The VS-mode load after the sequence reads page B.  A hart that drops the top bits of rs1 does not remove the stale translation and reads page A.
+    bins: HS x hinval.gvma x vsatp paged x hgatp paged x {rs1 with GPA top bits 01, 10, 11} x rs2 {x0, register}

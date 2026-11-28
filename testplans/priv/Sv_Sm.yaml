@@ -126,7 +126,7 @@ coverpoints:
     expectation: No fault; the walk interprets the big-endian PTEs.
     bins: |-
       read_acc x PTE_sbe_d x PageType_d x sbe_mstatus
-      = 28 bins on RV64, 8 on RV32
+      = 28 bins on RV64, 8 on RV32; half that when S-mode endianness is fixed, which fixes mstatus.SBE
     id: MSTATUS_SBE_WARL MSTATUSH_SBE_WARL mstatus_sbe_implicit
     rules:
       - "[norm:MSTATUS_SBE_WARL] [norm:MSTATUSH_SBE_WARL] [norm:mstatus_sbe_implicit]"
@@ -136,7 +136,7 @@ coverpoints:
     expectation: No fault; the walk interprets the big-endian PTEs.
     bins: |-
       write_acc x PTE_sbe_d x PageType_d x sbe_mstatus
-      = 28 bins on RV64, 8 on RV32
+      = 28 bins on RV64, 8 on RV32; half that when S-mode endianness is fixed, which fixes mstatus.SBE
     id: MSTATUS_SBE_WARL MSTATUSH_SBE_WARL mstatus_sbe_implicit
     rules:
       - "[norm:MSTATUS_SBE_WARL] [norm:MSTATUSH_SBE_WARL] [norm:mstatus_sbe_implicit]"

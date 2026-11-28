@@ -1151,14 +1151,13 @@ covergroup PMP_Sm_cg with function sample(
   lock_checking: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_PMPCFG0, "pmp1cfg_l")[0] {}
 
   // Attempt to write values in given PMP CSRs when A = {OFF/TOR/NAPOT} and L = {0/1}
-  // rs1 should be x0 while writing to pmpaddr1 & pmp1cfg0 in order to write all 0s.
-  // rs1 should be x4 with the value -1 which we try to write in lower pmpaddr.
-  // rs1 should be x5 having 3'b111 for XWR at LSB to write in lower pmpcfg.
-  pmp_csr_to_write: coverpoint ins.current.insn {
-    wildcard bins pmpaddr1 = {32'b001110110001_00000_001_?????_1110011};
-    wildcard bins pmp1cfg0 = {32'b001110100000_00000_001_?????_1110011};
-    wildcard bins pmp0cfg0 = {32'b001110100000_00101_001_?????_1110011};
-    wildcard bins pmpaddr0 = {32'b001110110000_00100_001_?????_1110011};
+  // csrrw to pmpaddr1, pmpaddr0 and pmpcfg0. A pmpcfg0 write that sets entry 0's XWR modifies the
+  // lower entry; one that leaves them 0 targets entry 1.
+  pmp_csr_to_write: coverpoint ins.current.insn[31:20] iff (ins.current.insn[14:0] ==? 15'b001_?????_1110011) {
+    bins pmpaddr1 = {CSR_PMPADDR1};
+    bins pmp1cfg0 = {CSR_PMPCFG0} iff (ins.current.rs1_val[2:0] == 3'b000);
+    bins pmp0cfg0 = {CSR_PMPCFG0} iff (ins.current.rs1_val[2:0] == 3'b111);
+    bins pmpaddr0 = {CSR_PMPADDR0};
   }
 
 //-------------------------------------------------------
@@ -3293,13 +3292,13 @@ covergroup PMP_Sv_cg with function sample(ins_t ins);
         bins set = {1};
     }
 
-    load_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) {
+    load_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) iff (ins.current.csr_wb[CSR_MCAUSE]) {
         bins load_acc_fault = {LOAD_ACCESS_FAULT};
     }
-    store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) {
+    store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) iff (ins.current.csr_wb[CSR_MCAUSE]) {
         bins store_acc_fault = {STORE_AMO_ACCESS_FAULT};
     }
-    ins_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) {
+    ins_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) iff (ins.current.csr_wb[CSR_MCAUSE]) {
         bins ins_acc_fault  = {INSTRUCTION_ACCESS_FAULT};
     }
 
@@ -3404,7 +3403,7 @@ covergroup PMP_SvZicbo_cg with function sample(ins_t ins);
         }
     `endif
 
-    store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) {
+    store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MCAUSE) iff (ins.current.csr_wb[CSR_MCAUSE]) {
         bins store_acc_fault = {STORE_AMO_ACCESS_FAULT};
     }
 

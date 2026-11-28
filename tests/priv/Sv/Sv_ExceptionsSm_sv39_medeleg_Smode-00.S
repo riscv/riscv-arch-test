@@ -15,7 +15,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 88
+#define SIGUPD_COUNT 94
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
@@ -62,7 +62,7 @@ RVTEST_BEGIN
 
   LI(x9, 0x800) // Test signature initialization
 
-  LI(x6, 0x1)
+  LI(x6, 0x0)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -134,7 +134,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test2_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test2_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test2_exec_str)
 
-  LI(x6, 0x2)
+  LI(x6, 0x1)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -206,7 +206,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test4_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test4_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test4_exec_str)
 
-  LI(x6, 0x4)
+  LI(x6, 0x2)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -278,7 +278,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test6_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test6_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test6_exec_str)
 
-  LI(x6, 0x8)
+  LI(x6, 0x4)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -350,7 +350,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test8_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test8_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test8_exec_str)
 
-  LI(x6, 0x10)
+  LI(x6, 0x8)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -422,7 +422,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test10_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test10_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test10_exec_str)
 
-  LI(x6, 0x20)
+  LI(x6, 0x10)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -494,7 +494,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test12_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test12_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test12_exec_str)
 
-  LI(x6, 0x40)
+  LI(x6, 0x20)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -566,7 +566,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test14_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test14_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test14_exec_str)
 
-  LI(x6, 0x80)
+  LI(x6, 0x40)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -638,7 +638,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test16_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test16_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test16_exec_str)
 
-  LI(x6, 0x100)
+  LI(x6, 0x80)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -710,7 +710,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test18_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test18_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test18_exec_str)
 
-  LI(x6, 0x1000)
+  LI(x6, 0x100)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -782,7 +782,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test20_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test20_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test20_exec_str)
 
-  LI(x6, 0x2000)
+  LI(x6, 0x1000)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -854,7 +854,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test22_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test22_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test22_exec_str)
 
-  LI(x6, 0x8000)
+  LI(x6, 0x2000)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -926,7 +926,7 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test24_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test24_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test24_exec_str)
 
-  LI(x6, 0xb1ff)
+  LI(x6, 0x8000)
   csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
@@ -997,6 +997,78 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test26_exec:
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_s_test26_load, Sv_ExceptionsSm_cg_cp_medeleg_s_test26_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test26_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test26_exec_str)
+
+  LI(x6, 0xb1ff)
+  csrw medeleg, x6
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  sfence.vma
+
+  LI(x8, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x8, x8, x6
+  RVTEST_TSBI_GOTO_SMODE
+  addi x9, x9, 16
+
+// Store
+Sv_ExceptionsSm_cg_cp_medeleg_s_test27_store:
+  sw x9, 20(x8)
+  nop
+
+// Load
+Sv_ExceptionsSm_cg_cp_medeleg_s_test27_load:
+  lw x15, 20(x8)
+  nop
+
+// Execute
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test27_exec:
+  jalr ra, x8, 0
+  nop
+
+  RVTEST_TSBI_GOTO_MMODE
+
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_s_test27_store, Sv_ExceptionsSm_cg_cp_medeleg_s_test27_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_s_test27_load, Sv_ExceptionsSm_cg_cp_medeleg_s_test27_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test27_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test27_exec_str)
+
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL2)
+  sfence.vma
+
+  LI(x8, (va_data_invalid >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x8, x8, x6
+  RVTEST_TSBI_GOTO_SMODE
+  addi x9, x9, 16
+
+// Store
+Sv_ExceptionsSm_cg_cp_medeleg_s_test28_store:
+  sw x9, 20(x8)
+  nop
+
+// Load
+Sv_ExceptionsSm_cg_cp_medeleg_s_test28_load:
+  lw x15, 20(x8)
+  nop
+
+// Execute
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test28_exec:
+  jalr ra, x8, 0
+  nop
+
+  RVTEST_TSBI_GOTO_MMODE
+
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_ExceptionsSm_cg_cp_medeleg_s_test28_store, Sv_ExceptionsSm_cg_cp_medeleg_s_test28_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_ExceptionsSm_cg_cp_medeleg_s_test28_load, Sv_ExceptionsSm_cg_cp_medeleg_s_test28_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test28_exec, Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test28_exec_str)
 
   csrw medeleg, x13
 
@@ -1108,6 +1180,12 @@ Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test25_exec_str: .string "\"test: 75; cg: 
 Sv_ExceptionsSm_cg_cp_medeleg_s_test26_store_str: .string "\"test: 76; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_s; bin: test26_store\""
 Sv_ExceptionsSm_cg_cp_medeleg_s_test26_load_str: .string "\"test: 77; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_s; bin: test26_load\""
 Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test26_exec_str: .string "\"test: 78; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_s; bin: test26_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_s_test27_store_str: .string "\"test: 79; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_s; bin: test27_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_s_test27_load_str: .string "\"test: 80; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_s; bin: test27_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test27_exec_str: .string "\"test: 81; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_s; bin: test27_exec\""
+Sv_ExceptionsSm_cg_cp_medeleg_s_test28_store_str: .string "\"test: 82; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_s; bin: test28_store\""
+Sv_ExceptionsSm_cg_cp_medeleg_s_test28_load_str: .string "\"test: 83; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_s; bin: test28_load\""
+Sv_ExceptionsSm_cg_cp_medeleg_fetch_s_test28_exec_str: .string "\"test: 84; cg: Sv_ExceptionsSm_cg; cp: cp_medeleg_fetch_s; bin: test28_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

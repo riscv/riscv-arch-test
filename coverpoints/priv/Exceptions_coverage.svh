@@ -12,6 +12,8 @@
 
 `define COVER_EXCEPTIONS
 
+`include "general/RISCV_coverage_hypervisor.svh"
+
 `ifdef ZICBOM_SUPPORTED
     `define EXCEPTIONS_ZICBO_ANY
 `elsif ZICBOZ_SUPPORTED
@@ -261,9 +263,12 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
     }
     rs1_1_0: coverpoint ins.current.rs1_val[1:0] {
     }
-    medeleg_illegalinstr_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG)[2] {
-        bins enabled = {1};
-    }
+    // cp_stvec needs illegal-instruction exceptions delegated, which medeleg[2] read-only 0 prevents
+    `ifdef UDB_MEDELEG_DELEGATABLE_2
+        medeleg_illegalinstr_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MEDELEG)[2] {
+            bins enabled = {1};
+        }
+    `endif
     mtvec_stvec_ne: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MTVEC) != get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_STVEC)} {
         bins notequal = {1};
     }
@@ -287,7 +292,9 @@ covergroup Exceptions_S_cg with function sample(ins_t ins);
     cp_load_address_misaligned:              cross priv_mode_s, loadops, adr_LSBs;
     cp_store_address_misaligned:             cross priv_mode_s, storeops, adr_LSBs;
     cp_ecall_s:                              cross priv_mode_s, ecall;
-    cp_stvec:                                cross priv_mode_s_u, illegalops, medeleg_illegalinstr_enabled, mtvec_stvec_ne; // Testplan was not specific, I chose illegal instruction fault for the delegated exception
+    `ifdef UDB_MEDELEG_DELEGATABLE_2
+        cp_stvec:                            cross priv_mode_s_u, illegalops, medeleg_illegalinstr_enabled, mtvec_stvec_ne; // Testplan was not specific, I chose illegal instruction fault for the delegated exception
+    `endif
     cp_xstatus_ie:                           cross priv_mode_s_u, ecall, mstatus_MIE, mstatus_SIE;
 
     // access fault coverpoints
@@ -1443,12 +1450,17 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
     medeleg_delegation: coverpoint (get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[31:0] & 32'h00F3_FFFE) {
         bins ones = {32'h00F0_B5FE & `UDB_MEDELEG_DELEGATABLE_MASK};
     }
-    medeleg_ecall_u_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[8] {
-        bins delegated = {1};
-    }
-    medeleg_ecall_u_vs_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[10:8] {
-        wildcard bins delegated = {3'b1?1};
-    }
+    // Ecalls from U-mode and VS-mode reach HS-mode or VS-mode only when medeleg[8] and medeleg[10] can be set
+    `ifdef UDB_MEDELEG_DELEGATABLE_8
+        medeleg_ecall_u_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[8] {
+            bins delegated = {1};
+        }
+        `ifdef UDB_MEDELEG_DELEGATABLE_10
+            medeleg_ecall_u_vs_enabled: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MEDELEG, "deleg")[10:8] {
+                wildcard bins delegated = {3'b1?1};
+            }
+        `endif
+    `endif
     // Bits 16 and 20-23 are read-only 0; bit 0 is writable only when IALIGN = 32
     hedeleg_walk: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HEDELEG, "deleg") {
         bins zeros              = {32'h00000000};
@@ -1518,8 +1530,12 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
     cp_hedeleg_hs_u_ecall:               cross priv_mode_s_u, ecall, medeleg_delegation, hedeleg_writable;
 
     // Ecalls taken in VS-mode and HS-mode; the trap record holds the status fields they write
-    cp_ecall_to_vs: cross ecall, priv_mode_vu, medeleg_ecall_u_enabled, hedeleg_ecall_u_enabled, vsstatus_sie;
-    cp_ecall_to_hs: cross ecall, priv_mode_vs_u_vu, medeleg_ecall_u_vs_enabled, hedeleg_ecall_u_vs_disabled, hstatus_spvp;
+    `ifdef UDB_MEDELEG_DELEGATABLE_8
+        cp_ecall_to_vs: cross ecall, priv_mode_vu, medeleg_ecall_u_enabled, hedeleg_ecall_u_enabled, vsstatus_sie;
+        `ifdef UDB_MEDELEG_DELEGATABLE_10
+            cp_ecall_to_hs: cross ecall, priv_mode_vs_u_vu, medeleg_ecall_u_vs_enabled, hedeleg_ecall_u_vs_disabled, hstatus_spvp;
+        `endif
+    `endif
 
     // Traps delegated to VS-mode go through vstvec, which points to a different handler than stvec
     vstvec_trap: coverpoint ins.current.insn {
@@ -1598,9 +1614,18 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         bins aligned    = {2'b00};
         bins misaligned = {2'b01};
     }
-    hstatus_gva_set: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS, "gva") {
-        bins set = {1};
-    }
+    // GVA of the trap: hstatus.GVA, or mstatus.GVA for an access fault that medeleg cannot delegate to HS-mode
+    `ifdef UDB_MXLEN_64
+        hstatus_gva_set: coverpoint (medeleg_blocked_trap(ins) ? get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUS, "gva") :
+                                                                 get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS, "gva")) {
+            bins set = {1};
+        }
+    `else
+        hstatus_gva_set: coverpoint (medeleg_blocked_trap(ins) ? get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MSTATUSH, "gva") :
+                                                                 get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_HSTATUS, "gva")) {
+            bins set = {1};
+        }
+    `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS_FETCH
         jalr: coverpoint ins.current.insn {
             wildcard bins jalr = {JALR};

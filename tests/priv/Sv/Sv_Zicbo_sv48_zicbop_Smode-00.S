@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sv48', 'Zicbop']
+# REQUIRED_EXTENSIONS: ['I', 'Sv48']
 # # # no param constraints
 # MARCH: rv${XLEN}i_zicbop_zicsr_zifencei
 ##### END_TEST_CONFIG #####
@@ -56,11 +56,6 @@ RVTEST_BEGIN
 
   SATP_SETUP_RV64(sv48) // Enable address translation.
   sfence.vma
-
-  LI(x6, MENVCFG_CBZE)
-  # T-SBI call to execute instruction: csrs menvcfg, x6
-  mv a1, x6
-  RVTEST_TSBI_CSR_ACCESS TSBI_CSR_SET(CSR_MENVCFG)
 
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma

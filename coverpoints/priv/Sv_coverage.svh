@@ -2683,7 +2683,10 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   menvcfg_cbie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_MENVCFG, "cbie") {
     bins off   = {2'b00};
     bins flush = {2'b01};
-    bins inval = {2'b11};
+    // menvcfg.CBIE = 11 is illegal with FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+    `ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+      bins inval = {2'b11};
+    `endif
   }
   henvcfg_cbie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_BEFORE, CSR_HENVCFG, "cbie") {
     bins off   = {2'b00};

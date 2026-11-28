@@ -57,7 +57,7 @@ RVTEST_BEGIN
   SATP_SETUP_RV64(sv39) // Enable address translation.
   sfence.vma
 
-  LI(x9, MENVCFG_CBCFE | MENVCFG_CBIE)
+  LI(x9, MENVCFG_CBCFE | MENVCFG_CBIE_ENABLE)
   # T-SBI call to execute instruction: csrs menvcfg, x9
   mv a1, x9
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_SET(CSR_MENVCFG)

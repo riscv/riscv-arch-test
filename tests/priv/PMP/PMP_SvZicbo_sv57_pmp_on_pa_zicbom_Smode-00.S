@@ -75,7 +75,7 @@ RVTEST_BEGIN
   SATP_SETUP_RV64(sv57) // Enable address translation.
   sfence.vma
 
-  LI(x14, MENVCFG_CBCFE | MENVCFG_CBIE)
+  LI(x14, MENVCFG_CBCFE | MENVCFG_CBIE_ENABLE)
   csrs menvcfg, x14
 
   LI(x12, (((PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(0)))

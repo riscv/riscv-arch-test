@@ -1010,13 +1010,20 @@ covergroup Exceptions_ZicboS_cg with function sample(ins_t ins);
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
             menvcfg_cbie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbie")[1:0] {
                 ignore_bins reserved = {2'b10};
+                `ifdef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+                    // menvcfg.CBIE = 11 is illegal with FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+                    ignore_bins inval = {2'b11};
+                `endif
             }
             menvcfg_cbcfe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbcfe")[0] {
             }
             // cbo.inval only executes with cbie enabled; 00 traps and 10 is reserved
             menvcfg_cbie_enabled: coverpoint ins.current.csr[CSR_MENVCFG][5:4] {
                 bins flush = {2'b01};
-                bins inval = {2'b11};
+                // menvcfg.CBIE = 11 is illegal with FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+                `ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+                    bins inval = {2'b11};
+                `endif
             }
         `endif
         `ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -1049,7 +1056,12 @@ covergroup Exceptions_ZicboS_cg with function sample(ins_t ins);
     }
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
         menvcfg_all_enable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG)[7:4] {
-            bins ones = {4'b1111};
+            // With FORCE_UPGRADE_CBO_INVAL_TO_FLUSH, CBIE = 11 is illegal, so the tests enable cbo.inval with CBIE = 01
+            `ifdef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+                bins ones = {4'b1101};
+            `else
+                bins ones = {4'b1111};
+            `endif
         }
     `endif
     `ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -1132,6 +1144,10 @@ covergroup Exceptions_ZicboSm_cg with function sample(ins_t ins);
             `ifdef U_SUPPORTED
                 menvcfg_cbie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbie")[1:0] {
                     ignore_bins reserved = {2'b10};
+                    `ifdef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+                        // menvcfg.CBIE = 11 is illegal with FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+                        ignore_bins inval = {2'b11};
+                    `endif
                 }
                 menvcfg_cbcfe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbcfe")[0] {
                 }
@@ -1158,7 +1174,12 @@ covergroup Exceptions_ZicboSm_cg with function sample(ins_t ins);
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
         `ifdef U_SUPPORTED
             menvcfg_all_enable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG)[7:4] {
-                bins ones = {4'b1111};
+                // With FORCE_UPGRADE_CBO_INVAL_TO_FLUSH, CBIE = 11 is illegal, so the tests enable cbo.inval with CBIE = 01
+                `ifdef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+                    bins ones = {4'b1101};
+                `else
+                    bins ones = {4'b1111};
+                `endif
             }
         `endif
     `endif
@@ -1238,13 +1259,20 @@ covergroup Exceptions_ZicboU_cg with function sample(ins_t ins);
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
             menvcfg_cbie: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbie")[1:0] {
                 ignore_bins reserved = {2'b10};
+                `ifdef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+                    // menvcfg.CBIE = 11 is illegal with FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+                    ignore_bins inval = {2'b11};
+                `endif
             }
             menvcfg_cbcfe: coverpoint get_csr_field(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG, "cbcfe")[0] {
             }
             // cbo.inval only executes with cbie enabled; 00 traps and 10 is reserved
             menvcfg_cbie_enabled: coverpoint ins.current.csr[CSR_MENVCFG][5:4] {
                 bins flush = {2'b01};
-                bins inval = {2'b11};
+                // menvcfg.CBIE = 11 is illegal with FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+                `ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+                    bins inval = {2'b11};
+                `endif
             }
         `endif
         `ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -1268,7 +1296,12 @@ covergroup Exceptions_ZicboU_cg with function sample(ins_t ins);
     }
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
         menvcfg_all_enable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_MENVCFG)[7:4] {
-            bins ones = {4'b1111};
+            // With FORCE_UPGRADE_CBO_INVAL_TO_FLUSH, CBIE = 11 is illegal, so the tests enable cbo.inval with CBIE = 01
+            `ifdef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+                bins ones = {4'b1101};
+            `else
+                bins ones = {4'b1111};
+            `endif
         }
     `endif
     cbo_instrs: coverpoint ins.current.insn {

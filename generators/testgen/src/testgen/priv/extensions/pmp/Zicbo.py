@@ -22,7 +22,7 @@ from testgen.priv.extensions.pmp.probes import (
 )
 from testgen.priv.registry import add_priv_test_generator
 
-_ENABLE_CBO = ["LI(t0, 0xF0)", "csrrs zero, menvcfg, t0"]
+_ENABLE_CBO = ["LI(t0, MENVCFG_CBZE | MENVCFG_CBCFE | MENVCFG_CBIE_ENABLE)", "csrrs zero, menvcfg, t0"]
 # The locked NAPOT region is max(page, grain) bytes from TEST_FOR_EXECUTION; pad to its end so that
 # nothing the trap handler writes (e.g. the trap signature) shares it at grains above a page.
 _PAGE_REGION = [*make_exec_region(("1024", "nop"), pad=None), ".p2align 12", ".p2align (UDB_PMP_GRANULARITY)"]

@@ -19,7 +19,7 @@ from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFl
 from testgen.priv.registry import add_priv_test_generator
 
 _FAMILIES = {
-    "Zicbom": ("MENVCFG_CBCFE | MENVCFG_CBIE", ("cbo.clean", "cbo.flush", "cbo.inval")),
+    "Zicbom": ("MENVCFG_CBCFE | MENVCFG_CBIE_ENABLE", ("cbo.clean", "cbo.flush", "cbo.inval")),
     "Zicboz": ("MENVCFG_CBZE", ("cbo.zero",)),
 }
 

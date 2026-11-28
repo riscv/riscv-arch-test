@@ -114,6 +114,7 @@ Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11, Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_str)
   RVTEST_TSBI_GOTO_SMODE
+#ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
   # T-SBI call to execute instruction: csrc menvcfg, x9
   mv a1, x9
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
@@ -126,6 +127,8 @@ Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie01_henvcfg_cbie11:
 Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie00:
   cbo.inval    0(x14)
   RVTEST_TSBI_GOTO_SMODE
+#endif // UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+#ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
   # T-SBI call to execute instruction: csrc menvcfg, x9
   mv a1, x9
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
@@ -145,6 +148,8 @@ Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01, Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_str)
   RVTEST_TSBI_GOTO_SMODE
+#endif // UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+#ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
   # T-SBI call to execute instruction: csrc menvcfg, x9
   mv a1, x9
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
@@ -159,6 +164,7 @@ Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie01:
 Sv_HZicbo_cg_cp_cbie_vs_cbo_inval_menvcfg_cbie11_henvcfg_cbie11:
   cbo.inval    0(x14)
   RVTEST_TSBI_GOTO_SMODE
+#endif // UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
 #endif // ZICBOM_SUPPORTED
 
 
@@ -435,6 +441,7 @@ Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11_str)
   RVTEST_TSBI_GOTO_SMODE
+#ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
@@ -448,6 +455,8 @@ Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie01_henvcfg_cbie11_senvcfg_cbie11:
 Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie00:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
+#endif // UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+#ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
@@ -463,6 +472,8 @@ Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie00:
 Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie01:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
+#endif // UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+#ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
@@ -478,6 +489,8 @@ Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie01:
 Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie11:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
+#endif // UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+#ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
@@ -493,6 +506,8 @@ Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie00_senvcfg_cbie11:
 Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie00:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
+#endif // UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+#ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
@@ -515,6 +530,8 @@ Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie01:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie01, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie01_str)
   RVTEST_TSBI_GOTO_SMODE
+#endif // UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+#ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
@@ -537,6 +554,8 @@ Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11_str)
   RVTEST_TSBI_GOTO_SMODE
+#endif // UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+#ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
@@ -552,6 +571,8 @@ Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie01_senvcfg_cbie11:
 Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie00:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
+#endif // UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+#ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
@@ -574,6 +595,8 @@ Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01, Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01_str)
   RVTEST_TSBI_GOTO_SMODE
+#endif // UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+#ifndef UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
   # T-SBI call to execute instruction: csrc menvcfg, x14
   mv a1, x14
   RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
@@ -591,6 +614,7 @@ Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie01:
 Sv_HZicbo_cg_cp_cbie_vu_cbo_inval_menvcfg_cbie11_henvcfg_cbie11_senvcfg_cbie11:
   cbo.inval    0(x9)
   RVTEST_TSBI_GOTO_SMODE
+#endif // UDB_FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
 #endif // ZICBOM_SUPPORTED
 
 
